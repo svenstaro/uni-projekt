@@ -1,0 +1,90 @@
+\documentclass[a4paper]{article}
+
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc} 
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=3cm,includeheadfoot]{geometry}
+\usepackage[scaled=.90]{helvet}
+\usepackage{courier}
+\usepackage{dsfont} 
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes,automata,backgrounds,petri}
+\usepackage{listings} \lstset{numbers=left, numberstyle=\tiny, numbersep=5pt} \lstset{language=Perl} 
+
+\pagestyle{fancy} %eigener Seitenstil
+\fancyhf{} %alle Kopf- und Fußzeilenfelder bereinigen
+%\fancyhead[L]{\doctitle  \nummer} %Kopfzeile links
+\fancyhead[L]{\docauthors} %Kopfzeile rechts
+\renewcommand{\headrulewidth}{0.5pt} %obere Trennlinie
+\fancyfoot[L]{\doctitle  \nummer} %Kopfzeile links
+\fancyfoot[R]{Seite \thepage} %Fußzeile rechts
+\renewcommand{\footrulewidth}{0.5pt} %untere Trennlinie
+
+% Titelseite Block oben
+\newcommand{\titelblock}{
+\sloppy
+\begin{center}
+\sffamily
+{\Large{\veranstaltung \\}}
+{\Huge{\doctitle  \nummer}\\}
+\vspace{0.5cm}
+\tutorium \\
+\hrulefill
+\end{center}
+}
+
+\newcommand{\docauthors}{Felix Wiedemann, Marcel Hellwig, Nasif Yueksel, David Weber, Sven-Hendrik Haase, Alias Dammer, Felix Ortmann}
+\newcommand{\docdate}{\today}
+\newcommand{\doctitle}{Ideensammlung}
+\newcommand{\nummer}{ 1} %Übungszettelnummer hier anpassen
+\newcommand{\tutorium}{WS 2013/2014}
+\newcommand{\veranstaltung}{Projekt: Mikrorechner}
+\newcommand{\gruppe}{}
+
+
+\begin{document}
+\titelblock
+
+\section{Ideensammlung}
+
+\subsection{Instruction Set Architecture}
+
+\begin{itemize}
+
+\item Wortbreite 32 bit
+\item Adressbreite 32 bit
+\item 3-Operanden (1 Ziel-, 2 Quell-Operanden)
+\item 15 Register
+\item 1 \$0-Register
+\item 4 Statusflags (Z,N,C,V)
+\item Big Endian
+
+
+\end{itemize}
+
+\subsection{Arithmetik / Logik}
+
+\begin{itemize}
+\item ADD, ADC
+\item SUB, SBC
+\item MUL (MULL)
+\item LSL, ADR, LSR, ROR 
+\item AND, OR, XOR, NOT
+\end{itemize}
+
+\subsection{Fancy Magic}
+
+\begin{itemize}
+\item Divisionseinheit
+\item Fließkomma
+\item Touchscreen / Display
+\item Cache
+\item SIMD
+\end{itemize}
+
+
+\end{document}

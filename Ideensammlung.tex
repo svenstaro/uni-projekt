@@ -11,6 +11,7 @@
 \usepackage[scaled=.90]{helvet}
 \usepackage{courier}
 \usepackage{dsfont} 
+\usepackage{multicol}
 \usepackage{tikz}
 \usetikzlibrary{arrows,shapes,automata,backgrounds,petri}
 \usepackage{listings} \lstset{numbers=left, numberstyle=\tiny, numbersep=5pt} \lstset{language=Perl} 
@@ -49,10 +50,11 @@
 \begin{document}
 \titelblock
 
-\section{Ideensammlung}
+\section{Ideensammlung - Instruction Set Architecture}
 
-\subsection{Instruction Set Architecture}
+\subsection{General}
 
+\begin{multicols}{2}
 \begin{itemize}
 
 \item Wortbreite 32 bit
@@ -76,7 +78,7 @@
 \item MUL (MULL)
 \item LSL, ADR, LSR, ROR 
 \item AND, OR, XOR, NOT
-\item SWAP
+\item SWAP (Wenn Felix ganz lieb fragt evtl soch)
 \end{itemize}
 
 \subsection{Controlflow}
@@ -84,19 +86,8 @@
 \begin{itemize}
 \item JMP
 \item Jxx (Flag dependant JMP)
-\item verschiedene Ideen für Jxx - kodierbar mit 3 (hardcode), 6, 7, mehr-bit (Flag Auslesen)
 \item CALL
 \item RET (== JMP \$15)
-\end{itemize}
-
-\subsection{Fancy Magic}
-
-\begin{itemize}
-\item Divisionseinheit
-\item Fließkomma
-\item Touchscreen / Display
-\item Cache
-\item SIMD
 \end{itemize}
 
 \subsection{Memory}
@@ -106,6 +97,26 @@
 \item STR
 \item ToDo: indirekte Adresssierung
 \end{itemize}
+\end{multicols}
+
+\newline
+\hline
+
+\subsection{Befehlsstruktur}
+\[Opcode - (7bit) : R_{dest} - (4bit) : R_{s1} - (4bit) : OP2 - (17bit)\]
+\[ALU - 0 : OpC0d3 - (5bit) : SF - (1bit)\]
+\[MEM - 10 : LD/ST - (1bit) : R_{dest} - (4bit) : OP2 - (25bit, 1bit f. Reg / Imm.)\]
+
+\subsection{Fancy Magic}
+
+\begin{itemize}
+\item Divisionseinheit
+\item Fließkomma
+\item Touchscreen / Display (Mäder: das is ganz eklig) - flieht ihr Narren!!
+\item Cache
+\item SIMD
+\end{itemize}
+
 
 \subsection{Other Stuff, nice-to-haves, not-to-be-dones}
 
@@ -114,7 +125,52 @@
 \item Software Interrupts
 \item MMU (Kommentar aus dem Plenum: unnötig und scheiße)
 \item OS-Aufrufe (falls wir mal eins haben)
-\item Windows portieren (hier werden leute sterben)
-\item alles vorher mit 0 / 1 modellieren
+\item GCC und lib-C poriteren
+\item Linux portieren
+\item Windows portieren (für den Versuch werden Leute sterben)
 \item SD-Karte nutzen (wie Rasp-Pi?? als cache??)
+\end{itemize}
+
+\subsection{Codierung der Befehle - Binär}
+Arithmetisch/Logische Befehle fangen mit 0 an
+\begin{multicols}{2}
+\emph{Präfix 00 + {Op-C0d3}}
+\begin{itemize}
+\item ADD 000
+\item ADC 001
+\item SUB 100
+\item SBC 101
+\item RSB 110
+\item RSC 111
+\end{itemize}
+
+\emph{Präfix 100 + {Op-C0d3}}
+\begin{itemize}
+\item MUL 00
+\item MULL 01
+\item DIV 10
+\end{itemize}
+
+\emph{Präfix 010 + {Op-C0d3}}
+\begin{itemize}
+\item AND 00
+\item OR 01
+\item XOR 10
+\item NOT 11
+\end{itemize}
+
+
+\emph{Präfix 011 + {Op-C0d3}}
+\begin{itemize}
+\item LSL 00
+\item ASR 01
+\item LSR 10
+\item ROR 11
+\end{itemize}
+
+
+\end{multicols}
+
+
+
 \end{document}

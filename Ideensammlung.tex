@@ -58,11 +58,13 @@
 \item Wortbreite 32 bit
 \item Adressbreite 32 bit
 \item 3-Operanden (1 Ziel-, 2 Quell-Operanden)
-\item 15 Register
-\item 1 \$0-Register
+\item 14 General-Purpose Register
+\item \$0-Register: Null
+\item \$15-Register: Return Address
 \item 4 Statusflags (Z,N,C,V)
 \item Big Endian
-
+\item Befehle können Statusflags setzen
+\item 16-Bit Immediates
 
 \end{itemize}
 
@@ -70,10 +72,21 @@
 
 \begin{itemize}
 \item ADD, ADC
-\item SUB, SBC
+\item SUB, SBC, RSB, RSC
 \item MUL (MULL)
 \item LSL, ADR, LSR, ROR 
 \item AND, OR, XOR, NOT
+\item SWAP
+\end{itemize}
+
+\subsection{Controlflow}
+
+\begin{itemize}
+\item JMP
+\item Jxx (Flag dependant JMP)
+\item verschiedene Ideen für Jxx - kodierbar mit 3 (hardcode), 6, 7, mehr-bit (Flag Auslesen)
+\item CALL
+\item RET (== JMP \$15)
 \end{itemize}
 
 \subsection{Fancy Magic}
@@ -86,5 +99,22 @@
 \item SIMD
 \end{itemize}
 
+\subsection{Memory}
 
+\begin{itemize}
+\item LD (candy: load mit imm. add in one op)
+\item STR
+\item ToDo: indirekte Adresssierung
+\end{itemize}
+
+\subsection{Other Stuff, nice-to-haves, not-to-be-dones}
+
+\begin{itemize}
+\item read / write from somewhere
+\item Software Interrupts
+\item MMU (Kommentar aus dem Plenum: unnötig und scheiße)
+\item OS-Aufrufe (falls wir mal eins haben)
+\item Windows portieren (hier werden leute sterben)
+\item alles vorher mit 0 / 1 modellieren
+\item SD-Karte nutzen (wie Rasp-Pi?? als cache??)
 \end{document}

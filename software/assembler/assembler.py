@@ -1,18 +1,34 @@
 #!/usr/bin/env python
 
+# vim: softtabstop=4:expandtab
+
 import myhdl
 
 alu_ops = {
     "add": "00000",
     "adc": "00001",
-    "sub": "00100"}
+    "sub": "00100",
+    "sbc": "00101",
+    "rsb": "00110",
+    "rsc": "00111",
+
+    "mul": "10000",
+    "mull":"10001",
+    "div": "10010",
+
+    "and": "01000",
+    "or" : "01001",
+    "xor": "01010",
+    "not": "01011",
+
+    "lsl": "01100",
+    "asr": "01101",
+    "lsr": "01110",
+    "rot": "01111"
+}
 
 def isRegister(arg):
-    try:
-        regEncode(arg)
-    except ValueError:
-        return False
-    return True
+    return arg.startswith("$")
 
 def regEncode(arg):
     ex = ValueError(arg, "is not a valid register")
@@ -31,11 +47,12 @@ def regEncode(arg):
     return format(result, "04b")
 
 def isImmediate(arg, maxSize=16):
-    return immEncode(arg, maxSize) is not False
+    return arg.startswith("#")
 
 def immEncode(arg, maxSize=16):
+    ex = ValueError(arg, "is not a valid %s-bit Immediate"%maxSize)
     if not arg.startswith("#"):
-        return False
+        raise ex
     number = arg[1:]
 
     sign = ""
@@ -54,19 +71,22 @@ def immEncode(arg, maxSize=16):
     try:
         result = int(sign+number, base=base)
     except ValueError:
-        return False
+        raise ex
 
     if not -2**(maxSize-1) <= result <= 2**(maxSize-1) -1:
-        return False
+        raise ex
 
     return myhdl.bin(result,width=maxSize)
 
 def op2Encode(arg):
-    if isRegister(arg):
-        return "0" + regEncode(arg) + "0"*12
-    if isImmediate(arg):
-        return "0" + immEncode(arg)
-    raise ValueError(arg,"not a valid op2")
+    try:
+        if isRegister(arg):
+            return "0" + regEncode(arg) + "0"*12
+        if isImmediate(arg):
+            return "0" + immEncode(arg)
+        raise ValueError(arg, "unknown type")
+    except ValueError, e:
+        raise ValueError(arg, "is not a valid op2", e)
 
 def buildAluOp(line):
     (command,arguments) = line.split(" ", 1)

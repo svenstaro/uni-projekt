@@ -1,15 +1,6 @@
 # vim: softtabstop=4:expandtab
 
+from structure import Structure
 
-class Operand(object):
-    @staticmethod
-    def isA(arg):
-        raise NotImplementedError()
-
-    @staticmethod
-    def encode(arg):
-        raise NotImplementedError()
-
-    @staticmethod
-    def decode(arg):
-        raise NotImplementedError()
+class Operand(Structure):
+    pass

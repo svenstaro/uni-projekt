@@ -1,12 +1,14 @@
 # vim: softtabstop=4:expandtab
 
+import re
+
 from operands import Operand
-from exceptions import EncodingError, DecodingError
+from errors import EncodingError, DecodingError
 
 
 class Register(Operand):
     @staticmethod
-    def isA(arg):
+    def encodable(arg):
         return arg.startswith("$")
 
     @staticmethod
@@ -27,9 +29,19 @@ class Register(Operand):
         return format(result, "04b")
 
     @staticmethod
+    def decodable(arg):
+        return re.match("^[01]{4}$", arg)
+
+    @staticmethod
     def decode(arg):
         # TODO Do error checking
         ex = DecodingError(arg, "is not a valid encoded register")
 
-        return "$" + int(arg, base=2)
+        if not Register.decodable(arg):
+            raise ex
+
+        try:
+            return "$" + str(int(arg, base=2))
+        except:
+            raise ex
 

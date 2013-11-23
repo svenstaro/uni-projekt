@@ -1,18 +1,19 @@
 # vim: softtabstop=4:expandtab
 
-import myhdl
 from operands import Operand
+from errors import EncodingError, DecodingError
+import re, string, myhdl
 
 
 class Immediate(Operand):
     @staticmethod
-    def isA(arg):
+    def encodable(arg):
         return arg.startswith("#")
 
     @staticmethod
     def encodeGeneric(arg, maxSize):
-        ex = ValueError(arg, "is not a valid %s-bit Immediate" % maxSize)
-        if not Immediate.isA(arg):
+        ex = EncodingError(arg, "is not a valid %s-bit Immediate" % maxSize)
+        if not Immediate.encodable(arg):
             raise ex
         number = arg[1:]
 
@@ -40,14 +41,35 @@ class Immediate(Operand):
         return myhdl.bin(result, width=maxSize)
 
     @staticmethod
+    def decodableGeneric(arg,size):
+        return re.match("^[01]{%s}$" % size, arg)
+
+    @staticmethod
+    def negate(arg):
+        return arg.translate(string.maketrans("01","10"))
+
+    @staticmethod
     def decodeGeneric(arg, size):
-        # TODO Implement
-        raise NotImplementedError()
+        ex = DecodingError(arg, "is not a valid %s-bit Immediate" % size)
+
+        if not Immediate.decodableGeneric(arg, size):
+            raise ex
+
+        if arg[0] is "0":
+            return int(arg, base=2)
+        else:
+            return ~int(Immediate.negate(arg), base=2)
 
 
 class Immediate16(Immediate):
+    @staticmethod
     def encode(arg):
         return super.encodeGeneric(arg, 16)
 
+    @staticmethod
+    def decodable(arg):
+        return super.decodableGeneric(arg, 16)
+
+    @staticmethod
     def decode(arg):
         return super.decodeGeneric(arg, 16)

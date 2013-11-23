@@ -1,6 +1,8 @@
 # vim: softtabstop=4:expandtab
 
-from operations.operation import Operation
+from operation import Operation
+from operands import Register,Operand2
+from operations.aluOperation import AluOperation
 
 
 class AluOperation(Operation):
@@ -29,13 +31,13 @@ class AluOperation(Operation):
 
 
     @staticmethod
-    def isA(line):
-        return AluOperation.opcodes.has_key(arg[0:3])
+    def encodable(line):
+        return AluOperation.opcodes.has_key(line[0:3])
 
     @staticmethod
     def extractStatusflag(command):
         statusflag = "0"
-        if command.endswith("s") and alu_ops.has_key(command[:-1]):
+        if command.endswith("s") and AluOperation.opcodes.has_key(command[:-1]):
             statusflag = "1"
             command = command[:-1]
         return (statusflag, command)

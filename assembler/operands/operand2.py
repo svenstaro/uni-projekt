@@ -5,24 +5,27 @@ from errors import EncodingError, DecodingError
 
 
 class Operand2(Operand):
-    @staticmethod
-    def encodable(arg):
-        return Register.encodable(arg) or Immediate16.encodable(arg)
+    def encodable(self):
+        return Register(self.arg).encodable() or Immediate16(self.arg).encodable()
 
-    @staticmethod
-    def encode(arg):
+    def encode(self):
         try:
-            if Register.encodable(arg):
-                return "0" + Register.encode(arg) + "0" * 12
+            register = Register(self.arg)
+            if register.encodable():
+                return "0" + register.encode() + "0" * 12
 
-            if Immediate16.encodable(arg):
-                return "1" + Immediate16.encode(arg)
+            imm = Immediate16(self.arg)
+            if imm.encodable():
+                return "1" + imm.encode()
         except: # TODO: Capture error
-            raise EncodingError(arg, "is not valid operand2")
+            raise EncodingError(self.arg, "is not valid operand2")
 
-    @staticmethod
-    def decode(arg):
+    def decodable(self):
+        # TODO: Implement
+        raise NotImplementedError()
+
+    def decode(self):
         # TODO Do error checking
-        if arg.startswith("1"):
-            return Immediate16.decode(arg[1:])
-        return Register.decode(arg[1:4])
+        if self.arg.startswith("1"):
+            return Immediate16(self.arg[1:]).decode()
+        return Register(self.arg[1:5]).decode()

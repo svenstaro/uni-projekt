@@ -1,16 +1,16 @@
 class Structure(object):
-    @staticmethod
-    def encodable(line):
+    #TODO: Bad name! -- Felix O.
+    def __init__(self, arg):
+        self.arg = arg
+
+    def encodable(self):
         raise NotImplementedError()
 
-    @staticmethod
-    def encode(line):
+    def encode(self):
         raise NotImplementedError()
 
-    @staticmethod
-    def decodable(arg):
+    def decodable(self):
         raise NotImplementedError()
 
-    @staticmethod
-    def decode(line):
+    def decode(self):
         raise NotImplementedError()

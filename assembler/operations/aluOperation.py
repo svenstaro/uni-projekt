@@ -1,6 +1,5 @@
 from operation import Operation
-from operands import Register,Operand2
-from errors import EncodingError
+from operands import Register, AluOperand2
 
 
 class AluOperation(Operation):
@@ -35,17 +34,4 @@ class AluOperation(Operation):
         "lsr": "01110",
         "rot": "01111"
     })
-    argTypes = [Register, Register, Operand2]
-
-
-    def getOperationName(self):
-        #TODO: Extract find
-        opcode = (key for key, vals in self.opcodes.items() if vals == self.arg[1:6]).next()
-        statusflag = "" if self.arg[6:7] == 0 else "s"
-        return opcode + statusflag
-
-    def getOperands(self):
-        regDest = Register.decode(self.arg[7:11])
-        regSrc1 = Register.decode(self.arg[11:15])
-        op2 = Operand2.decode(self.arg[15:32])
-        return [regDest, regSrc1, op2]
+    argTypes = [Register, Register, AluOperand2]

@@ -1,23 +1,18 @@
-# vim: softtabstop=4:expandtab
-
-from operands import Operand, Register, Immediate16
+from operands import Operand, Register, Immediate
 from errors import EncodingError, DecodingError
-import re
 
 
 class Operand2(Operand):
-    size = 17
-
     def encodable(self):
-        return Register(self.arg).encodable() or Immediate16(self.arg).encodable()
+        return Register(self.arg).encodable() or Immediate(self.arg, self.size - 1).encodable()
 
     def encode(self):
         try:
             register = Register(self.arg)
             if register.encodable():
-                return "0" + register.encode() + "0" * 12
+                return "0" + register.encode() + "0" * (self.size - 5)
 
-            imm = Immediate16(self.arg)
+            imm = Immediate(self.arg, self.size - 1)
             if imm.encodable():
                 return "1" + imm.encode()
         except Exception, e:
@@ -28,7 +23,8 @@ class Operand2(Operand):
             if not self.decodable():
                 raise ValueError("Invalid size!")
             if self.arg.startswith("1"):
-                return Immediate16(self.arg[1:]).decode()
+                return Immediate(self.arg[1:], self.size - 1).decode()
             return Register(self.arg[1:5]).decode()
-        except Exception,e:
+        except Exception, e:
             raise DecodingError(self.arg, "is not a valid operand2", e)
+

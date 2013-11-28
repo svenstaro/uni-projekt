@@ -1,9 +1,16 @@
+import string
+
+import myhdl
+
 from operands import Operand
 from errors import EncodingError, DecodingError
-import re, string, myhdl
 
 
 class Immediate(Operand):
+    def __init__(self, arg, size):
+        Operand.__init__(self, arg)
+        self.size = size
+
     def encodable(self):
         return self.arg.startswith("#")
 
@@ -50,7 +57,3 @@ class Immediate(Operand):
             return "#" + str(int(self.arg, base=2))
         else:
             return "#-" + str(~int(Immediate.negate(self.arg), base=2))
-
-
-class Immediate16(Immediate):
-    size = 16

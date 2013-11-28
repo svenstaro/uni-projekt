@@ -1,10 +1,10 @@
-import re
-
 from operands import Operand
 from errors import EncodingError, DecodingError
 
 
 class Register(Operand):
+    size = 4
+
     def encodable(self):
         return self.arg.startswith("$")
 
@@ -24,18 +24,8 @@ class Register(Operand):
 
         return format(result, "04b")
 
-    def decodable(self):
-        return re.match("^[01]{4}$", self.arg)
-
     def decode(self):
-        # TODO Do error checking
-        ex = DecodingError(self.arg, "is not a valid encoded register")
-
         if not self.decodable():
-            raise ex
-
-        try:
-            return "$" + str(int(self.arg, base=2))
-        except:
-            raise ex
+            raise DecodingError(self.arg, "is not a valid encoded register")
+        return "$" + str(int(self.arg, base=2))
 

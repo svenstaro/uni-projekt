@@ -1,4 +1,8 @@
+import re
+
 class Structure(object):
+    size = None
+
     #TODO: Bad name! -- Felix O.
     def __init__(self, arg):
         self.arg = arg
@@ -10,7 +14,7 @@ class Structure(object):
         raise NotImplementedError()
 
     def decodable(self):
-        raise NotImplementedError()
+        return re.match("^[01]{%s}$" % self.size, self.arg)
 
     def decode(self):
         raise NotImplementedError()

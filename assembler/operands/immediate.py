@@ -1,16 +1,9 @@
-# vim: softtabstop=4:expandtab
-
 from operands import Operand
 from errors import EncodingError, DecodingError
 import re, string, myhdl
 
 
 class Immediate(Operand):
-
-    def __init__(self, arg, size):
-        super(Operand,self).__init__(self, arg)
-        self.size = size
-
     def encodable(self):
         return self.arg.startswith("#")
 
@@ -43,25 +36,21 @@ class Immediate(Operand):
 
         return myhdl.bin(result, width=self.size)
 
-    def decodable(self):
-        return re.match("^[01]{%s}$" % self.size, self.arg)
-
     @staticmethod
     def negate(bitstring):
-        return bitstring.translate(string.maketrans("01","10"))
+        return bitstring.translate(string.maketrans("01", "10"))
 
     def decode(self):
-        ex = DecodingError(self.arg, "is not a valid %s-bit Immediate" % size)
+        ex = DecodingError(self.arg, "is not a valid %s-bit Immediate" % self.size)
 
         if not self.decodable():
             raise ex
 
         if self.arg[0] is "0":
-            return int(self.arg, base=2)
+            return "#" + str(int(self.arg, base=2))
         else:
-            return ~int(Immediate.negate(self.arg), base=2)
+            return "#-" + str(~int(Immediate.negate(self.arg), base=2))
 
 
 class Immediate16(Immediate):
-    def __init__(self, arg):
-        super(Immediate, self).__init__(arg,16)
+    size = 16

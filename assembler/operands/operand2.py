@@ -2,9 +2,12 @@
 
 from operands import Operand, Register, Immediate16
 from errors import EncodingError, DecodingError
+import re
 
 
 class Operand2(Operand):
+    size = 17
+
     def encodable(self):
         return Register(self.arg).encodable() or Immediate16(self.arg).encodable()
 
@@ -17,15 +20,15 @@ class Operand2(Operand):
             imm = Immediate16(self.arg)
             if imm.encodable():
                 return "1" + imm.encode()
-        except: # TODO: Capture error
-            raise EncodingError(self.arg, "is not valid operand2")
-
-    def decodable(self):
-        # TODO: Implement
-        raise NotImplementedError()
+        except Exception, e:
+            raise EncodingError(self.arg, "is not valid operand2", e)
 
     def decode(self):
-        # TODO Do error checking
-        if self.arg.startswith("1"):
-            return Immediate16(self.arg[1:]).decode()
-        return Register(self.arg[1:5]).decode()
+        try:
+            if not self.decodable():
+                raise ValueError("Invalid size!")
+            if self.arg.startswith("1"):
+                return Immediate16(self.arg[1:]).decode()
+            return Register(self.arg[1:5]).decode()
+        except Exception,e:
+            raise DecodingError(self.arg, "is not a valid operand2", e)

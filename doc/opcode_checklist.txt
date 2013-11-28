@@ -1,0 +1,15 @@
+7.5 Checklist for the Design of an Opcode.
+
+Designing an opcode starts with asking a number of questions. The answers are found in the specification of
+the opcode. The answers identify the outputs that need to be set other than their default values. While the
+instructions are quite different, the questions are always the same:
+
+1. What operation shall the ALU perform? Set ALU_OP and Q_WE_F accordingly.
+2. Is a destination register or destination register pair used? If so, set DDDDD (and WE_D if written).
+3. Is a second register or register pair involved? If so, set RRRRR.
+4. Does the opcode access the memory? If so, set AMOD, PMS, RSEL, RD_M, WE_M, and
+WE_XYZS accordingly.
+5. Is an immediate or implied operand used? If so, set IMM and RSEL.
+6. Is the program counter modified (other than incrementing it)? If so, set PC_OP and SKIP.
+7. Is a bit number specified in the opcode ? If so, set BIT.
+8. Are instructions skipped? If so, set SKIP.

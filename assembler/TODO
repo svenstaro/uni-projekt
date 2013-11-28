@@ -1,0 +1,10 @@
+TODO:
+ - Test cases! (-> TDD)
+ - not operation
+ - jmp and call
+ - ld and str
+ - ret pseudo op
+ - mov pseudo op
+ - labels!
+ - glue code!
+ - …

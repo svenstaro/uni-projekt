@@ -1,28 +1,30 @@
-# vim: softtabstop=4:expandtab
-
-from operands import Operand, Register, Immediate16
+from operands import Operand, Register, Immediate
 from errors import EncodingError, DecodingError
 
 
 class Operand2(Operand):
-    @staticmethod
-    def encodable(arg):
-        return Register.encodable(arg) or Immediate16.encodable(arg)
+    def encodable(self):
+        return Register(self.arg).encodable() or Immediate(self.arg, self.size - 1).encodable()
 
-    @staticmethod
-    def encode(arg):
+    def encode(self):
         try:
-            if Register.encodable(arg):
-                return "0" + Register.encode(arg) + "0" * 12
+            register = Register(self.arg)
+            if register.encodable():
+                return "0" + register.encode() + "0" * (self.size - 5)
 
-            if Immediate16.encodable(arg):
-                return "1" + Immediate16.encode(arg)
-        except: # TODO: Capture error
-            raise EncodingError(arg, "is not valid operand2")
+            imm = Immediate(self.arg, self.size - 1)
+            if imm.encodable():
+                return "1" + imm.encode()
+        except Exception, e:
+            raise EncodingError(self.arg, "is not valid operand2", e)
 
-    @staticmethod
-    def decode(arg):
-        # TODO Do error checking
-        if arg.startswith("1"):
-            return Immediate16.decode(arg[1:])
-        return Register.decode(arg[1:4])
+    def decode(self):
+        try:
+            if not self.decodable():
+                raise ValueError("Invalid size!")
+            if self.arg.startswith("1"):
+                return Immediate(self.arg[1:], self.size - 1).decode()
+            return Register(self.arg[1:5]).decode()
+        except Exception, e:
+            raise DecodingError(self.arg, "is not a valid operand2", e)
+

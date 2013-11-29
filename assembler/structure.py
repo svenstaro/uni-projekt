@@ -1,16 +1,20 @@
+import re
+
 class Structure(object):
-    @staticmethod
-    def encodable(line):
+    size = None
+
+    #TODO: Bad name! -- Felix O.
+    def __init__(self, arg):
+        self.arg = arg
+
+    def encodable(self):
         raise NotImplementedError()
 
-    @staticmethod
-    def encode(line):
+    def encode(self):
         raise NotImplementedError()
 
-    @staticmethod
-    def decodable(arg):
-        raise NotImplementedError()
+    def decodable(self):
+        return re.match("^[01]{%s}$" % self.size, self.arg)
 
-    @staticmethod
-    def decode(line):
+    def decode(self):
         raise NotImplementedError()

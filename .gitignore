@@ -34,3 +34,13 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# gtkwave files
+*.vcd*
+
+# vim swap
+*.sw?
+
+# latex shit
+*.aux
+*.log

@@ -1,0 +1,13 @@
+TODO:
+ - Test cases! (-> TDD)
+ - jmp and call
+ - ld and str
+ - ret pseudo op
+ - labels!
+ - glue code!
+ - TODOs!!!
+ - …
+
+
+  - JMP decode: Felix O.
+  - RET pseudo op: Felix O.

@@ -1,6 +1,7 @@
+import re
+
 from structure import Structure
 from errors import EncodingError
-import re
 
 
 class Operation(Structure):
@@ -27,11 +28,16 @@ class Operation(Structure):
             raise EncodingError("Not a valid %s: " % type(self).__name__, self.arg, e)
 
     def splitOperation(self):
-        (command, arguments) = self.arg.split(" ", 1)
-        args = [arg.strip() for arg in arguments.split(",")]
+        splittedLine = self.arg.split(" ", 1)
+        command = splittedLine[0]
+
+        if len(splittedLine) is 1:
+            return command, []
+
+        args = [arg.strip() for arg in splittedLine[1].split(",")]
         if not len(args) is len(self.argTypes):
             raise ValueError("Invalid number of arguments:", self.arg)
-        return (command, args)
+        return command, args
 
     @staticmethod
     def joinOperation(opname, args):

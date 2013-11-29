@@ -1,6 +1,7 @@
 from errors import EncodingError, DecodingError
 
 
+#noinspection PyUnresolvedReferences
 class TestStructure(object):
     def __init__(self):
         self.type = None

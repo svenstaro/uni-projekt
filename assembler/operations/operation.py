@@ -3,8 +3,11 @@ import re
 from structure import Structure
 from errors import EncodingError
 
-
 class Operation(Structure):
+    def __init__(self, arg, position):
+        Structure.__init__(self, arg)
+        self.position = position
+
     size = 4
     opcodes = None
     argTypes = None
@@ -13,8 +16,11 @@ class Operation(Structure):
         return self.opcodes.has_key(command)
 
     def encodable(self):
-        (command, _) = self.splitOperation()
-        return self.isCommand(command)
+        try:
+            command = self.splitOperation()[0]
+            return self.isCommand(command)
+        except ValueError:
+            return False
 
     def buildEncodedOperation(self, command, args):
         return self.opcodes[command] + "".join(args)
@@ -66,4 +72,3 @@ class Operation(Structure):
         opname, remainder = self.decodeOpname()
         args = self.decodeArguments(remainder)
         return Operation.joinOperation(opname, args)
-

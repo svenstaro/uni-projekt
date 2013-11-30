@@ -1,11 +1,14 @@
-from operations import Operation
-from operands import OtherOperand2
+from operations import LabelOperation
+from operands import LabelOperand
 
 
-class JumpOperation(Operation):
+class JumpOperation(LabelOperation):
+    def __init__(self, arg, position):
+        LabelOperation.__init__(self, arg, position)
+        self.argTypes = [LabelOperand.createLabelOperand(self.labels, self.position)]
+
     opcodes = {"jmp": "1110000",
                "call": "1110001"}
-    argTypes = [OtherOperand2]
 
     conditions = {
         # equal or zero

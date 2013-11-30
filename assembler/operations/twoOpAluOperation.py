@@ -15,3 +15,6 @@ class TwoOpAluOperation(AluOperation):
     def decodeArguments(self, remainder):
         remainder = remainder[0:4] + remainder[8:25]
         return AluOperation.decodeArguments(self, remainder)
+
+    def decodable(self):
+        return AluOperation.decodable(self) and self.arg[4:8] == "0"*4

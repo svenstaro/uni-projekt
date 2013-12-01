@@ -1,9 +1,13 @@
-from structure import Structure
-from errors import EncodingError
 import re
 
+from structure import Structure
+from errors import EncodingError
 
 class Operation(Structure):
+    def __init__(self, arg, position):
+        Structure.__init__(self, arg)
+        self.position = position
+
     size = 4
     opcodes = None
     argTypes = None
@@ -12,8 +16,11 @@ class Operation(Structure):
         return self.opcodes.has_key(command)
 
     def encodable(self):
-        (command, _) = self.splitOperation()
-        return self.isCommand(command)
+        try:
+            command = self.splitOperation()[0]
+            return self.isCommand(command)
+        except ValueError:
+            return False
 
     def buildEncodedOperation(self, command, args):
         return self.opcodes[command] + "".join(args)
@@ -27,11 +34,16 @@ class Operation(Structure):
             raise EncodingError("Not a valid %s: " % type(self).__name__, self.arg, e)
 
     def splitOperation(self):
-        (command, arguments) = self.arg.split(" ", 1)
-        args = [arg.strip() for arg in arguments.split(",")]
+        splittedLine = self.arg.split(" ", 1)
+        command = splittedLine[0]
+
+        if len(splittedLine) is 1:
+            return command, []
+
+        args = [arg.strip() for arg in splittedLine[1].split(",")]
         if not len(args) is len(self.argTypes):
             raise ValueError("Invalid number of arguments:", self.arg)
-        return (command, args)
+        return command, args
 
     @staticmethod
     def joinOperation(opname, args):
@@ -60,4 +72,3 @@ class Operation(Structure):
         opname, remainder = self.decodeOpname()
         args = self.decodeArguments(remainder)
         return Operation.joinOperation(opname, args)
-

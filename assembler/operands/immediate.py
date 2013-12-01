@@ -56,4 +56,4 @@ class Immediate(Operand):
         if self.arg[0] is "0":
             return "#" + str(int(self.arg, base=2))
         else:
-            return "#-" + str(~int(Immediate.negate(self.arg), base=2))
+            return "#" + str(~int(Immediate.negate(self.arg), base=2))

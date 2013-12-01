@@ -11,7 +11,7 @@ def registerbank(clk, reset, we, channel, data_in, data_out, amount = 16, bitwid
             data_out.next = 0
         else:
             if we:
-                data[channel-1] = data_in.val
+                data[channel-1] = intbv(data_in.val)
             data_out.next = data[channel-1]
 
     return logic

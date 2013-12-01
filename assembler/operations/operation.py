@@ -2,6 +2,7 @@ import re
 
 from structure import Structure
 from errors import EncodingError
+from operands import Ignore
 
 class Operation(Structure):
     def __init__(self, arg, position):
@@ -41,7 +42,7 @@ class Operation(Structure):
             return command, []
 
         args = [arg.strip() for arg in splittedLine[1].split(",")]
-        if not len(args) is len(self.argTypes):
+        if not len(args) is len([argType for argType in self.argTypes if not issubclass(argType, Ignore)]):
             raise ValueError("Invalid number of arguments:", self.arg)
         return command, args
 
@@ -50,11 +51,20 @@ class Operation(Structure):
         return opname + " " + ", ".join(args)
 
     def decodable(self):
-        if not re.match("^[01]{32}$",self.arg):
+        if not re.match("^[01]{32}$", self.arg):
             return False
         for opcode in self.opcodes.values():
-            if self.arg.startswith(opcode):
+            if self.arg.startswith(opcode) and self.argumentsDecodable(self.arg[len(opcode):]):
                 return True
+        return False
+
+    def argumentsDecodable(self, remainder):
+        for argType in self.argTypes:
+            current, remainder = remainder[:argType.size], remainder[argType.size:]
+            if not argType(current).decodable():
+                return False
+        return True
+
 
     def decodeOpname(self):
         opname = (key for key, val in self.opcodes.items() if self.arg.startswith(val)).next()
@@ -63,9 +73,9 @@ class Operation(Structure):
     def decodeArguments(self, remainder):
         args = []
         for argType in self.argTypes:
-            current = remainder[0:argType.size]
-            args += [argType(current).decode()]
-            remainder = remainder[argType.size:]
+            current, remainder = remainder[:argType.size], remainder[argType.size:]
+            if not issubclass(argType, Ignore):
+                args += [argType(current).decode()]
         return args
 
     def decode(self):

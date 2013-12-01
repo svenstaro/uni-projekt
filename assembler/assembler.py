@@ -8,7 +8,7 @@ def encodeCommandStream(f):
     labels = {}
     ops = getOperations(labels)
 
-    labelPattern = re.compile("^(?P<label>\.[a-zA-Z0-9]+):$")
+    labelPattern = re.compile("^(?P<label>\.[a-zA-Z0-9_-]+):$")
     def parseLabel(line, labels, pos):
         labelname = labelPattern.match(line).group('label')
         if labels.has_key(labelname):

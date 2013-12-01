@@ -5,7 +5,7 @@ import re
 
 class LabelOperand(Operand2):
     size = 25
-    labelPattern = re.compile("^(?P<label>\.[a-zA-Z0-9]+)$")
+    labelPattern = re.compile("^(?P<label>\.[a-zA-Z0-9_-]+)$")
     labels = None
     position = None
 

@@ -1,0 +1,39 @@
+from unittest import TestCase
+from myhdl import *
+
+class DutClass():
+    """Wrapper around DUT"""
+    def __init__(self):
+        pass
+
+    def Gens(self, traceSignal = False):
+        pass
+
+def genSim(verifyMethod, cl=DutClass(), clkfreq=1, traceSignal=False):
+    
+    @always(delay(clkfreq))
+    def clkGen():
+        cl.clk.next = not cl.clk
+
+    @instance
+    def stimulus():
+        cl.reset.next = True
+        yield delay(2)
+        cl.reset.next = False
+
+        yield verifyMethod(cl, dut)
+        raise StopSimulation
+
+    dut = cl.Gens(traceSignal=traceSignal)
+    return Simulation(dut, clkGen, stimulus)
+
+
+class DummyTest(TestCase):
+    def testDummy(self):
+        def verify(cl, dut):
+            pass
+    
+        genSim(verify).run()
+
+# vim: set ft=python:
+

@@ -7,11 +7,11 @@ def registerbank(clk, reset, we, channel, data_in, data_out, amount = 16, bitwid
     def logic():
         assert channel < amount
 
-        if channel == 0:
+        if channel == 0: #zero register is always zero!
             data_out.next = 0
         else:
             if we:
-                data[channel-1] = intbv(data_in.val)
+                data[channel-1] = intbv(data_in.val) #make sure to create a new object! elsewise this would be a reference, which is not, what you want!
             data_out.next = data[channel-1]
 
     return logic

@@ -29,8 +29,14 @@ class Operation(Structure):
     def encode(self):
         try:
             (command, args) = self.splitOperation()
-            args = [converter(arg).encode() for (converter, arg) in zip(self.argTypes, args)]
-            return self.buildEncodedOperation(command, args)
+            encodedArgs = []
+            count = 0
+            for argType in self.argTypes:
+                encodedArgs.append(argType(args[count]).encode())
+                if not issubclass(argType, Ignore):
+                    count += 1
+
+            return self.buildEncodedOperation(command, encodedArgs)
         except Exception, e:
             raise EncodingError("Not a valid %s: " % type(self).__name__, self.arg, e)
 

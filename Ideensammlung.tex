@@ -56,18 +56,22 @@
 
 \begin{multicols}{2}
 \begin{itemize}
-
-\item Wortbreite 32 bit
-\item Adressbreite 32 bit
-\item 3-Operanden (1 Ziel-, 2 Quell-Operanden)
-\item 14 General-Purpose Register
-\item \$0-Register: Null
-\item \$15-Register: Return Address
-\item 4 Statusflags (Z,N,C,V)
-\item Big Endian
-\item Befehle können Statusflags setzen
-\item 16-Bit Immediates
-
+  \item Wortbreite 32 bit
+  \item Adressbreite 32 bit
+  \item 3-Operanden (1 Ziel-, 2 Quell-Operanden)
+  \item 14 General-Purpose Register
+  \item \$0-Register: Null
+  \item \$15-Register: Return Address
+  \item 4 Statusflags
+  \begin{itemize}
+    \item[Z] Zero - 1 wenn Ergebnis == 0
+    \item[N] Negative - 1 wenn MSB == 1
+    \item[C] Carry - 1 wenn ein (signed) Over- oder Underflow stattgefunden hat
+    \item[V] Overflow - 1 wenn ein (unsigned) Over- oder Underflow stattgefunden hat
+  \end{itemize}
+  \item Big Endian
+  \item Befehle können Statusflags setzen
+  \item 16-Bit Immediates
 \end{itemize}
 
 \subsection{Arithmetik / Logik}

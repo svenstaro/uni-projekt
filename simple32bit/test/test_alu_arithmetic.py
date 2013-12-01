@@ -6,3 +6,4 @@ class TestAluArithmetic(TestCase):
         """Check that the ALU can correctly execute an add operation."""
         #Simulation()
         self.assertEqual(True, True)
+

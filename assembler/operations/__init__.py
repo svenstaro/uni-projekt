@@ -6,10 +6,12 @@ from .memOperation import MemOperation
 from .labelOperation import LabelOperation
 from .jumpOperation import JumpOperation
 from .retOperation import RetOperation
+from .swiOperation import SwiOperation
 from .asciiData import AsciiData
 
 
 def getOperations(labels):
-    operations = [CompareOperation, TwoOpAluOperation, AluOperation, RetOperation, JumpOperation, MemOperation, AsciiData]
+    operations = [CompareOperation, TwoOpAluOperation, AluOperation, RetOperation, JumpOperation, MemOperation,
+                  SwiOperation, AsciiData]
     operations = [LabelOperation.create(op, labels) if issubclass(op, LabelOperation) else op for op in operations]
     return operations

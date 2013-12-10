@@ -1,5 +1,5 @@
-from operands import Operand2
+from .labelOperand import LabelOperand
 
 
-class AluOperand2(Operand2):
+class AluOperand2(LabelOperand):
     size = 17

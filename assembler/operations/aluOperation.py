@@ -7,32 +7,31 @@ class AluOperation(LabelOperation):
     def buildAluOpcodes(opcodes):
         result = {}
         for (name, code) in opcodes.items():
-            code = "0" + code
+            code = "00" + code
             result[name] = code + "0"
             result[name + "s"] = code + "1"
         return result
 
     opcodes = buildAluOpcodes.__func__({
-        "add": "00000",
-        "adc": "00001",
-        "sub": "00100",
-        "sbc": "00101",
-        "rsb": "00110",
-        "rsc": "00111",
+        "add": "0000",
+        "adc": "0001",
+        "sub": "0100",
+        "sbc": "0101",
+        "rsb": "0110",
+        "rsc": "0111",
 
-        "mul": "10000",
-        "mll": "10001",
-        "div": "10010",
+        "mul": "0010",
+        "div": "0011",
 
-        "and": "01000",
-        "orr": "01001",
-        "xor": "01010",
-        #"not"
+        "and": "1000",
+        "orr": "1001",
+        "xor": "1010",
+        #"not": "1011"
 
-        "lsl": "01100",
-        "asr": "01101",
-        "lsr": "01110",
-        "rot": "01111"
+        "lsl": "1100",
+        "asr": "1101",
+        "lsr": "1110",
+        "ror": "1111"
     })
 
     def __init__(self, arg, position):

@@ -79,7 +79,7 @@
 \begin{itemize}
 \item ADD, ADC
 \item SUB, SBC, RSB, RSC
-\item MUL (MLL)
+\item MUL, DIV
 \item LSL, ADR, LSR, ROR 
 \item AND, ORR, XOR, NOT
 \item SWP (Wenn Felix ganz lieb fragt evtl soch)
@@ -89,17 +89,17 @@
 
 \begin{itemize}
 \item JMP
-\item Jxx (Flag dependant JMP)
+\item Jxx (Flag dependent JMP)
 \item CALL
 \item RET (== JMP \$15)
+\item SWI (Software Interrupt)
 \end{itemize}
 
 \subsection{Memory}
 
 \begin{itemize}
-\item LD (candy: load mit imm. add in one op)
+\item LD
 \item STR
-\item ToDo: indirekte Adresssierung
 \end{itemize}
 \end{multicols}
 
@@ -107,11 +107,12 @@
 %\hline
 
 \subsection{Befehlsstruktur}
-\[Opcode - (7bit) : R_{dest} - (4bit) : R_{s1} - (4bit) : OP2 - (17bit)\]
-\[ALU - 0 : OpC0d3 - (5bit) : SF - (1bit)\]
-\[MEM - 10 : LD/ST - (1bit) : R_{dest} - (4bit) : OP2 - (25bit, 1bit f. Reg / Imm.)\]
-\[Jxx - 110 : Condition - (4bit) : OP2 - (25bit, 1bit f. Reg / Imm.)\]
-\[JMP/CALL - 1110000 : OP2 - (25bit, 1bit f. Reg / Imm.)\]
+\[ALU - 00 : Opcode - (4bit) : SF - (1bit) : R_{dest} - (4bit) : R_{s1} - (4bit) : OP2 - (17bit)\]
+\[MEM - 1 : abs/rel. - (1bit) : LD/ST - (1bit) : R_{dest} - (4bit) : OP2 - (25bit)\]
+\[Jxx - 010 : Condition - (4bit) : OP2 - (25bit)\]
+\[JMP - 0110000 : OP2 - (25bit)\]
+\[CALL- 0110001 : OP2 - (25bit)\]
+\[SWI - 0110010 : OP2 - (25bit)\]
 
 \subsection{Fancy Magic}
 
@@ -137,9 +138,9 @@
 \end{itemize}
 
 \subsection{Codierung der Befehle - Binär}
-Arithmetisch/Logische Befehle fangen mit 0 an
+Arithmetisch/Logische Befehle fangen mit 00 an
 \begin{multicols}{2}
-\emph{Präfix 00 + {Op-C0d3}}
+\emph{Präfix 0 + {Opcode}}
 \begin{itemize}
 \item ADD 000
 \item ADC 001
@@ -147,16 +148,12 @@ Arithmetisch/Logische Befehle fangen mit 0 an
 \item SBC 101
 \item RSB 110
 \item RSC 111
+
+\item MUL 010
+\item DIV 011
 \end{itemize}
 
-\emph{Präfix 100 + {Op-C0d3}}
-\begin{itemize}
-\item MUL 00
-\item MLL 01
-\item DIV 10
-\end{itemize}
-
-\emph{Präfix 010 + {Op-C0d3}}
+\emph{Präfix 10 + {Opcode}}
 \begin{itemize}
 \item AND 00
 \item ORR 01
@@ -164,8 +161,7 @@ Arithmetisch/Logische Befehle fangen mit 0 an
 \item NOT 11
 \end{itemize}
 
-
-\emph{Präfix 011 + {Op-C0d3}}
+\emph{Präfix 11 + {Opcode}}
 \begin{itemize}
 \item LSL 00
 \item ASR 01

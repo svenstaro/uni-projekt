@@ -16,8 +16,8 @@ class AsciiData(Operation):
     def encode(self):
         if not self.encodable():
             raise EncodingError(self.arg, "is not a valid AsciiData")
-        data = self.arg[len(self.start):]
-        paddinglen = 4 - len(data) % 4
+        data = self.arg[len(self.start):] + "\0"
+        paddinglen = (- len(data)) % 4
         self.size = len(data) + paddinglen
 
         return ''.join(myhdl.bin(ord(byte), width=8) for byte in data) + "0"*8*paddinglen

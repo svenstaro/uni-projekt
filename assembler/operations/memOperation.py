@@ -8,5 +8,6 @@ class MemOperation(LabelOperation):
         self.argTypes = [Register, LabelOperand.createLabelOperand(self.labels, self.position)]
 
 
-    opcodes = {"ld": "101",
-               "str": "100"}
+    opcodes = {"ld": "100",
+               "st": "101",
+               "adr":"010"}

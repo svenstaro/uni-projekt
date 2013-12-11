@@ -108,11 +108,12 @@
 
 \subsection{Befehlsstruktur}
 \[ALU - 00 : Opcode - (4bit) : SF - (1bit) : R_{dest} - (4bit) : R_{s1} - (4bit) : OP2 - (17bit)\]
-\[MEM - 1 : abs/rel. - (1bit) : LD/ST - (1bit) : R_{dest} - (4bit) : OP2 - (25bit)\]
-\[Jxx - 010 : Condition - (4bit) : OP2 - (25bit)\]
-\[JMP - 0110000 : OP2 - (25bit)\]
-\[CALL- 0110001 : OP2 - (25bit)\]
-\[SWI - 0110010 : OP2 - (25bit)\]
+\[MEM - 10 : LD/ST - (1bit) : R_{dest} - (4bit) : OP2 - (25bit)\]
+\[Jxx - 110 : Condition - (4bit) : OP2 - (25bit)\]
+\[JMP - 1110000 : OP2 - (25bit)\]
+\[CALL- 1110001 : OP2 - (25bit)\]
+\[SWI - 1110010 : OP2 - (25bit)\]
+\[ADR - 010 : R_{dest} - (4bit) : OP2 - (25bit)\]
 
 \subsection{OP2}
 \[ 0 : R_{src} - (4bit) : 0* \]

@@ -29,8 +29,6 @@ def alu(clk, opc, upS, A, B, Cin, Res, Z, N, C, V):
 
     def MUL(A, B, Cin):
         return A * B #TODO
-    def MLL(A, B, Cin):
-        return A * B #TODO
     def DIV(A, B, Cin):
         return A // B #TODO
 
@@ -55,26 +53,25 @@ def alu(clk, opc, upS, A, B, Cin, Res, Z, N, C, V):
 
     opcodes = { 
                 #arithmetic
-                0b00000 : ADD,
-                0b00001 : ADC,
-                0b00100 : SUB,
-                0b00101 : SBC,
-                0b00110 : RSB,
-                0b00111 : RSC,
+                0b000000 : ADD,
+                0b000001 : ADC,
+                0b000100 : SUB,
+                0b000101 : SBC,
+                0b000110 : RSB,
+                0b000111 : RSC,
                 #arithm special
-#                0b10000 : MUL,
-#                0b10001 : MLL,
-#                0b10010 : DIV,
+                0b000010 : MUL,
+                0b000011 : DIV,
                 #logic
-                0b01000 : AND,
-                0b01001 : ORR,
-                0b01010 : XOR,
-                0b01011 : NOT,
+                0b001000 : AND,
+                0b001001 : ORR,
+                0b001010 : XOR,
+                0b001011 : NOT,
                 #shift/rotate
-                0b01100 : LSL,
-                0b01101 : ASR,
-                0b01110 : LSR,
-                0b01111 : ROR
+                0b001100 : LSL,
+                0b001101 : ASR,
+                0b001110 : LSR,
+                0b001111 : ROR
               }
 
     @always_seq(clk.posedge)

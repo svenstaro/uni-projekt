@@ -5,14 +5,13 @@ from registerbank import *
 class DutClass():
     """Wrapper around DUT"""
 
-    def __init__(self, clkfreq=1, bitwidth=8, numChannel=5):
+    def __init__(self, bitwidth=8, numChannel=5):
         self.clk = Signal(bool(0))
         self.reset = ResetSignal(0,1,True)
         self.we = Signal(bool(0))
         self.inn = Signal(intbv(0)[bitwidth:])
         self.out = Signal(intbv(0)[bitwidth:])
         self.channel = Signal(intbv(0,0,numChannel))
-        self.clkfreq = clkfreq
         self.bitwidth = bitwidth
         self.numChannel = numChannel
 
@@ -103,7 +102,7 @@ class RegisterbankTest(TestCase):
             yield cl.clk.negedge
             self.assertEquals(42, cl.out)
 
-        genSim(verify,trace=True).run()
+        genSim(verify).run()
 
     def testWriteEnabled(self):
         """Test if the write flag is respected"""

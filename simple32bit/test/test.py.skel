@@ -6,10 +6,10 @@ class DutClass():
     def __init__(self):
         pass
 
-    def Gens(self, traceSignal = False):
+    def Gens(self, trace = False):
         pass
 
-def genSim(verifyMethod, cl=DutClass, clkfreq=1, traceSignal=False):
+def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
     """ Generates a Simulation Object """
 
     dut_cl = cl()

@@ -42,6 +42,9 @@ nosetests.xml
 *.kdev4
 .kdev/
 
+# idea shit
+.idea/
+
 # vim swap
 *.sw?
 

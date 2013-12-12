@@ -23,7 +23,7 @@ def programcounter(clk, reset, enabled, a, b, c, d, select1, select2, out):
     
     data = Signal(intbv(0)[16:])
 
-    @always_comb(clk.posedge, reset=reset)
+    @always_comb(clk.posedge, reset)
     def logic():
         if enabled:
             if   not s2 and not s1:

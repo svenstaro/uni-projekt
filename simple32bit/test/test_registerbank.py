@@ -32,22 +32,24 @@ class DutClass():
         return dut
 
 
-def genSim(verifyMethod, cl=DutClass(), clkfreq=1, trace=False):
+def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
+    dut_cl = cl()
+
     """ Generates a Simulation Object """
     @always(delay(clkfreq))
     def clkGen():
-        cl.clk.next = not cl.clk
+        dut_cl.clk.next = not dut_cl.clk
 
     @instance
     def stimulus():
-        cl.reset.next = True
+        dut_cl.reset.next = True
         yield delay(3)
-        cl.reset.next = False
+        dut_cl.reset.next = False
 
-        yield verifyMethod(cl, dut)
+        yield verifyMethod(dut_cl, dut)
         raise StopSimulation
 
-    dut = cl.Gens(trace=trace)
+    dut = dut_cl.Gens(trace=trace)
     return Simulation(dut, clkGen, stimulus)
 
 
@@ -58,16 +60,19 @@ class RegisterbankTest(TestCase):
         def verify(cl, dut):
             cl.we.next = True
             cl.inn.next = intbv(1)
-            yield cl.clk.posedge
+            yield cl.clk.negedge
+            yield cl.clk.negedge
             self.assertEquals(0, cl.out)
 
             cl.inn.next = intbv(30)
-            yield cl.clk.posedge
+            yield cl.clk.negedge
+            yield cl.clk.negedge
             self.assertEquals(0, cl.out)
 
             cl.we.next = False
             cl.inn.next = intbv(22)
-            yield cl.clk.posedge
+            yield cl.clk.negedge
+            yield cl.clk.negedge
             self.assertEquals(0, cl.out)
 
         genSim(verify).run()
@@ -81,23 +86,28 @@ class RegisterbankTest(TestCase):
 
             cl.inn.next = intbv(23)
             yield cl.clk.negedge
+            yield cl.clk.negedge
             self.assertEquals(23, cl.out)
 
             cl.inn.next = intbv(0)
             yield cl.clk.negedge
+            yield cl.clk.negedge
             self.assertEquals(0, cl.out)
             
             cl.inn.next = intbv(2**cl.bitwidth - 1)
+            yield cl.clk.negedge
             yield cl.clk.negedge
             self.assertEquals(2**cl.bitwidth - 1, cl.out)
 
             cl.channel.next = 2 
             cl.inn.next = intbv(25)
             yield cl.clk.negedge
+            yield cl.clk.negedge
             self.assertEquals(25, cl.out)
 
             cl.channel.next = 4 
             cl.inn.next = intbv(42)
+            yield cl.clk.negedge
             yield cl.clk.negedge
             self.assertEquals(42, cl.out)
 
@@ -111,10 +121,12 @@ class RegisterbankTest(TestCase):
 
             cl.inn.next = intbv(20)
             yield cl.clk.negedge
+            yield cl.clk.negedge
             self.assertEquals(20, cl.out)
 
             cl.we.next = False
             cl.inn.next = intbv(21)
+            yield cl.clk.negedge
             yield cl.clk.negedge
             self.assertEquals(20, cl.out)
 
@@ -128,30 +140,37 @@ class RegisterbankTest(TestCase):
             cl.channel.next = 1
             cl.inn.next = intbv(1)
             yield cl.clk.negedge
+            yield cl.clk.negedge
 
             cl.channel.next = 2
             cl.inn.next = intbv(2)
             yield cl.clk.negedge
+            yield cl.clk.negedge
 
             cl.channel.next = 3
             cl.inn.next = intbv(3)
+            yield cl.clk.negedge
             yield cl.clk.negedge
             
             cl.we.next = False
             
             cl.channel.next = 3
             yield cl.clk.negedge
+            yield cl.clk.negedge
             self.assertEquals(3, cl.out)
 
             cl.channel.next = 2
+            yield cl.clk.negedge
             yield cl.clk.negedge
             self.assertEquals(2, cl.out)
 
             cl.channel.next = 1
             yield cl.clk.negedge
+            yield cl.clk.negedge
             self.assertEquals(1, cl.out)
             
             cl.channel.next = 0 #check the 0-register, just to be sure ;)
+            yield cl.clk.negedge
             yield cl.clk.negedge
             self.assertEquals(0, cl.out)
 

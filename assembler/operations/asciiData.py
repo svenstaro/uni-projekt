@@ -3,13 +3,12 @@ from operation import Operation
 import tools
 
 class AsciiData(Operation):
-    def __init__(self, arg, position):
-        Operation.__init__(self, arg, position)
+    def __init__(self, arg, state):
+        Operation.__init__(self, arg, state)
         self.size = len(arg)
         if self.encodable():
                 data = self.arg[len(self.start):] + "\0"
-		self.size = len(data) + (- len(data)) % 4 
-                # print arg, self.size
+                self.size = len(data) + (- len(data)) % 4
 
     start = ".ascii "
 

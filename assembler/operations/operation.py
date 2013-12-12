@@ -5,16 +5,13 @@ from errors import EncodingError
 from operands import Ignore
 
 class Operation(Structure):
-    def __init__(self, arg, position):
-        Structure.__init__(self, arg)
-        self.position = position
 
     size = 4
     opcodes = None
     argTypes = None
 
     def isCommand(self, command):
-        return self.opcodes.has_key(command)
+        return command in self.opcodes
 
     def encodable(self):
         try:
@@ -32,7 +29,7 @@ class Operation(Structure):
             encodedArgs = []
             count = 0
             for argType in self.argTypes:
-                encodedArgs.append(argType(args[count]).encode())
+                encodedArgs.append(argType(args[count], self.state).encode())
                 if not issubclass(argType, Ignore):
                     count += 1
 
@@ -67,7 +64,7 @@ class Operation(Structure):
     def argumentsDecodable(self, remainder):
         for argType in self.argTypes:
             current, remainder = remainder[:argType.size], remainder[argType.size:]
-            if not argType(current).decodable():
+            if not argType(current, self.state).decodable():
                 return False
         return True
 
@@ -81,7 +78,7 @@ class Operation(Structure):
         for argType in self.argTypes:
             current, remainder = remainder[:argType.size], remainder[argType.size:]
             if not issubclass(argType, Ignore):
-                args += [argType(current).decode()]
+                args += [argType(current, self.state).decode()]
         return args
 
     def decode(self):

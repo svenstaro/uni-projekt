@@ -1,8 +1,8 @@
-from .labelOperation import LabelOperation
-from operands import Register, AluOperand2, LabelOperand
+from .operation import Operation
+from operands import Register, AluOperand2
 
 
-class AluOperation(LabelOperation):
+class AluOperation(Operation):
     @staticmethod
     def buildAluOpcodes(opcodes):
         result = {}
@@ -34,8 +34,4 @@ class AluOperation(LabelOperation):
         "ror": "1111"
     })
 
-    def __init__(self, arg, position):
-        LabelOperation.__init__(self, arg, position)
-        op2 = LabelOperand.createLabelOperand(self.labels, self.position)
-        op2.size = 17
-        self.argTypes = [Register, Register, op2]
+    argTypes = [Register, Register, AluOperand2]

@@ -6,8 +6,8 @@ import tools
 
 
 class Immediate(Operand):
-    def __init__(self, arg, size):
-        Operand.__init__(self, arg)
+    def __init__(self, arg, state, size):
+        Operand.__init__(self, arg, state)
         self.size = size
 
     def encodable(self):

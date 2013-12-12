@@ -1,11 +1,10 @@
-from operations import LabelOperation
+from .operation import Operation
 from operands import LabelOperand
 
 
-class JumpOperation(LabelOperation):
-    def __init__(self, arg, position):
-        LabelOperation.__init__(self, arg, position)
-        self.argTypes = [LabelOperand.createLabelOperand(self.labels, self.position)]
+class JumpOperation(Operation):
+
+    argTypes = [LabelOperand]
 
     opcodes = {"jmp": "1110000",
                "call": "1110001"}

@@ -2,12 +2,13 @@
 
 import re
 from operations import getOperations
+from state import EncodingState, DecodingState
 import struct
 import tools
 
 def encodeCommandStream(f):
     labels = {}
-    ops = getOperations(labels)
+    ops = getOperations()
 
     labelPattern = re.compile("^(?P<label>\.[a-zA-Z0-9_-]+):$")
     def parseLabel(line, labels, pos):
@@ -25,7 +26,7 @@ def encodeCommandStream(f):
         if labelPattern.match(line):  # Label
             parseLabel(line, labels, pos)
         else:
-            cmd = parseCommand(line, ops, pos, encode=True)
+            cmd = parseCommand(line, ops, EncodingState(labels, pos), encode=True)
             cmds.append(cmd)
             pos += cmd.size
 
@@ -36,19 +37,19 @@ def encodeCommandStream(f):
 
 def decodeCommandStream(stream):
     labels = {}
-    ops = getOperations(labels)
+    ops = getOperations()
     pos = 0
     result = ""
     while stream:
         word, stream = stream[:32], stream[32:]
-        cmd = parseCommand(word, ops, pos, encode=False)
+        cmd = parseCommand(word, ops, DecodingState(), encode=False)
         line = cmd.decode()
         result += line + "\n"
     return result
 
-def parseCommand(line, ops, pos, encode=True):
+def parseCommand(line, ops, state, encode=True):
     for op in ops:
-        cmd = op(line, pos)
+        cmd = op(line, state)
         if encode and cmd.encodable():
             return cmd
         elif not encode and cmd.decodable():

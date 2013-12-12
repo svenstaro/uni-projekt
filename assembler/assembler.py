@@ -2,7 +2,8 @@
 
 import re
 from operations import getOperations
-import struct, myhdl
+import struct
+import tools
 
 def encodeCommandStream(f):
     labels = {}
@@ -64,7 +65,7 @@ def readStream(f):
     stream = ""
     for binary in f.read():
         byte = struct.unpack("B", binary)[0]
-        stream += myhdl.bin(byte, width=8)
+        stream += tools.tobin(byte, width=8)
     return stream
 
 if __name__ == '__main__':

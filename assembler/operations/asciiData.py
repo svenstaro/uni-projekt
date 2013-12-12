@@ -1,12 +1,15 @@
 from errors import EncodingError
-from operations import Operation
-import myhdl
-
+from operation import Operation
+import tools
 
 class AsciiData(Operation):
     def __init__(self, arg, position):
         Operation.__init__(self, arg, position)
         self.size = len(arg)
+        if self.encodable():
+                data = self.arg[len(self.start):] + "\0"
+		self.size = len(data) + (- len(data)) % 4 
+                # print arg, self.size
 
     start = ".ascii "
 
@@ -18,9 +21,8 @@ class AsciiData(Operation):
             raise EncodingError(self.arg, "is not a valid AsciiData")
         data = self.arg[len(self.start):] + "\0"
         paddinglen = (- len(data)) % 4
-        self.size = len(data) + paddinglen
 
-        return ''.join(myhdl.bin(ord(byte), width=8) for byte in data) + "0"*8*paddinglen
+        return ''.join(tools.tobin(ord(byte), width=8) for byte in data) + "0"*8*paddinglen
 
     def decodable(self):
         return True

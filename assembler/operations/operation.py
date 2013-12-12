@@ -88,3 +88,4 @@ class Operation(Structure):
         opname, remainder = self.decodeOpname()
         args = self.decodeArguments(remainder)
         return Operation.joinOperation(opname, args)
+

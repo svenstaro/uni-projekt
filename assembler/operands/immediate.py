@@ -1,9 +1,8 @@
 import string
 
-import myhdl
-
 from operands import Operand
 from errors import EncodingError, DecodingError
+import tools
 
 
 class Immediate(Operand):
@@ -41,7 +40,7 @@ class Immediate(Operand):
         if not -2 ** (self.size - 1) <= result <= 2 ** (self.size - 1) - 1:
             raise ex
 
-        return myhdl.bin(result, width=self.size)
+        return tools.tobin(result, width=self.size)
 
     @staticmethod
     def negate(bitstring):

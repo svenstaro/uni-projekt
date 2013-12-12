@@ -9,22 +9,25 @@ class DutClass():
     def Gens(self, traceSignal = False):
         pass
 
-def genSim(verifyMethod, cl=DutClass(), clkfreq=1, traceSignal=False):
-    
+def genSim(verifyMethod, cl=DutClass, clkfreq=1, traceSignal=False):
+    """ Generates a Simulation Object """
+
+    dut_cl = cl()
+
     @always(delay(clkfreq))
     def clkGen():
-        cl.clk.next = not cl.clk
+        dut_cl.clk.next = not dut_cl.clk
 
     @instance
     def stimulus():
-        cl.reset.next = True
-        yield delay(2)
-        cl.reset.next = False
+        dut_cl.reset.next = True
+        yield delay(3)
+        dut_cl.reset.next = False
 
-        yield verifyMethod(cl, dut)
+        yield verifyMethod(dut_cl, dut)
         raise StopSimulation
 
-    dut = cl.Gens(traceSignal=traceSignal)
+    dut = dut_cl.Gens(trace=trace)
     return Simulation(dut, clkGen, stimulus)
 
 
@@ -32,8 +35,7 @@ class DummyTest(TestCase):
     def testDummy(self):
         def verify(cl, dut):
             pass
-    
+
         genSim(verify).run()
 
 # vim: set ft=python:
-

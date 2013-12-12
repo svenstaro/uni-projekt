@@ -4,6 +4,7 @@ from registerbank import *
 
 class DutClass():
     """Wrapper around DUT"""
+
     def __init__(self, clkfreq=1, bitwidth=8, numChannel=5):
         self.clk = Signal(bool(0))
         self.reset = ResetSignal(0,1,True)
@@ -33,9 +34,10 @@ class DutClass():
 
 
 def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
+    """ Generates a Simulation Object """
+
     dut_cl = cl()
 
-    """ Generates a Simulation Object """
     @always(delay(clkfreq))
     def clkGen():
         dut_cl.clk.next = not dut_cl.clk
@@ -93,7 +95,7 @@ class RegisterbankTest(TestCase):
             yield cl.clk.negedge
             yield cl.clk.negedge
             self.assertEquals(0, cl.out)
-            
+
             cl.inn.next = intbv(2**cl.bitwidth - 1)
             yield cl.clk.negedge
             yield cl.clk.negedge
@@ -111,7 +113,7 @@ class RegisterbankTest(TestCase):
             yield cl.clk.negedge
             self.assertEquals(42, cl.out)
 
-        genSim(verify).run()
+        genSim(verify,trace=True).run()
 
     def testWriteEnabled(self):
         """Test if the write flag is respected"""
@@ -151,9 +153,9 @@ class RegisterbankTest(TestCase):
             cl.inn.next = intbv(3)
             yield cl.clk.negedge
             yield cl.clk.negedge
-            
+
             cl.we.next = False
-            
+
             cl.channel.next = 3
             yield cl.clk.negedge
             yield cl.clk.negedge
@@ -168,15 +170,13 @@ class RegisterbankTest(TestCase):
             yield cl.clk.negedge
             yield cl.clk.negedge
             self.assertEquals(1, cl.out)
-            
+
             cl.channel.next = 0 #check the 0-register, just to be sure ;)
             yield cl.clk.negedge
             yield cl.clk.negedge
             self.assertEquals(0, cl.out)
 
-        
         genSim(verify).run()
 
 
 # vim: set ft=python:
-

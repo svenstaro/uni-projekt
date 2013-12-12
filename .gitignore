@@ -38,6 +38,10 @@ nosetests.xml
 # gtkwave files
 *.vcd*
 
+# kdevelop
+*.kdev4
+.kdev/
+
 # vim swap
 *.sw?
 

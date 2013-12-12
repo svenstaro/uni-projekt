@@ -1,11 +1,13 @@
 import re
 
+
 class Structure(object):
     size = None
 
     #TODO: Bad name! -- Felix O.
-    def __init__(self, arg):
+    def __init__(self, arg, state):
         self.arg = arg
+        self.state = state
 
     def encodable(self):
         raise NotImplementedError()

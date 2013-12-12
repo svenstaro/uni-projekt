@@ -1,13 +1,10 @@
-from labelOperation import LabelOperation
+from .operation import Operation
 from operands import Register, LabelOperand
 
 
-class MemOperation(LabelOperation):
-    def __init__(self, arg, position):
-        LabelOperation.__init__(self, arg, position)
-        self.argTypes = [Register, LabelOperand.createLabelOperand(self.labels, self.position)]
+class MemOperation(Operation):
+    opcodes = {"ld":  "100",
+               "st":  "101",
+               "adr": "010"}
 
-
-    opcodes = {"ld": "100",
-               "st": "101",
-               "adr":"010"}
+    argTypes = [Register, LabelOperand]

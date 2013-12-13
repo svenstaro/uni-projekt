@@ -29,7 +29,7 @@ class Operand2(Operand):
             if arg.startswith("1"):
                 inner = cls.immType.fromBinary(arg[1:], state)
             else:
-                inner = Register(arg[1:5], state)
+                inner = Register.fromBinary(arg[1:5], state)
             return cls(inner.text, arg, inner)
         except Exception, e:
             raise DecodingError(arg, "is not a valid operand2", e)

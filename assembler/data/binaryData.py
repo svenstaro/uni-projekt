@@ -27,7 +27,6 @@ class BinaryData(Data):
         return cls(text, arg)
 
 
-
 class WordData(BinaryData):
     size = 32
     start = ".word "

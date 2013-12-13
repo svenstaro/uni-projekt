@@ -16,8 +16,8 @@ def isLabel(s):
         return False
     if not s.endswith(":"):
         return False
-    for char in s:
-        if not char in string.printable:
+    for char in s[1:-1]:
+        if not char in string.ascii_letters + "_-":
             return False
     return True
 
@@ -35,7 +35,7 @@ def encodeCommandStream(lines):
         elif isLabel(line):
             parseLabel(line, labels, pos)
         elif line[0] == ".":
-            pos += parseData(line, data, None, sizeOnly=True)
+            pos += parseData(line, data, None, sizeOnly=True) / 8
         else:
             pos += 4
 

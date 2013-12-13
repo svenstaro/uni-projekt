@@ -2,4 +2,8 @@ from structure import Structure
 
 
 class Operand(Structure):
-    pass
+    start = None
+
+    @classmethod
+    def isValidText(cls, arg):
+        return arg.startswith(cls.start)

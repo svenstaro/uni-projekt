@@ -4,85 +4,97 @@ from structure import Structure
 from errors import EncodingError
 from operands import Ignore
 
+
 class Operation(Structure):
 
-    size = 4
+    size = 32
     opcodes = None
     argTypes = None
 
-    def isCommand(self, command):
-        return command in self.opcodes
+    @classmethod
+    def isCommand(cls, command):
+        return command in cls.opcodes
 
-    def encodable(self):
+    @classmethod
+    def isValidText(cls, arg):
         try:
-            command = self.splitOperation()[0]
-            return self.isCommand(command)
+            command = cls.splitOperation(arg)[0]
+            return cls.isCommand(command)
         except ValueError:
             return False
 
-    def buildEncodedOperation(self, command, args):
-        return self.opcodes[command] + "".join(args)
+    @classmethod
+    def buildEncodedOperation(cls, command, args):
+        return cls.opcodes[command] + "".join(args)
 
-    def encode(self):
+    @classmethod
+    def fromText(cls, line, state):
         try:
-            (command, args) = self.splitOperation()
+            (command, args) = cls.splitOperation(line)
             encodedArgs = []
             count = 0
-            for argType in self.argTypes:
-                encodedArgs.append(argType(args[count], self.state).encode())
+            for argType in cls.argTypes:
+                encodedArgs.append(argType.fromText(args[count], state))
                 if not issubclass(argType, Ignore):
                     count += 1
 
-            return self.buildEncodedOperation(command, encodedArgs)
+            return cls(line, cls.buildEncodedOperation(command, [arg.binary for arg in encodedArgs]), encodedArgs)
         except Exception, e:
-            raise EncodingError("Not a valid %s: " % type(self).__name__, self.arg, e)
+            raise EncodingError("Not a valid %s: " % cls.__name__, line, e)
 
-    def splitOperation(self):
-        splittedLine = self.arg.split(" ", 1)
+    @classmethod
+    def splitOperation(cls, arg):
+        splittedLine = arg.split(" ", 1)
         command = splittedLine[0]
 
         if len(splittedLine) is 1:
             return command, []
 
         args = [arg.strip() for arg in splittedLine[1].split(",")]
-        if not len(args) is len([argType for argType in self.argTypes if not issubclass(argType, Ignore)]):
-            raise ValueError("Invalid number of arguments:", self.arg)
+        if not len(args) is len([argType for argType in cls.argTypes if not issubclass(argType, Ignore)]):
+            raise ValueError("Invalid number of arguments:", arg)
         return command, args
 
     @staticmethod
     def joinOperation(opname, args):
         return opname + " " + ", ".join(args)
 
-    def decodable(self):
-        if not re.match("^[01]{32}$", self.arg):
+    @classmethod
+    def isValidBinary(cls, arg):
+        if not re.match("^[01]{32}$", arg):
             return False
-        for opcode in self.opcodes.values():
-            if self.arg.startswith(opcode) and self.argumentsDecodable(self.arg[len(opcode):]):
+        for opcode in cls.opcodes.values():
+            if arg.startswith(opcode) and cls.argumentsDecodable(arg[len(opcode):]):
                 return True
         return False
 
-    def argumentsDecodable(self, remainder):
-        for argType in self.argTypes:
+    @classmethod
+    def argumentsDecodable(cls, remainder):
+        for argType in cls.argTypes:
             current, remainder = remainder[:argType.size], remainder[argType.size:]
-            if not argType(current, self.state).decodable():
+            if not argType.isValidBinary(current):
                 return False
         return True
 
+    @classmethod
+    def decodeOpname(cls, arg):
+        opname = (key for key, val in cls.opcodes.items() if arg.startswith(val)).next()
+        return opname, arg[len(cls.opcodes[opname]):]
 
-    def decodeOpname(self):
-        opname = (key for key, val in self.opcodes.items() if self.arg.startswith(val)).next()
-        return opname, self.arg[len(self.opcodes[opname]):]
-
-    def decodeArguments(self, remainder):
+    @classmethod
+    def decodeArguments(cls, remainder, state):
         args = []
-        for argType in self.argTypes:
+        for argType in cls.argTypes:
             current, remainder = remainder[:argType.size], remainder[argType.size:]
             if not issubclass(argType, Ignore):
-                args += [argType(current, self.state).decode()]
+                args += [argType.fromBinary(current, state)]
         return args
 
-    def decode(self):
-        opname, remainder = self.decodeOpname()
-        args = self.decodeArguments(remainder)
-        return Operation.joinOperation(opname, args)
+    @classmethod
+    def fromBinary(cls, arg, state):
+        opname, remainder = cls.decodeOpname(arg)
+        args = cls.decodeArguments(remainder, state)
+        #
+        text = Operation.joinOperation(opname, [arg.text for arg in args])
+        return cls(text, arg, args)
 

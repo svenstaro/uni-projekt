@@ -3,28 +3,34 @@ from errors import EncodingError, DecodingError
 
 
 class Operand2(Operand):
-    def encodable(self):
-        return Register(self.arg, self.state).encodable() or Immediate(self.arg, self.state, self.size - 1).encodable()
+    immType = None
 
-    def encode(self):
+    @classmethod
+    def isValidText(cls, arg):
+        return Register.isValidText(arg) or Immediate.isValidText(arg)
+
+    @classmethod
+    def fromText(cls, arg, state):
         try:
-            register = Register(self.arg, self.state)
-            if register.encodable():
-                return "0" + register.encode() + "0" * (self.size - 5)
-
-            imm = Immediate(self.arg, self.state, self.size - 1)
-            if imm.encodable():
-                return "1" + imm.encode()
+            if Register.isValidText(arg):
+                register = Register.fromText(arg, state)
+                return cls(arg, "0" + register.binary + "0" * (cls.size - 5), register)
+            else:
+                immediate = cls.immType.fromText(arg, state)
+                return cls(arg, "1" + immediate.binary, immediate)
         except Exception, e:
-            raise EncodingError(self.arg, "is not valid operand2", e)
+            raise EncodingError(arg, "is not valid operand2", e)
 
-    def decode(self):
+    @classmethod
+    def fromBinary(cls, arg, state):
         try:
-            if not self.decodable():
+            if not cls.isValidBinary(arg):
                 raise ValueError("Invalid size!")
-            if self.arg.startswith("1"):
-                return Immediate(self.arg[1:], self.state, self.size - 1).decode()
-            return Register(self.arg[1:5], self.state).decode()
+            if arg.startswith("1"):
+                inner = cls.immType.fromBinary(arg[1:], state)
+            else:
+                inner = Register(arg[1:5], state)
+            return cls(inner.text, arg, inner)
         except Exception, e:
-            raise DecodingError(self.arg, "is not a valid operand2", e)
+            raise DecodingError(arg, "is not a valid operand2", e)
 

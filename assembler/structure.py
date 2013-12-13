@@ -3,20 +3,27 @@ import re
 
 class Structure(object):
     size = None
+    text = None
+    binary = None
+    inner = None
 
-    #TODO: Bad name! -- Felix O.
-    def __init__(self, arg, state):
-        self.arg = arg
-        self.state = state
+    def __init__(self, text, binary, inner=None):
+        self.text = text
+        self.binary = binary
+        self.inner = inner
 
-    def encodable(self):
+    @classmethod
+    def isValidText(cls, arg):
         raise NotImplementedError()
 
-    def encode(self):
+    @classmethod
+    def fromText(cls, arg, state):
         raise NotImplementedError()
 
-    def decodable(self):
-        return re.match("^[01]{%s}$" % self.size, self.arg)
+    @classmethod
+    def isValidBinary(cls, arg):
+        return re.match("^[01]{%s}$" % cls.size, arg)
 
-    def decode(self):
+    @classmethod
+    def fromBinary(cls, arg, state):
         raise NotImplementedError()

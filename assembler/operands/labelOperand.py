@@ -1,24 +1,25 @@
 from errors import EncodingError
-from operands import Operand2
-import re
+from .operand2 import Operand2
+from .immediate import Immediate24
+import tools
 
 
 class LabelOperand(Operand2):
     size = 25
-    labelPattern = re.compile("^(?P<label>\.[a-zA-Z0-9_-]+)$")
+    immType = Immediate24
 
-    def encodable(self):
-        return self.labelPattern.match(self.arg) or Operand2.encodable(self)
+    @classmethod
+    def isValidText(cls, arg):
+        return tools.labelPattern.match(arg) or Operand2.isValidText(arg)
 
-    def encode(self):
+    @classmethod
+    def fromText(cls, arg, state):
         try:
-            if Operand2.encodable(self):
-                return Operand2.encode(self)
-
-            labelname = self.labelPattern.match(self.arg).group('label')
-            labelpos = self.state.labels[labelname]
-            diff = labelpos - self.state.position
-            self.arg = "#"+str(diff)
-            return Operand2.encode(self)
+            if Operand2.isValidText(arg):
+                return super(LabelOperand, cls).fromText(arg, state)
+            else:
+                imm = "#" + str(tools.label2immediate(arg, state))
+                inner = super(LabelOperand, cls).fromText(imm, state)
+                return cls(arg, inner.binary, inner)
         except Exception, e:
-            raise EncodingError(self.arg, "is not a valid label", e)
+            raise EncodingError(arg, "is not a valid label", e)

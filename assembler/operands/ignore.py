@@ -3,19 +3,21 @@ from errors import DecodingError
 
 
 class Ignore(Operand):
-    def encodable(self):
+    @classmethod
+    def isValidText(cls, arg):
         return True
 
-    def encode(self):
-        return "0"*self.size
+    @classmethod
+    def fromText(cls, arg, state):
+        return cls(arg, "0"*cls.size)
 
-    def decodable(self):
-        return self.arg == "0"*self.size
+    @classmethod
+    def isValidBinary(cls, arg):
+        return arg == "0"*cls.size
 
-    def decode(self):
-        if not self.decodable():
-            raise DecodingError(self.arg, "is not null!")
-        return ""
+    @classmethod
+    def fromBinary(cls, arg, state):
+        raise DecodingError(arg, "is a %s, which can not be decoded!" % cls.__name__)
 
 
 class IgnoreRegister(Ignore):

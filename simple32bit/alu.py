@@ -17,6 +17,7 @@ def alu(opc, ups, A, B, Cin, Res, Z, N, C, V):
     C   -- Carry flag
     V   -- Overflow flag
     """
+
     def ADD(A, B, Cin):
         return A + B
     def ADC(A, B, Cin):

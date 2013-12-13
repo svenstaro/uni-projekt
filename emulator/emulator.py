@@ -5,6 +5,17 @@ from cpu import Cpu
 import time
 
 
+def printpretty(n):
+    suffixes = [" ", " k", " M", " G", "T"]
+    order = 0
+    while n > 1000 and order < len(suffixes) - 1:
+        n /= 1000
+        order += 1
+    suffix = suffixes[order]
+
+    return str(int(n)) + "." + str(int(n*100) % 100) + suffix  # TODO iih
+
+
 def run(fp):
     program_contents = ""
     while True:
@@ -13,15 +24,14 @@ def run(fp):
             break
         program_contents += read
     os.close(fp)
-    cpu = Cpu(1024*1024)
-    cpu.fillMemory(program_contents)
+    cpu = Cpu(0, program_contents)
     start = time.time()
     cpu.run()
     end = time.time()
     print
-    print "Executed %s ops in %s secs ( %s ops/sec )" % (cpu.counter,
-                                                         end - start,
-                                                         cpu.counter / (end - start))
+    print "Executed %sops in %ss ( %sops/sec )" % (printpretty(cpu.counter),
+                                                   printpretty(end - start),
+                                                   printpretty(cpu.counter / (end - start)))
 
 
 def entry_point(argv):
@@ -37,6 +47,7 @@ def entry_point(argv):
 
 def target(*args):
     return entry_point, None
+
 
 def jitpolicy(driver):
     from rpython.jit.codewriter.policy import JitPolicy

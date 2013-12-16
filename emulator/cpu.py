@@ -131,7 +131,7 @@ class Cpu(object):
         if src == 0:
             os.write(1, chr(self.register[1]))
         elif src == 1:
-            os.write(1, self.register[1])
+            os.write(1, str(self.register[1]))
 
     def executeCallOp(self, command):
         self.register[15] = self.pc & mask

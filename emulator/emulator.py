@@ -6,7 +6,7 @@ import time
 
 
 def printpretty(n):
-    suffixes = [" ", " k", " M", " G", "T"]
+    suffixes = [" ", " k", " M", " G", " T"]
     order = 0
     while n > 1000 and order < len(suffixes) - 1:
         n /= 1000

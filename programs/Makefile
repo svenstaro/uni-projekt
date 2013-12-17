@@ -10,4 +10,4 @@ all: $(OBJECTS)
 
 .PHONY: clean
 clean:
-	@rm -f *.s.out
+	@rm -f $(OBJECTS)

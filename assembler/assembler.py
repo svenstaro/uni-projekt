@@ -2,6 +2,7 @@
 
 from operations import getOperations
 from state import EncodingState, DecodingState
+from errors import EncodingError
 import struct
 import tools
 import sys
@@ -17,7 +18,7 @@ def isLabel(s):
     if not s.endswith(":"):
         return False
     for char in s[1:-1]:
-        if not char in string.ascii_letters + "_-":
+        if not char in string.ascii_letters + string.digits + "_-":
             return False
     return True
 
@@ -35,7 +36,11 @@ def encodeCommandStream(lines):
         elif isLabel(line):
             parseLabel(line, labels, pos)
         elif line[0] == ".":
-            pos += parseData(line, data, None, sizeOnly=True) / 8
+            size = parseData(line, data, None, sizeOnly=True)
+            if size:
+                pos += size / 8
+            else:
+                raise EncodingError(line, "Invalid instruction")
         else:
             pos += 4
 

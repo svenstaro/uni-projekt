@@ -1,7 +1,7 @@
 jmp .start
 
 ;.globl gcd
-.gcd:
+gcd:
 ; $1 - int
 ; $2 - int
 
@@ -22,12 +22,12 @@ jle .gcd_cont2
 mov $3, $1
 mov $1, $2
 mov $2, $3
-jmp .gcd
+jmp gcd
 
 ; ggt($1, $2) = ggt($1, $2-$1)
 .gcd_cont2:
 sub $2, $2, $1
-jmp .gcd
+jmp gcd
 
 .a:
 .word 999
@@ -37,6 +37,6 @@ jmp .gcd
 .start:
 ld $1, .a
 ld $2, .b
-call .gcd
+call gcd
 swi #1 ; should be 9
 halt

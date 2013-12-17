@@ -1,7 +1,7 @@
 jmp .start
 
 ;.globl fibonacci
-.fibonacci:
+fibonacci:
 ; $1 - unsigned int
 cmp $1, #1
 jle $15
@@ -24,6 +24,6 @@ ret
 
 .start:
 mov $1, #20
-call .fibonacci
+call fibonacci
 swi #1 ; should be 6765
 halt

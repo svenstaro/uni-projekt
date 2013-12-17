@@ -13,14 +13,9 @@ import string
 
 
 def isLabel(s):
-    if not s.startswith("."):
-        return False
     if not s.endswith(":"):
         return False
-    for char in s[1:-1]:
-        if not char in string.ascii_letters + string.digits + "_-":
-            return False
-    return True
+    return tools.labelPattern.match(s[:-1])
 
 
 def encodeCommandStream(lines):

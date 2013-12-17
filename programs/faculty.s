@@ -1,7 +1,7 @@
 jmp .start
 
 ;.globl faculty
-.faculty:
+faculty:
 ; $1 - unsigned int
 movs $2, $1
 mov $1, #1
@@ -15,6 +15,6 @@ ret
 
 .start:
 mov $1, #6
-call .faculty
+call faculty
 swi #1 ; should be 720
 halt

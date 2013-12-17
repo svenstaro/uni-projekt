@@ -1,4 +1,5 @@
 from errors import EncodingError, DecodingError
+from state import DecodingState, EncodingState
 
 
 #noinspection PyUnresolvedReferences
@@ -11,15 +12,15 @@ class TestStructure(object):
 
     def testValid(self):
         for (k, v) in self.validMappings.iteritems():
-            self.assertEqual(self.type(k).encode(), v, "Encoding failed for: %s:" % k)
-            self.assertEqual(k, self.type(v).decode(), "Decoding failed for: %s:" % v)
+            self.assertEqual(self.type.fromText(k, EncodingState(0, {})).binary, v, "Encoding failed for: %s:" % k)
+            self.assertEqual(k, self.type.fromBinary(v, DecodingState()).text, "Decoding failed for: %s:" % v)
 
     def testNotEncodable(self):
         for k in self.notEncodable:
             with self.assertRaises(EncodingError):
-                self.type(k).encode()
+                self.type.fromText(k, EncodingState(0, {}))
 
     def testNotDecodable(self):
         for k in self.notDecodable:
             with self.assertRaises(DecodingError):
-                self.type(k).decode()
+                self.type.fromBinary(k, DecodingState())

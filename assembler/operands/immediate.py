@@ -6,24 +6,15 @@ import tools
 
 
 class Immediate(Operand):
-    def __init__(self, arg, state, size):
-        Operand.__init__(self, arg, state)
-        self.size = size
 
-    def encodable(self):
-        return self.arg.startswith("#")
+    start = "#"
 
-    def encode(self):
-        ex = EncodingError(self.arg, "is not a valid %s-bit Immediate" % self.size)
-        if not self.encodable():
-            raise ex
-        number = self.arg[1:]
-
+    @staticmethod
+    def immediate2binary(number, size):
         sign = ""
         if number.startswith("-"):
             sign = "-"
             number = number[1:]
-
         base = 10
         if number.startswith("0b"):
             base = 2
@@ -31,28 +22,48 @@ class Immediate(Operand):
             base = 16
         elif number.startswith("0"):
             base = 8
-
         try:
             result = int(sign + number, base=base)
         except ValueError:
-            raise ex
+            return False
+        if not -2 ** (size - 1) <= result <= 2 ** (size - 1) - 1:
+            return False
+        binary = tools.tobin(result, width=size)
+        return binary
 
-        if not -2 ** (self.size - 1) <= result <= 2 ** (self.size - 1) - 1:
+    @classmethod
+    def fromText(cls, arg, state):
+        ex = EncodingError(arg, "is not a valid %s-bit Immediate" % cls.size)
+        if not cls.isValidText(arg):
             raise ex
-
-        return tools.tobin(result, width=self.size)
+        binary = Immediate.immediate2binary(arg[1:], cls.size)
+        if not binary:
+            raise ex
+        return cls(arg, binary)
 
     @staticmethod
     def negate(bitstring):
         return bitstring.translate(string.maketrans("01", "10"))
 
-    def decode(self):
-        ex = DecodingError(self.arg, "is not a valid %s-bit Immediate" % self.size)
+    @classmethod
+    def fromBinary(cls, arg, state):
+        ex = DecodingError(arg, "is not a valid %s-bit Immediate" % cls.size)
 
-        if not self.decodable():
+        if not cls.isValidBinary(arg):
             raise ex
 
-        if self.arg[0] is "0":
-            return "#" + str(int(self.arg, base=2))
-        else:
-            return "#" + str(~int(Immediate.negate(self.arg), base=2))
+        number = int(arg, base=2) if arg[0] == "0" else ~int(Immediate.negate(arg), base=2)
+
+        return cls("#" + str(number), arg)
+
+class Immediate8(Immediate):
+    size = 8
+
+class Immediate16(Immediate):
+    size = 16
+
+class Immediate24(Immediate):
+    size = 24
+
+class Immediate32(Immediate):
+    size = 32

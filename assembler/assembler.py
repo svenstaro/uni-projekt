@@ -1,66 +1,109 @@
 #!/usr/bin/env python
 
-import re
 from operations import getOperations
 from state import EncodingState, DecodingState
 import struct
 import tools
+import sys
+import os
+from data import getData
+from data import WordData
+import string
 
-def encodeCommandStream(f):
+
+def isLabel(s):
+    if not s.startswith("."):
+        return False
+    if not s.endswith(":"):
+        return False
+    for char in s[1:-1]:
+        if not char in string.ascii_letters + "_-":
+            return False
+    return True
+
+
+def encodeCommandStream(lines):
     labels = {}
     ops = getOperations()
+    data = getData()
 
-    labelPattern = re.compile("^(?P<label>\.[a-zA-Z0-9_-]+):$")
-    def parseLabel(line, labels, pos):
-        labelname = labelPattern.match(line).group('label')
-        if labels.has_key(labelname):
-            raise ValueError(labelname, "Label appeared twice!")
-        labels[labelname] = pos
-
-    cmds = []
     pos = 0
-    for (number, line) in enumerate(f):
-        line = line.strip()
-        if not line or line[0] is "#":
+    for line in lines:
+        line = line.strip(" \r\n").split(";", 1)[0]
+        if line == "":
             continue
-        if labelPattern.match(line):  # Label
+        elif isLabel(line):
             parseLabel(line, labels, pos)
+        elif line[0] == ".":
+            pos += parseData(line, data, None, sizeOnly=True) / 8
         else:
-            cmd = parseCommand(line, ops, EncodingState(labels, pos), encode=True)
-            cmds.append(cmd)
-            pos += cmd.size
+            pos += 4
 
     stream = ""
-    for cmd in cmds:
-        stream += cmd.encode()
+    pos = 0
+
+    for (number, line) in enumerate(lines):
+        line = line.strip(" \r\n").split(";", 1)[0]
+        if not line:
+            continue
+        elif isLabel(line):  # Label
+            continue
+        elif line[0] == ".":
+            d = parseData(line, data, EncodingState(labels, pos))
+            stream += d.binary
+            pos += d.size / 8
+        else:
+            op = parseCommand(line, ops, encode=True)
+            stream += op.fromText(line, EncodingState(labels, pos)).binary
+            pos += op.size / 8
+
     return stream
 
+
 def decodeCommandStream(stream):
-    labels = {}
     ops = getOperations()
     pos = 0
     result = ""
     while stream:
         word, stream = stream[:32], stream[32:]
-        cmd = parseCommand(word, ops, DecodingState(), encode=False)
-        line = cmd.decode()
+        op = parseCommand(word, ops, encode=False)
+        if op is None:
+            op = WordData
+        line = op.fromBinary(word, None).text
         result += line + "\n"
     return result
 
-def parseCommand(line, ops, state, encode=True):
-    for op in ops:
-        cmd = op(line, state)
-        if encode and cmd.encodable():
-            return cmd
-        elif not encode and cmd.decodable():
-            return cmd
 
-def writeStream(f, stream):
+
+def parseLabel(line, labels, pos):
+    labelname = line[0:-1]
+    if labelname in labels:
+        raise ValueError(labelname, "Label appeared twice!")
+    labels[labelname] = pos
+
+def parseData(line, data, state, sizeOnly=False):
+    for d in data:
+        if d.isValidText(line):
+            if sizeOnly:
+                return d.getBinarysize(line)
+            else:
+                return d.fromText(line, state)
+
+def parseCommand(line, ops, encode=True):
+    for op in ops:
+        if encode and op.isValidText(line):
+            return op
+        elif not encode and op.isValidBinary(line):
+            return op
+
+
+def writeStream(fd, stream):
     while stream:
         firstbyte, stream = stream[0:8], stream[8:]
 
         binary = struct.pack("B", int(firstbyte, base=2))
-        f.write(binary)
+        os.write(fd, binary)
+
 
 def readStream(f):
     stream = ""
@@ -69,7 +112,36 @@ def readStream(f):
         stream += tools.tobin(byte, width=8)
     return stream
 
+
+def entry_point(argv):
+    try:
+        filename = argv[1]
+    except IndexError:
+        print "You must supply a filename"
+        return 1
+
+    fin = os.open(filename, os.O_RDONLY, 0777)
+    content = ""
+    while True:
+        read = os.read(fin, 4096)
+        if len(read) == 0:
+            break
+        content += read
+    os.close(fin)
+
+    lines = content.split('\n')
+
+    stream = encodeCommandStream(lines)
+
+    fout = os.open(filename + ".out", os.O_WRONLY | os.O_CREAT, 0777)
+    writeStream(fout, stream)
+    os.close(fout)
+
+    return 0
+
+
+def target(*args):
+    return entry_point, None
+
 if __name__ == '__main__':
-    with open("testfile") as f:
-        with open("out", "wb") as out:
-            writeStream(out, encodeCommandStream(f))
+    entry_point(sys.argv)

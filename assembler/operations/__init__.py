@@ -4,11 +4,10 @@ from .twoOpAluOperation import TwoOpAluOperation
 from .compareOperation import CompareOperation
 from .memOperation import MemOperation
 from .jumpOperation import JumpOperation
-from .retOperation import RetOperation
+from .pseudoOperation import PseudoOperation
 from .swiOperation import SwiOperation
-from .asciiData import AsciiData
 
 
 def getOperations():
-    return [CompareOperation, TwoOpAluOperation, AluOperation, RetOperation, JumpOperation, MemOperation,
-                  SwiOperation, AsciiData]
+    return [CompareOperation, TwoOpAluOperation, AluOperation, PseudoOperation, JumpOperation, MemOperation,
+                  SwiOperation]

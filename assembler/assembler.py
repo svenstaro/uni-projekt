@@ -2,6 +2,7 @@
 
 from operations import getOperations
 from state import EncodingState, DecodingState
+from errors import EncodingError
 import struct
 import tools
 import sys
@@ -12,14 +13,9 @@ import string
 
 
 def isLabel(s):
-    if not s.startswith("."):
-        return False
     if not s.endswith(":"):
         return False
-    for char in s[1:-1]:
-        if not char in string.ascii_letters + "_-":
-            return False
-    return True
+    return tools.labelPattern.match(s[:-1])
 
 
 def encodeCommandStream(lines):
@@ -35,7 +31,11 @@ def encodeCommandStream(lines):
         elif isLabel(line):
             parseLabel(line, labels, pos)
         elif line[0] == ".":
-            pos += parseData(line, data, None, sizeOnly=True) / 8
+            size = parseData(line, data, None, sizeOnly=True)
+            if size:
+                pos += size / 8
+            else:
+                raise EncodingError(line, "Invalid instruction")
         else:
             pos += 4
 
@@ -133,7 +133,7 @@ def entry_point(argv):
 
     stream = encodeCommandStream(lines)
 
-    fout = os.open(filename + ".out", os.O_WRONLY | os.O_CREAT, 0777)
+    fout = os.open(filename + ".out", os.O_WRONLY | os.O_CREAT, 0644)
     writeStream(fout, stream)
     os.close(fout)
 

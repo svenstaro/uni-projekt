@@ -131,7 +131,10 @@ class Cpu(object):
         if src == 0:
             os.write(1, chr(self.register[1]))
         elif src == 1:
-            os.write(1, str(self.register[1]))
+            value = self.register[1]
+            if value & high == high:
+                value -= 2 **32
+            os.write(1, str(value)+'\n')
 
     def executeCallOp(self, command):
         self.register[15] = self.pc & mask

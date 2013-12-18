@@ -46,7 +46,7 @@ def alu(opc, ups, A, B, Cin, Res, Z, N, C, V):
         return ~B
 
     def LSL(A, B, Cin):
-        return A << B
+        return (A << B)[32:0]
     def ASR(A, B, Cin):
         return A >> B
     def LSR(A, B, Cin):

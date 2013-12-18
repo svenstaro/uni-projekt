@@ -51,3 +51,6 @@ nosetests.xml
 # latex shit
 *.aux
 *.log
+
+# assembler binaries
+*.s.out

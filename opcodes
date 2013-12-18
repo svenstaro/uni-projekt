@@ -1,0 +1,47 @@
+Alu:
+<opcode> <S> <Rd> <Rs1> <Op2-17bit>
+add	0000
+adc	0001
+
+mul	0010
+div	0011
+
+sub	0100
+sbc	0101
+rsb	0110
+rsc	0111
+
+and	1000
+orr	1001
+xor	1010
+not	1011
+
+lsl	1100
+asr	1101
+lsr	1110
+ror	1111
+
+Jump:
+<opcode> <Op2-25bit>
+jmp	1110000
+call	1110001
+jeq	1100000
+jne	1100001
+jlt	1100100
+jle	1100101
+jgt	1100110
+jge	1100111
+jo	1101000
+jno	1101001
+jc	1101010
+jnc	1101011
+
+Mem:
+<opcode> <R> <Op2-25bit>
+ld	100
+st	101
+adr	010
+
+Swi:
+<opcode> <Op2-25bit>
+swi	1110010

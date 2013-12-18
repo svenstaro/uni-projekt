@@ -1,7 +1,7 @@
 from myhdl import *
 
-def register(clk, reset, we, data_in, data_out):
-    data = Signal(intbv(0)[16:])
+def register(clk, reset, we, data_in, data_out, bitwidth=32):
+    data = Signal(intbv(0)[bitwidth:])
 
     @always_seq(clk.posedge, reset)
     def logic():

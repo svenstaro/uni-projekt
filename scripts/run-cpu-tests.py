@@ -3,5 +3,5 @@
 import unittest
 
 loader = unittest.TestLoader()
-testsuite = loader.discover("simple32bit")
+testsuite = loader.discover("hardware")
 unittest.TextTestRunner(verbosity=2).run(testsuite)

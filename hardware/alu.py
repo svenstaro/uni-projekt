@@ -52,7 +52,7 @@ def alu(opc, ups, A, B, Cin, Res, Z, N, C, V):
     def LSR(A, B, Cin):
         return 0 #TODO
     def ROR(A, B, Cin):
-        return 0 #TODO
+        return A << (32 - B)
 
 
     opcodes = {
@@ -82,13 +82,15 @@ def alu(opc, ups, A, B, Cin, Res, Z, N, C, V):
     def logic():
         assert int(opc) in opcodes
 
-        Res.next = opcodes[int(opc)](A, B, Cin)
+        result = opcodes[int(opc)](A, B, Cin)
 
         if ups: #update status flags
             Z.next = result == 0
             N.next = result < 0
-            C.next = False #TODO
+            C.next = A[len(A)] ^ B[len(B)]
             V.next = False #TODO
+
+        Res.next = result
 
     return logic
 

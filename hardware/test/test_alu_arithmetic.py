@@ -15,7 +15,7 @@ class DutClass():
         self.clk = Signal(bool(0))
         self.reset = ResetSignal(0,1,True)
 
-        self.opc = Signal(intbv(0)[32:])
+        self.opc = Signal(intbv(0)[4:])
         self.ups = Signal(bool(0))
         self.A, self.B, self.R = [Signal(modbv(0,-(2**31),2**31-1)) for _ in range(3)]
 
@@ -148,4 +148,4 @@ class TestAluArithmetic(TestCase):
                     self.assertEquals(tup[2], cl.R, msg = "%s != %s (%s⊕%s opc:%s) " % (tup[2],cl.R,cl.A,cl.B,bin(opc,4)))
                     #self.assertEquals(tup[2], cl.R)
 
-        genSim(verify).run()
+        genSim(verify, trace=True).run()

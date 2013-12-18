@@ -1,3 +1,11 @@
+operands:
+<R*>	register	4-bit
+<Op2>	operand2	x-bit
+	0 <Rs> 0*
+	1 <2's complement immediate>
+<S>	statusflag	1 bit
+
+
 Alu:
 <opcode> <S> <Rd> <Rs1> <Op2-17bit>
 add	0000
@@ -14,7 +22,7 @@ rsc	0111
 and	1000
 orr	1001
 xor	1010
-not	1011
+not	1011  *ignores Rs1
 
 lsl	1100
 asr	1101

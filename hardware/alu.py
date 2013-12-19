@@ -29,7 +29,7 @@ def alu(opc, ups, A, B, Cin, Res, Z, N, C, V):
     def RSB(A, B, Cin):
         return B - A
     def RSC(A, B, Cin):
-        return B - A - Cin
+        return B + Cin - A
 
     def MUL(A, B, Cin):
         return A * B #TODO

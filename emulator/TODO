@@ -2,3 +2,21 @@ TODO
 ===
  - Catch memory access errors
  - Tests!
+
+
+
+Emulator GUI wishlist:
+    Displayed:
+    Statusflags
+    Register
+    ProgramCounter
+    Next Instruction
+
+    Program stepable (one instruction each)
+
+    Advanced:
+        Breakpoints
+        Step Over, Run
+
+    Advanced advanced:
+        Manipulation of memory / registers at runtime

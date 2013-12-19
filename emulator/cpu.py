@@ -78,6 +78,8 @@ class Cpu(object):
             self.executeSwiOp(command)
         elif command & 0xE0000000 == 0x40000000:
             self.executeAdrOp(command)
+        elif command & 0x68000000 == 0x68000000:
+            self.executeStackOperation(command)
         else:
             pass  # TODO: Invalid opcode
 
@@ -103,11 +105,13 @@ class Cpu(object):
             address = self.register[address]
         if store:
             assert address & high == 0
+            assert address >= 0
             self.mem[address:address+4] = int32to8(self.register[rdest])
         elif rdest != 0:
             if address & high == high:
                 self.register[rdest] = fetchFromRom(self.rom, address)
             else:
+                assert address >= 0
                 self.register[rdest] = int8to32(self.mem[address:address+4])
 
     def executeConditionalJumpOp(self, command):
@@ -145,6 +149,20 @@ class Cpu(object):
         immsrc = command & 0xFFFFFF
         value = self.pc + immediatedecode(immsrc, 24)
         self.register[rdest] = value & mask
+
+    def executeStackOperation(self, command):
+        push = command & 0x02000000 == 0
+        rdest = command & 0xF
+        if push:
+            address = self.register[14]
+            assert address >= 0
+            self.mem[address:address+4] = int32to8(self.register[rdest])
+            self.register[14] -= 4
+        else:
+            self.register[14] += 4
+            address = self.register[14]
+            assert address >= 0
+            self.register[rdest] = int8to32(self.mem[address:address+4])
 
 
 class Flags:
@@ -226,7 +244,7 @@ def executeAluOperation(opcode, src1, src2, c):
     elif opcode == 0x6:
         result = src2 - src1
     elif opcode == 0x7:
-        result = src2 - src1 - c
+        result = src2 - src1 + c
 
     elif opcode == 0x2:
         result = src1 * src2
@@ -241,20 +259,25 @@ def executeAluOperation(opcode, src1, src2, c):
         result = src1 ^ src2
     elif opcode == 0xB:
         result = ~src2
-
     elif opcode == 0xC:
+	assert 0 <= src2 < 32
         result = src1 << src2
     elif opcode == 0xD:
-        result = src1 >> src2
+	assert 0 <= src2 < 32
+        msb = src1 >> 31
+        bitmask = ~((-msb) << src2) << (32-src2)
+        result = (src1 >> src2) | mitmask
     elif opcode == 0xE:
-        result = src1 >> src2  # TODO LSR
+        assert 0 <= src2 < 32
+        result = src1 >> src2
     elif opcode == 0xF:
-        pass  # TODO ROR
+        assert 0 <= src2 < 32
+        result = src1 >> src2 | src1 << (32-src2)
 
-    negative = result < 0
+    negative = result & high != 0
     zero = result == 0
-    carry = src1 < result and src2 < result
-    overflow = src1 > result > src2
+    carry = result & mask != result
+    overflow = src1 & high == src2 & high and src & high != result & high
 
     flags = [negative, zero, carry, overflow]
 
@@ -262,7 +285,7 @@ def executeAluOperation(opcode, src1, src2, c):
 
 @purefunction
 def fetchFromRom(rom, address):
-    address &= 0x7FFFFFFF
+    address &= (high - 1)
     return int8to32(rom[address:address+4])
 
 @purefunction

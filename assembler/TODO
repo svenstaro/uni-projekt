@@ -1,7 +1,7 @@
 TODO:
- - Test cases! (-> TDD)
- - labels!
- - glue code!
- - TODOs!!!
- - …
+ - Test cases!
  - Decode: Insert labels to improve readability. (jne #-8 sucks!)
+ - Support multiple input files
+ - Support .globl (Global labels across file boundaries)
+ - Improve error handling
+ - Improve error messages

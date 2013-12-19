@@ -20,7 +20,7 @@ def programcounter(clk, reset, enabled, a, b, c, d, select1, select2, out):
     --+--+---
      1| 1| d
     """
-    
+
     data = Signal(intbv(0)[16:])
 
     @always_comb(clk.posedge, reset)
@@ -38,5 +38,3 @@ def programcounter(clk, reset, enabled, a, b, c, d, select1, select2, out):
         out.next = data
 
     return logic
-
-

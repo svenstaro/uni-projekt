@@ -2,3 +2,18 @@ TODO
 ===
  - Catch memory access errors
  - Tests!
+
+
+
+Emulator GUI whishlist:
+    Statusflags
+    Register
+    ProgramCounter
+    Neyt Instruction
+
+    Advanced:
+        Breakpoints
+        Step, Step Over, Run
+
+    Advanced advanced:
+        Manipulation of Code / Registers at runtime

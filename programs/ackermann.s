@@ -17,22 +17,17 @@ mov $2, #1
 jmp ackermann
 
 .ack_2:
-st $1, $14
-sub $14, $14, #4
-
-st $15, $14
-sub $14, $14, #4
+push $1
+push $15
 
 sub $2, $2, #1
 call ackermann
 
 mov $2, $1
 
-add $14, $14, #4
-ld $15, $14
+pop $15
+pop $1
 
-add $14, $14, #4
-ld $1, $14
 sub $1, $1, #1
 jmp ackermann
 

@@ -244,7 +244,7 @@ def executeAluOperation(opcode, src1, src2, c):
     elif opcode == 0x6:
         result = src2 - src1
     elif opcode == 0x7:
-        result = src2 - src1 - c
+        result = src2 - src1 + c
 
     elif opcode == 0x2:
         result = src1 * src2
@@ -259,20 +259,25 @@ def executeAluOperation(opcode, src1, src2, c):
         result = src1 ^ src2
     elif opcode == 0xB:
         result = ~src2
-
     elif opcode == 0xC:
+	assert 0 <= src2 < 32
         result = src1 << src2
     elif opcode == 0xD:
-        result = src1 >> src2
+	assert 0 <= src2 < 32
+        msb = src1 >> 31
+        bitmask = ~((-msb) << src2) << (32-src2)
+        result = (src1 >> src2) | mitmask
     elif opcode == 0xE:
-        result = src1 >> src2  # TODO LSR
+        assert 0 <= src2 < 32
+        result = src1 >> src2
     elif opcode == 0xF:
-        pass  # TODO ROR
+        assert 0 <= src2 < 32
+        result = src1 >> src2 | src1 << (32-src2)
 
-    negative = result < 0
+    negative = result & high != 0
     zero = result == 0
-    carry = src1 < result and src2 < result
-    overflow = src1 > result > src2
+    carry = result & mask != result
+    overflow = src1 & high == src2 & high and src & high != result & high
 
     flags = [negative, zero, carry, overflow]
 
@@ -280,7 +285,7 @@ def executeAluOperation(opcode, src1, src2, c):
 
 @purefunction
 def fetchFromRom(rom, address):
-    address &= 0x7FFFFFFF
+    address &= (high - 1)
     return int8to32(rom[address:address+4])
 
 @purefunction

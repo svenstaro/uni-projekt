@@ -72,9 +72,9 @@ class TestAluArithmetic(TestCase):
                 0b0110 : [(6,3,0,-3), #RSB
                           (5,10,0,5),
                           (13,-13,1,-26)],
-                0b0111 : [(4,5,1,0), #RSC
-                          (23,20,1,-4),
-                          (-5,-7,1,-3)],
+                0b0111 : [(4,5,1,2), #RSC
+                          (23,20,1,-2),
+                          (-5,-7,1,-1)],
                 0b0010 : [(4,5,0,20), #MUL
                           (-3,4,0,-12),
                           (6,-3,0,-18),
@@ -131,12 +131,20 @@ class TestAluArithmetic(TestCase):
                           (5,4, 0b1010000),
                           (13,0,13),
                           (0,5,0),
-                          (16,30,0)],
+                          (16,30,0),
+                          (1,31,-2**31)],
                 0b1101 : [(1,0, 1), #ASR
                           (3,10,0),
-                          (10,1,0b101)],
-                0b1110 : [(0,0,0)], #LSR
-                0b1111 : [(0,0,0)]  #ROR
+                          (10,1,0b101),
+                          (~1,2,-1),
+                          (~1,0,~1),
+                          (-1,31,-1)],
+                0b1110 : [(-1,31,1), #LSR
+                          (3,10,0),
+                          (6,0,6),
+                          (-1,0,-1),
+                          (5,1,2)],
+                0b1111 : [(4,29,32)]  #ROR
                 }
 
             for opc, val in tests.iteritems():
@@ -145,7 +153,8 @@ class TestAluArithmetic(TestCase):
                     cl.A.next = tup[0]
                     cl.B.next = tup[1]
                     yield delay(1)
-                    self.assertEquals(tup[2], cl.R, msg = "%s != %s (%s⊕%s opc:%s) " % (tup[2],cl.R,cl.A,cl.B,bin(opc,4)))
-                    #self.assertEquals(tup[2], cl.R)
+                    #self.assertEquals(tup[2], cl.R, msg = "%s != %s (%s⊕%s opc:%s) " % (tup[2],cl.R,cl.A,cl.B,bin(opc,4)))
+                    self.assertEquals(tup[2], cl.R)
 
         genSim(verify).run()
+

@@ -1,7 +1,7 @@
 from math import log
 from myhdl import *
 
-def alu(opc, ups, A, B, Cin, Res, Z, N, C, V):
+def alu(opc, ups, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
     """This represents the ALU of the microcontroller.
 
     All Parameters are Signals as usual.
@@ -32,9 +32,9 @@ def alu(opc, ups, A, B, Cin, Res, Z, N, C, V):
         return B + Cin - A
 
     def MUL(A, B, Cin):
-        return A * B #TODO
+        return A * B #TODO hardware nutzen
     def DIV(A, B, Cin):
-        return A // B #TODO
+        return A // B #TODO rauswerfen
 
     def AND(A, B, Cin):
         return A & B
@@ -46,13 +46,13 @@ def alu(opc, ups, A, B, Cin, Res, Z, N, C, V):
         return ~B
 
     def LSL(A, B, Cin):
-        return (A << B)[32:0]
+        return (A << B)[bitwidth:].signed()
     def ASR(A, B, Cin):
         return A >> B
     def LSR(A, B, Cin):
-        return 0 #TODO
+        return ((A[bitwidth+1:] & (2**bitwidth-1)) >> B)[bitwidth:].signed() #TODO unhuebsch
     def ROR(A, B, Cin):
-        return A << (32 - B)
+        return A << (bitwidth - B)
 
 
     opcodes = {
@@ -85,10 +85,14 @@ def alu(opc, ups, A, B, Cin, Res, Z, N, C, V):
         result = opcodes[int(opc)](A, B, Cin)
 
         if ups: #update status flags
+            amsb = A[bitwidth-1]
+            bmsb = B[bitwidth-1]
+            rmsb = intbv(result)[bitwidth-1]
+
             Z.next = result == 0
             N.next = result < 0
-            C.next = A[len(A)] ^ B[len(B)]
-            V.next = False #TODO
+            C.next = intbv(result)[bitwidth]
+            V.next = (amsb == bmsb) and (amsb == (not rmsb))
 
         Res.next = result
 

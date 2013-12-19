@@ -148,4 +148,4 @@ class TestAluArithmetic(TestCase):
                     self.assertEquals(tup[2], cl.R, msg = "%s != %s (%s⊕%s opc:%s) " % (tup[2],cl.R,cl.A,cl.B,bin(opc,4)))
                     #self.assertEquals(tup[2], cl.R)
 
-        genSim(verify, trace=True).run()
+        genSim(verify).run()

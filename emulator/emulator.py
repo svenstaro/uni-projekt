@@ -24,7 +24,7 @@ def run(fp):
             break
         program_contents += read
     os.close(fp)
-    cpu = Cpu(0, program_contents)
+    cpu = Cpu(1024*1024, program_contents)
     start = time.time()
     cpu.run()
     end = time.time()

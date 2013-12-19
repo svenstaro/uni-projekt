@@ -277,7 +277,7 @@ def executeAluOperation(opcode, src1, src2, c):
     negative = result & high != 0
     zero = result == 0
     carry = result & mask != result
-    overflow = src1 & high == src2 & high and src & high != result & high
+    overflow = src1 & high == src2 & high and src1 & high != result & high
 
     flags = [negative, zero, carry, overflow]
 

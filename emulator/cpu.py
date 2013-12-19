@@ -78,6 +78,8 @@ class Cpu(object):
             self.executeSwiOp(command)
         elif command & 0xE0000000 == 0x40000000:
             self.executeAdrOp(command)
+        elif command & 0x68000000 == 0x68000000:
+            self.executeStackOperation(command)
         else:
             pass  # TODO: Invalid opcode
 
@@ -103,11 +105,13 @@ class Cpu(object):
             address = self.register[address]
         if store:
             assert address & high == 0
+            assert address >= 0
             self.mem[address:address+4] = int32to8(self.register[rdest])
         elif rdest != 0:
             if address & high == high:
                 self.register[rdest] = fetchFromRom(self.rom, address)
             else:
+                assert address >= 0
                 self.register[rdest] = int8to32(self.mem[address:address+4])
 
     def executeConditionalJumpOp(self, command):
@@ -145,6 +149,20 @@ class Cpu(object):
         immsrc = command & 0xFFFFFF
         value = self.pc + immediatedecode(immsrc, 24)
         self.register[rdest] = value & mask
+
+    def executeStackOperation(self, command):
+        push = command & 0x02000000 == 0
+        rdest = command & 0xF
+        if push:
+            address = self.register[14]
+            assert address >= 0
+            self.mem[address:address+4] = int32to8(self.register[rdest])
+            self.register[14] -= 4
+        else:
+            self.register[14] += 4
+            address = self.register[14]
+            assert address >= 0
+            self.register[rdest] = int8to32(self.mem[address:address+4])
 
 
 class Flags:

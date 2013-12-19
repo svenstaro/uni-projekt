@@ -7,7 +7,7 @@ operands:
 
 
 Alu:
-<opcode> <S> <Rd> <Rs1> <Op2-17bit>
+00 <opcode> <S> <Rd> <Rs1> <Op2-17bit>
 add	0000
 adc	0001
 
@@ -48,8 +48,16 @@ Mem:
 <opcode> <R> <Op2-25bit>
 ld	100
 st	101
+
+ADR:
+<opcode> <R> <Op2-25bit>
 adr	010
 
 Swi:
 <opcode> <Op2-25bit>
-swi	1110010
+swi	0110010
+
+Stack:
+<opcode> 0* <R>
+push	0110100
+pop	0110101

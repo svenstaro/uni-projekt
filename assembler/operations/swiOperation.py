@@ -9,6 +9,6 @@ class SwiOperand2(Operand2):
 
 
 class SwiOperation(Operation):
-    opcodes = {"swi": "1110010"}
+    opcodes = {"swi": "0110010"}
     argTypes = [SwiOperand2]
 

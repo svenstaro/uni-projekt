@@ -74,7 +74,7 @@ class Cpu(object):
             self.executeJumpOp(command)
         elif command & 0xFE000000 == 0xE2000000:
             self.executeCallOp(command)
-        elif command & 0xFE000000 == 0xE4000000:
+        elif command & 0xFE000000 == 0x64000000:
             self.executeSwiOp(command)
         elif command & 0xE0000000 == 0x40000000:
             self.executeAdrOp(command)

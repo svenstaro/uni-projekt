@@ -5,15 +5,18 @@ TODO
 
 
 
-Emulator GUI whishlist:
+Emulator GUI wishlist:
+    Displayed:
     Statusflags
     Register
     ProgramCounter
-    Neyt Instruction
+    Next Instruction
+
+    Program stepable (one instruction each)
 
     Advanced:
         Breakpoints
-        Step, Step Over, Run
+        Step Over, Run
 
     Advanced advanced:
-        Manipulation of Code / Registers at runtime
+        Manipulation of memory / registers at runtime

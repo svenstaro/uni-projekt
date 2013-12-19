@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 from operations import getOperations
 from state import EncodingState, DecodingState

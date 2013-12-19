@@ -112,8 +112,10 @@
 \[Jxx - 110 : Condition - (4bit) : OP2 - (25bit)\]
 \[JMP - 1110000 : OP2 - (25bit)\]
 \[CALL- 1110001 : OP2 - (25bit)\]
-\[SWI - 1110010 : OP2 - (25bit)\]
 \[ADR - 010 : R_{dest} - (4bit) : OP2 - (25bit)\]
+\[SWI - 0110010 : OP2 - (25bit)\]
+\[PUSH- 0110100 : 0* : R_{src} - (4bit)\]
+\[POP - 0110101 : 0* : R_{dest} - (4bit)\]
 
 \subsection{OP2}
 \[ 0 : R_{src} - (4bit) : 0* \]

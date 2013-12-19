@@ -53,10 +53,12 @@ def encodeCommandStream(lines):
             stream += d.binary
             pos += d.size / 8
         else:
-            op = parseCommand(line, ops, encode=True)
-            stream += op.fromText(line, EncodingState(labels, pos)).binary
-            pos += op.size / 8
-
+            try:
+                op = parseCommand(line, ops, encode=True)
+                stream += op.fromText(line, EncodingState(labels, pos)).binary
+                pos += op.size / 8
+            except:
+                raise EncodingError(line, "Invalid instruction")
     return stream
 
 

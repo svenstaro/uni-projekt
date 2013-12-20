@@ -3,11 +3,13 @@ from register import *
 from mux41 import *
 
 def programcounter(clk, reset, enabled, i00, i01, i10, i11, s1, s0, out, width=32):
-    """
-        Represents the programcounter (PC)
-    clk             -- The clock
-    reset           -- A reset input
-    enabled         -- enabled input
+    """Represents the programcounter (PC)
+
+    All parameters are Signals as usual
+
+    clk (Ibool)     -- The clock
+    reset (Ireset)  -- A reset input
+    enabled (Ibool) -- enabled input
     i00,i01,i10,i11 -- data input
     s1, s0          -- mux selector
     out             -- data out

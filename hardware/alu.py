@@ -6,16 +6,16 @@ def alu(opc, ups, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
 
     All Parameters are Signals as usual.
 
-    opc -- The opcode (must be a valid alu opcode)
-    ups -- Signal which says if to update the status flags
-    A   -- First input - must be modbv
-    B   -- Second input - must be modbv
-    Cin -- Carry input
-    Res -- The Result
-    Z   -- Zero flag
-    N   -- Negative flag
-    C   -- Carry flag
-    V   -- Overflow flag
+    opc (I4)    -- The opcode (must be a valid alu opcode)
+    ups (Ibool) -- Signal which says if to update the status flags
+    A   (Obw)   -- First input - must be modbv
+    B   (Obw)   -- Second input - must be modbv
+    Cin (Ibool) -- Carry input
+    Res (Obw)   -- The Result
+    Z   (Obool) -- Zero flag
+    N   (Obool) -- Negative flag
+    C   (Obool) -- Carry flag
+    V   (Obool) -- Overflow flag
     """
 
     def ADD(A, B, Cin):
@@ -97,4 +97,3 @@ def alu(opc, ups, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
         Res.next = result
 
     return logic
-

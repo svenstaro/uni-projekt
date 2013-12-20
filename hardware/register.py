@@ -13,4 +13,3 @@ def register(clk, reset, we, data_in, data_out, bitwidth=32):
         data_out.next = data
 
     return write, read
-

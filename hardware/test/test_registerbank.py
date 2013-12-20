@@ -171,7 +171,7 @@ class RegisterbankTest(TestCase):
 
             cl.addrX.next = 1
             cl.Z.next = 28
-            yield cl.clk.negedge
+            yield cl.clk.posedge
             self.assertEquals(27, cl.X)
 
             yield cl.clk.negedge
@@ -183,13 +183,13 @@ class RegisterbankTest(TestCase):
 
             cl.Z.next = 7
             cl.addrY.next = 2
-            yield cl.clk.negedge
+            yield cl.clk.posedge
             self.assertEquals(6, cl.Y)
-            
+
             yield cl.clk.negedge
             self.assertEquals(7, cl.Y)
 
-        genSim(verify).run()
+        genSim(verify,trace=True).run()
 
     def testAddrAutonomy(self):
         """Checks if X and Y give different Result"""

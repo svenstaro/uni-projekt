@@ -201,7 +201,7 @@ def immediatedecode(value, size):
 def op2decode(op2, size, relative=0):
     op2mask = 1 << (size - 1)
     if op2 & op2mask == 0:
-        return 1, (op2 >> (size - 1 - 4)) & 0xF
+        return 1, op2 & 0xF
     else:
         value = immediatedecode(op2 & (op2mask - 1), size - 1)
         if relative:

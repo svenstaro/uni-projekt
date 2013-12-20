@@ -14,7 +14,7 @@ class Operand2(Operand):
         try:
             if Register.isValidText(arg):
                 register = Register.fromText(arg, state)
-                return cls(arg, "0" + register.binary + "0" * (cls.size - 5), register)
+                return cls(arg, "0" + "0" * (cls.size - 5) + register.binary, register)
             else:
                 immediate = cls.immType.fromText(arg, state)
                 return cls(arg, "1" + immediate.binary, immediate)
@@ -29,7 +29,7 @@ class Operand2(Operand):
             if arg.startswith("1"):
                 inner = cls.immType.fromBinary(arg[1:], state)
             else:
-                inner = Register.fromBinary(arg[1:5], state)
+                inner = Register.fromBinary(arg[-4:], state)
             return cls(inner.text, arg, inner)
         except Exception, e:
             raise DecodingError(arg, "is not a valid operand2", e)

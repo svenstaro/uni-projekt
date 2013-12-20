@@ -35,8 +35,9 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
     return Simulation(dut, clkGen, stimulus)
 
 
-class DummyTest(TestCase):
-    def testAluOps(self):
+class TestDecoder(TestCase):
+    def testDecoding(self):
+        """Check if the decoder gives the correct aluop, op2, etc"""
         def verify(cl, dut):
             order = [
                    #(0, cl.ir),

@@ -34,7 +34,7 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
     return Simulation(dut, clkGen, stimulus)
 
 
-class DummyTest(TestCase):
+class TestMux41(TestCase):
     def testMux(self):
         """Checks if the mux is doing what it is supposed to do"""
         def verify(cl, dut):

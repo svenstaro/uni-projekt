@@ -76,7 +76,7 @@ def alu(opc, ups, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
                 0b1101 : ASR,
                 0b1110 : LSR,
                 0b1111 : ROR
-              }
+              } #TODO umschreiben nach if/elif
 
     @always_comb
     def logic():

@@ -1,6 +1,6 @@
 from myhdl import *
 
-def pseudoram(clk, we, oe, addr, data_in, data_out, mem=[Signal(intbv(0)) for _ in range(128)]):
+def pseudoram(clk, we, oe, addr, data_in, data_out, mem=[Signal(intbv(0)[32:]) for _ in range(128)]):
     """This is a pseudoram
     """
 
@@ -14,6 +14,7 @@ def pseudoram(clk, we, oe, addr, data_in, data_out, mem=[Signal(intbv(0)) for _ 
     @always_comb
     def read():
         assert addr < len(mem)
+
         if oe:
             data_out.next = mem[addr]
 

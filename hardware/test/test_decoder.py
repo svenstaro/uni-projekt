@@ -89,6 +89,6 @@ class TestDecoder(TestCase):
 
                     self.assertEquals(num, port)
 
-        genSim(verify,trace=True).run()
+        genSim(verify).run()
 
 # vim: set ft=python:

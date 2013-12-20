@@ -54,7 +54,6 @@ class RegisterbankTest(TestCase):
             yield cl.clk.negedge
             self.assertEquals(0, cl.Y)
 
-            cl.we.next = False
             cl.addrZ.next = 0
             cl.Z.next = 23
             yield cl.clk.negedge

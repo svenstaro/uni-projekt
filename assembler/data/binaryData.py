@@ -11,7 +11,7 @@ class BinaryData(Data):
         if not cls.isValidText(arg):
             raise EncodingError(arg, "is not a valid %s" % cls.__name__)
         data = arg[len(cls.start):]
-        number = str(tools.label2immediate(data, state)) if tools.labelPattern.match(data) else data
+        number = str(tools.label2immediate(data, state) + state.position) if tools.labelPattern.match(data) else data
         binary = Immediate.immediate2binary(number, cls.size)
         if not binary:
             raise EncodingError(arg, "is not a valid %s" % cls.__name__)

@@ -1,7 +1,7 @@
 operands:
 <R*>	register	4-bit
 <Op2>	operand2	x-bit
-	0 <Rs> 0*
+	0 0* <Rs> 
 	1 <2's complement immediate>
 <S>	statusflag	1 bit
 

@@ -1,12 +1,13 @@
 from myhdl import *
 
-def pseudorom(clk, we, addr, data_out, mem=[]):
-
+def pseudorom(clk, we, oe, addr, data_in, data_out, mem=[]):
+    """This is a pseudorom
+    """
     @always_comb
     def read():
         assert addr < len(mem)
 
-        data_out.next = mem[addr]
+        if oe:
+            data_out.next = mem[addr]
 
     return read
-

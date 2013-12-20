@@ -105,73 +105,126 @@ class RegisterbankTest(TestCase):
 
         genSim(verify).run()
 
-    #def testWriteEnabled(self):
-        #"""Test if the write flag is respected"""
-        #def verify(cl, dut):
-            #cl.we.next = True
-            #cl.channel.next = 1
+    def testWriteEnabled(self):
+        """Test if the write flag is respected"""
+        def verify(cl, dut):
+            cl.we.next = True
+            cl.addrZ.next = cl.addrX.next = 1
 
-            #cl.Z.next = 20
-            #yield cl.clk.negedge
-            #yield cl.clk.negedge
-            #self.assertEquals(20, cl.out)
+            cl.Z.next = 20
+            yield cl.clk.negedge
+            yield cl.clk.negedge
+            self.assertEquals(20, cl.X)
 
-            #cl.we.next = False
-            #cl.Z.next = 21
-            #yield cl.clk.negedge
-            #yield cl.clk.negedge
-            #self.assertEquals(20, cl.out)
+            cl.we.next = False
+            cl.Z.next = 21
+            yield cl.clk.negedge
+            yield cl.clk.negedge
+            self.assertEquals(20, cl.X)
 
-        #genSim(verify).run()
+        genSim(verify).run()
 
-    #def testRegisterAutonomy(self):
-        #"""Check if different register give different results"""
-        #def verify(cl, dut):
-            #cl.we.next = True
+    def testRegisterAutonomy(self):
+        """Check if different register give different results"""
+        def verify(cl, dut):
+            cl.we.next = True
 
-            #cl.channel.next = 1
-            #cl.Z.next = 1
-            #yield cl.clk.negedge
-            #yield cl.clk.negedge
+            cl.addrZ.next = 1
+            cl.Z.next = 1
+            yield cl.clk.negedge
 
-            #cl.channel.next = 2
-            #cl.Z.next = 2
-            #yield cl.clk.negedge
-            #yield cl.clk.negedge
+            cl.addrZ.next = 2
+            cl.Z.next = 2
+            yield cl.clk.negedge
 
-            #cl.channel.next = 3
-            #cl.Z.next = 3
-            #yield cl.clk.negedge
-            #yield cl.clk.negedge
+            cl.addrZ.next = 3
+            cl.Z.next = 3
+            yield cl.clk.negedge
 
-            #cl.we.next = False
+            cl.we.next = False
 
-            #cl.channel.next = 3
-            #yield cl.clk.negedge
-            #yield cl.clk.negedge
-            #self.assertEquals(3, cl.out)
+            cl.addrX.next = 3
+            yield cl.clk.negedge
+            self.assertEquals(3, cl.X)
 
-            #cl.channel.next = 2
-            #yield cl.clk.negedge
-            #yield cl.clk.negedge
-            #self.assertEquals(2, cl.out)
+            cl.addrX.next = 2
+            yield cl.clk.negedge
+            self.assertEquals(2, cl.X)
 
-            #cl.channel.next = 1
-            #yield cl.clk.negedge
-            #yield cl.clk.negedge
-            #self.assertEquals(1, cl.out)
+            cl.addrX.next = 1
+            yield cl.clk.negedge
+            self.assertEquals(1, cl.X)
 
-            #cl.channel.next = 0 #check the 0-register, just to be sure ;)
-            #yield cl.clk.negedge
-            #yield cl.clk.negedge
-            #self.assertEquals(0, cl.out)
+            cl.addrX.next = 0 #check the 0-register, just to be sure ;)
+            yield cl.clk.negedge
+            self.assertEquals(0, cl.X)
 
-        #genSim(verify).run()
+        genSim(verify).run()
 
     def testReadBeforeWrite(self):
-        pass
+        """Checks if the reading is done before writing"""
+        def verify(cl, dut):
+            cl.we.next = True
+
+            cl.addrZ.next = 1
+            cl.Z.next = 27
+            yield cl.clk.negedge
+
+            cl.addrX.next = 1
+            cl.Z.next = 28
+            yield cl.clk.negedge
+            self.assertEquals(27, cl.X)
+
+            yield cl.clk.negedge
+            self.assertEquals(28, cl.X)
+
+            cl.addrZ.next = 2
+            cl.Z.next = 6
+            yield cl.clk.negedge
+
+            cl.Z.next = 7
+            cl.addrY.next = 2
+            yield cl.clk.negedge
+            self.assertEquals(6, cl.Y)
+            
+            yield cl.clk.negedge
+            self.assertEquals(7, cl.Y)
+
+        genSim(verify).run()
 
     def testAddrAutonomy(self):
-        pass
+        """Checks if X and Y give different Result"""
+        def verify(cl, dut):
+            cl.we.next = True
+
+            cl.addrZ.next = 1
+            cl.Z.next = 23
+            yield cl.clk.negedge
+
+            cl.addrZ.next = 2
+            cl.Z.next = 45
+            yield cl.clk.negedge
+
+            cl.addrX.next = 1
+            cl.addrY.next = 2
+            yield cl.clk.negedge
+            self.assertEquals(23, cl.X)
+            self.assertEquals(45, cl.Y)
+
+            cl.addrX.next = 0
+            cl.addrY.next = 1
+            yield cl.clk.negedge
+            self.assertEquals(0, cl.X)
+            self.assertEquals(23, cl.Y)
+
+            cl.addrX.next = 2
+            cl.addrY.next = 2
+            yield cl.clk.negedge
+            self.assertEquals(45, cl.X)
+            self.assertEquals(45, cl.Y)
+            self.assertEquals(cl.X, cl.Y)
+
+        genSim(verify).run()
 
 # vim: set ft=python:
+

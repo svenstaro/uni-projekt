@@ -189,7 +189,7 @@ class RegisterbankTest(TestCase):
             yield cl.clk.negedge
             self.assertEquals(7, cl.Y)
 
-        genSim(verify,trace=True).run()
+        genSim(verify).run()
 
     def testAddrAutonomy(self):
         """Checks if X and Y give different Result"""

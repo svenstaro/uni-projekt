@@ -9,12 +9,12 @@ def decoder(ir, aluop, dest, source, op1, op2, source2, imm24, imm16, statusUp):
     aluop (O4)      -- The decoded aluop
     dest (O4)       -- The destination register
     source (O4)     -- The first source register
-    op1 (bool)      -- True if imm24 should be used, false for source
-    op2 (bool)      -- True if imm16 should be used, false for source2
+    op1 (O1)      -- True if imm24 should be used, false for source2
+    op2 (O1)      -- True if imm16 should be used, false for source2
     source2 (O4)    -- The second source register
     imm24 (O24)     -- The decoded 24bit width imm
     imm16 (O16)     -- The decoded 16bit width imm (for alu)
-    statusUp (bool) -- True if the status bit should be updated
+    statusUp (O1) -- True if the status bit should be updated
 
     """
 

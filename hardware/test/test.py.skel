@@ -7,7 +7,9 @@ class DutClass():
         pass
 
     def Gens(self, trace = False):
-        pass
+        args = []
+        
+        return traceSignals(dut, *args) if trace else dut(*args)
 
 def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
     """ Generates a Simulation Object """

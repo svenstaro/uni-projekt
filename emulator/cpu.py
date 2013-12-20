@@ -154,15 +154,15 @@ class Cpu(object):
         push = command & 0x02000000 == 0
         rdest = command & 0xF
         if push:
+            self.register[14] -= 4
             address = self.register[14]
             assert address >= 0
             self.mem[address:address+4] = int32to8(self.register[rdest])
-            self.register[14] -= 4
         else:
-            self.register[14] += 4
             address = self.register[14]
             assert address >= 0
             self.register[rdest] = int8to32(self.mem[address:address+4])
+            self.register[14] += 4
 
 
 class Flags:

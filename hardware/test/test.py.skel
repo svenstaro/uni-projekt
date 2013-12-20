@@ -23,7 +23,7 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
     @instance
     def stimulus():
         dut_cl.reset.next = True
-        yield delay(3)
+        yield delay(4*clkfreq)
         dut_cl.reset.next = False
 
         yield verifyMethod(dut_cl, dut)

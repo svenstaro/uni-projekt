@@ -17,7 +17,7 @@ class DutClass():
 
         self.opc = Signal(intbv(0)[4:])
         self.ups = Signal(bool(0))
-        self.A, self.B, self.R = [Signal(modbv(0,-(2**31),2**31-1)) for _ in range(3)]
+        self.A, self.B, self.R = [Signal(intbv(0,-(2**31),2**31-1)) for _ in range(3)]
 
         self.zero = register(self.clk,self.reset,self.zwe,self.zin,self.zout)
         self.negative = register(self.clk,self.reset,self.nwe,self.nin,self.nout)

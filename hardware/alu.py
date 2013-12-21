@@ -7,8 +7,8 @@ def alu(opc, ups, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
 
     opc (I4)    -- The opcode (must be a valid alu opcode)
     ups (Ibool) -- Signal which says if to update the status flags
-    A   (Obw)   -- First input - must be modbv
-    B   (Obw)   -- Second input - must be modbv
+    A   (Obw)   -- First input
+    B   (Obw)   -- Second input
     Cin (Ibool) -- Carry input
     Res (Obw)   -- The Result
     Z   (Obool) -- Zero flag

@@ -35,8 +35,8 @@ def alu(opc, ups, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
             result = B + Cin - A
         elif opc == 0b0010: #MUL
             result = A * B  #TODO hardware nutzen
-        elif opc == 0b0011: #DIV
-            result = A // B #TODO rauswerfen
+        elif opc == 0b0011: #ADN
+            result = A & ~B
         elif opc == 0b1000: #AND
             result = A & B
         elif opc == 0b1001: #ORR

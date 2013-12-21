@@ -1,6 +1,6 @@
 from myhdl import *
 
-def decoder(ir, aluop, dest, source, op1, op2, source2, imm24, imm16, sUp):
+def irdecoder(ir, aluop, dest, source, op1, op2, source2, imm24, imm16, sUp):
     """
         This is the IR decoder
         All inputs are Signals as usual

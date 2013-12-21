@@ -1,6 +1,6 @@
 from unittest import TestCase
 from myhdl import *
-from decoder import *
+from irdecoder import *
 
 class DutClass():
     """Wrapper around DUT"""
@@ -15,7 +15,7 @@ class DutClass():
     def Gens(self, trace = False):
         args = [self.ir,self.aluop,self.dest,self.source,self.op1,
                 self.op2,self.source2,self.imm24,self.imm16,self.statusUp]
-        return traceSignals(decoder, *args) if trace else decoder(*args)
+        return traceSignals(irdecoder, *args) if trace else irdecoder(*args)
 
 def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
     """ Generates a Simulation Object """
@@ -35,9 +35,9 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
     return Simulation(dut, clkGen, stimulus)
 
 
-class TestDecoder(TestCase):
+class TestIrDecoder(TestCase):
     def testDecoding(self):
-        """Check if the decoder gives the correct aluop, op2, etc"""
+        """Check if the irdecoder gives the correct aluop, op2, etc"""
         def verify(cl, dut):
             order = [
                    #(0, cl.ir),

@@ -5,7 +5,6 @@ from irdecoder import *
 class DutClass():
     """Wrapper around DUT"""
     def __init__(self):
-        self.clk = Signal(bool(0))
         self.ir = Signal(intbv(0)[32:])
         self.aluop, self.dest, self.source, self.source2 = [Signal(intbv(0)[4:]) for _ in range(4)]
         self.op1, self.op2, self.statusUp = [Signal(intbv(0)[1:]) for _ in range(3)]
@@ -22,17 +21,13 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
 
     dut_cl = cl()
 
-    @always(delay(clkfreq))
-    def clkGen():
-        dut_cl.clk.next = not dut_cl.clk
-
     @instance
     def stimulus():
         yield verifyMethod(dut_cl, dut)
         raise StopSimulation
 
     dut = dut_cl.Gens(trace=trace)
-    return Simulation(dut, clkGen, stimulus)
+    return Simulation(dut, stimulus)
 
 
 class TestIrDecoder(TestCase):
@@ -74,7 +69,7 @@ class TestIrDecoder(TestCase):
                 assert len(t) == 10 #check that we have preset all ports
 
                 cl.ir.next = int(t[0].replace(' ', ''),2) if type(t[0]) == str else t[0]
-                yield cl.clk.negedge
+                yield delay(1)
 
                 for ind,port in order:
                     if type(t[ind]) is str: #convert strings to int

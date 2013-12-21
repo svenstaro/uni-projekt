@@ -158,3 +158,5 @@ class TestAluArithmetic(TestCase):
 
         genSim(verify).run()
 
+    def testStatusFlags(self):
+        pass #TODO

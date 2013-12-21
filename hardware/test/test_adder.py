@@ -5,9 +5,8 @@ from adder import *
 class DutClass():
     """Wrapper around DUT"""
     def __init__(self,bitwidth=16):
-        self.clk = Signal(bool(0))
-
         self.a, self.b, self.s = [Signal(modbv(0)[bitwidth:]) for _ in range(3)]
+        self.bitwidth = bitwidth
 
     def Gens(self, trace = False):
         args = [self.a, self.b, self.s]
@@ -19,10 +18,6 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
 
     dut_cl = cl()
 
-    @always(delay(clkfreq))
-    def clkGen():
-        dut_cl.clk.next = not dut_cl.clk
-
     @instance
     def stimulus():
 
@@ -30,7 +25,7 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
         raise StopSimulation
 
     dut = dut_cl.Gens(trace=trace)
-    return Simulation(dut, clkGen, stimulus)
+    return Simulation(dut, stimulus)
 
 
 class AdderTest(TestCase):
@@ -38,7 +33,7 @@ class AdderTest(TestCase):
         def verify(cl, dut):
             cl.a.next = 3
             cl.b.next = 5
-            yield cl.clk.posedge
+            yield delay(1)
 
             self.assertEquals(8, cl.s)
 

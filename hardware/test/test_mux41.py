@@ -6,8 +6,6 @@ from mux41 import *
 class DutClass():
     """Wrapper around DUT"""
     def __init__(self,bitwidth=8):
-        self.clk = Signal(bool(0))
-
         self.i00, self.i01, self.i10, self.i11, self.out = [Signal(intbv(0)[bitwidth:]) for _ in range(5)]
         self.s1, self.s0 = [Signal(bool(0)) for _ in range(2)]
 
@@ -21,17 +19,13 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
 
     dut_cl = cl()
 
-    @always(delay(clkfreq))
-    def clkGen():
-        dut_cl.clk.next = not dut_cl.clk
-
     @instance
     def stimulus():
         yield verifyMethod(dut_cl, dut)
         raise StopSimulation
 
     dut = dut_cl.Gens(trace=trace)
-    return Simulation(dut, clkGen, stimulus)
+    return Simulation(dut, stimulus)
 
 
 class TestMux41(TestCase):
@@ -41,7 +35,7 @@ class TestMux41(TestCase):
             for i in range(128):
                 cl.i00.next, cl.i01.next, cl.i10.next, cl.i11.next = [randrange(2**8-1) for _ in range(4)]
                 cl.s1.next, cl.s0.next = [randrange(2) for _ in range(2)]
-                yield cl.clk.negedge
+                yield delay(1)
 
                 self.assertEquals({00 : cl.i00, 01 : cl.i01, 10 : cl.i10, 11 : cl.i11}.get(cl.s1 * 10 + cl.s0), cl.out)
 

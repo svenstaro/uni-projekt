@@ -9,7 +9,7 @@ def printpretty(n):
     suffixes = [" ", " k", " M", " G", " T"]
     order = 0
     while n > 1000 and order < len(suffixes) - 1:
-        n /= 1000
+        n /= 1000.0
         order += 1
     suffix = suffixes[order]
 

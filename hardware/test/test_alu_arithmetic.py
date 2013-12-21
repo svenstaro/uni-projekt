@@ -9,8 +9,8 @@ class DutClass():
     """Wrapper around DUT"""
     def __init__(self):
         self.zwe, self.nwe, self.cwe, self.vwe     = [Signal(bool(0)) for _ in range(4)]
-        self.zin, self.nin, self.cin, self.vin     = [Signal(intbv(0)[1:]) for _ in range(4)]
-        self.zout, self.nout, self.cout, self.vout = [Signal(intbv(0)[1:]) for _ in range(4)]
+        self.zin, self.nin, self.cin, self.vin     = [Signal(bool(0)) for _ in range(4)]
+        self.zout, self.nout, self.cout, self.vout = [Signal(bool(0)) for _ in range(4)]
 
         self.clk = Signal(bool(0))
         self.reset = ResetSignal(0,1,True)

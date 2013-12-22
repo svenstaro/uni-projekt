@@ -44,7 +44,7 @@ def alu(opc, ups, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
         elif opc == 0b1010: #XOR
             result = A ^ B
         elif opc == 0b1011: #NOT
-            result = ~B
+            result = int(~B)
         elif opc == 0b1100: #LSL
             result = (A << B)[bitwidth:]
         elif opc == 0b1101: #ASR

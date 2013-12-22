@@ -265,8 +265,8 @@ def executeAluOperation(opcode, src1, src2, c):
     elif opcode == 0xD:
 	assert 0 <= src2 < 32
         msb = src1 >> 31
-        bitmask = ~((-msb) << src2) << (32-src2)
-        result = (src1 >> src2) | mitmask
+        bitmask = ~((-msb) << src2) << (32-src2) if msb else 0
+        result = (src1 >> src2) | bitmask
     elif opcode == 0xE:
         assert 0 <= src2 < 32
         result = src1 >> src2

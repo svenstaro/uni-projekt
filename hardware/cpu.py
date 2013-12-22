@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+from ctypes import c_bool
 from myhdl import *
 
 def cpu(clk, addr, nextA, nextB, upcmux2, upcmux1, upcmux0, addrx15,
-        rxBuf, addrBuf, aluBuf, pcBuf,
+        rxBuf, op2Buf, addrBuf, aluBuf, pcBuf,
         enIr, enZ, enN, enC, enV, enPC, regWe, pcmux1, pcmux0,
         enMRR, enMDR, enMAR, MRRbuf, MDRbuf, mWe, mOe):
     """
@@ -18,6 +19,7 @@ def cpu(clk, addr, nextA, nextB, upcmux2, upcmux1, upcmux0, addrx15,
         upcmux0 (Obool) -- uPCMuxSelector
         addrx15 (Obool) -- set addrx for register to 15 (return addr register)
         rxBuf   (Obool) -- bufbit for xout
+        op2Buf  (Obool) -- bufbit for second opcode
         addrBuf (Obool) -- bufbit for addr (pc+imm)
         aluBuf  (Obool) -- bufbit for alu
         pcBuf   (Obool) -- bufbit for pc (programcounter)
@@ -40,7 +42,7 @@ def cpu(clk, addr, nextA, nextB, upcmux2, upcmux1, upcmux0, addrx15,
     """
 
     tState = enum('UNKNOWN', 'FETCH', 'DECODE', 'ALUOP', 'JUMP', 'LOAD', 'STORE', 'ILLEGAL', 'HALT')  # TODO add more
-    state = tState.FETCH
+    cState = Signal(tState.FETCH)
 
     """
         Ich muss noch überlegen, wie ich den bedingten sprung hier rein bekomme.
@@ -78,49 +80,79 @@ def cpu(clk, addr, nextA, nextB, upcmux2, upcmux1, upcmux0, addrx15,
 
     @always(clk.posedge)
     def logic():
-        preset()
+        preset() #this is important!
 
-        if state == tState.UNKNOWN:
+        if   cState == tState.UNKNOWN: #TODO mir gefällt die Lösung mit dem unknown state nicht, mal gucken, ob ich das besser hinbekomme
             if   addr[32:30] == 0b00:
-                state = tState.ALUOP
+                cState.next = tState.ALUOP
             elif addr[32:30] == 0b11:
-                state = tState.JUMP
+                cState.next = tState.JUMP
             elif addr[32:28] == 0b100:
-                state = tState.LOAD
+                cState.next = tState.LOAD
             elif addr[32:28] == 0b101:
-                state = tState.STORE
+                cState.next = tState.STORE
             else:
-                state = tState.ILLEGAL # TODO add more
-
-        if   state == tState.FETCH:
+                cState.next = tState.ILLEGAL # TODO add more
+        elif cState == tState.FETCH:
             pcBuf.next = True
             enMAR.next = True
             yield clk.posedge
             preset()
             mOe.next = True
-            yield clk.posedge # TODO add delay for timing
+            yield clk.posedge #TODO add delay for timing
             preset()
             mOe.next = True
             enMRR.next = True
             yield clk.posedge
             preset()
             MRRbuf.next = True
-            enIR.next = True
-            state = tState.DECODE
-        elif state == tState.DECODE:
+            enIr.next = True
+            cState.next = tState.DECODE
+        elif cState == tState.DECODE:
             upcmux2.next = True
             upcmux1.next = True
             upcmux0.next = True
             enPC.next    = True
-        elif state == tState.ALUOP:
+            cState._next = tState.UNKNOWN
+        elif cState == tState.ALUOP:
             enZ.next = True
             enN.next = True
             enC.next = True
             enV.next = True
             aluBuf.next = True
             regWe.next  = True
-            state = tState.FETCH
-        elif state == tState.HALT:
+            cState.next = tState.FETCH
+        elif cState == tState.JUMP:
+            pass
+        elif cState == tState.LOAD:
+            pcBuf.next = True
+            enMAR.next = True
+            yield clk.posedge
+            preset()
+            mOe.next = True
+            yield clk.posedge #TODO add delay for timing
+            preset()
+            mOe.next = True
+            enMRR.next = True
+            yield clk.posedge
+            preset()
+            MRRbuf.next = True
+            regWe.next = True
+            cState.next = tState.FETCH
+        elif cState == tState.STORE:
+            rxBuf.next = True
+            enMAR.next = True
+            yield clk.posedge
+            preset()
+            op2Buf.next = True
+            enMDR.next  = True
+            yield clk.posedge
+            preset()
+            MDRbuf.next = True
+            mWe.next    = True
+            yield clk.posedge #TODO add delay for timing
+            cState.next = tState.FETCH
+        elif cState == tState.HALT:
             pass
 
     return logic

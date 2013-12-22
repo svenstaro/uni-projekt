@@ -58,3 +58,7 @@ nosetests.xml
 # lock files
 .~lock.*.*#
 
+# vhdl files
+*.vhd
+!vhdl/*.vhd
+

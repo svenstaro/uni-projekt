@@ -1,17 +1,15 @@
 from myhdl import *
 
-def tristate(input, enable, output):
+def tristate(input, enable, odriver):
     """Tristate which puts the input to the output if enable, None elsewise
     """
-
-    o = output.driver()
 
     @always_comb
     def logic():
         if enable:
-            o.next = intbv(input.val)
+            odriver.next = intbv(input.val)
         else:
-            o.next = None
+            odriver.next = None
 
     return logic
 

@@ -10,8 +10,8 @@ class DutClass():
         self.output = TristateSignal(intbv(0)[32:])
 
     def Gens(self, trace = False):
-        args  = [self.input,self.en,self.output]
-        args2 = [self.input2,self.en2,self.output]
+        args  = [self.input,self.en,self.output.driver()]
+        args2 = [self.input2,self.en2,self.output.driver()]
         
         return traceSignals(tristate, *args) if trace else tristate(*args), traceSignals(tristate, *args) if trace else tristate(*args2)
 

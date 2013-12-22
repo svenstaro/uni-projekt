@@ -6,10 +6,7 @@ def tristate(input, enable, odriver):
 
     @always_comb
     def logic():
-        if enable:
-            odriver.next = intbv(input.val)
-        else:
-            odriver.next = None
+        odriver.next = input if enable else None
 
     return logic
 

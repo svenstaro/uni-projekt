@@ -21,7 +21,7 @@ class AluOperation(Operation):
         "rsc": "0111",
 
         "mul": "0010",
-        "div": "0011",
+        "andn":"0011",
 
         "and": "1000",
         "orr": "1001",

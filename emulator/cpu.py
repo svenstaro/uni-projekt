@@ -249,7 +249,7 @@ def executeAluOperation(opcode, src1, src2, c):
     elif opcode == 0x2:
         result = src1 * src2
     elif opcode == 0x3:
-        result = src1 / src2
+        result = src1 & ~src2
 
     elif opcode == 0x8:
         result = src1 & src2

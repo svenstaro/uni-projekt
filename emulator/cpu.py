@@ -57,7 +57,7 @@ class Cpu(object):
     def tick(self):
         self.counter += 1
         command = fetchInstruction(self.rom, self.pc)
-        if command == 0xe1000000:
+        if command == 0x43000000:
             return False
         self.execute(command)
         self.pc += 4
@@ -66,20 +66,18 @@ class Cpu(object):
     def execute(self, command):
         if command & 0xC0000000 == 0x00000000:
             self.executeAluOp(command)
+        elif command & 0xC0000000 == 0x40000000:
+            self.executeJumpOp(command)
         elif command & 0xC0000000 == 0x80000000:
             self.executeMemOp(command)
         elif command & 0xE0000000 == 0xC0000000:
-            self.executeConditionalJumpOp(command)
-        elif command & 0xFE000000 == 0xE0000000:
-            self.executeJumpOp(command)
-        elif command & 0xFE000000 == 0xE2000000:
-            self.executeCallOp(command)
-        elif command & 0xFE000000 == 0x64000000:
-            self.executeSwiOp(command)
-        elif command & 0xE0000000 == 0x40000000:
             self.executeAdrOp(command)
-        elif command & 0x68000000 == 0x68000000:
+        elif command & 0xF0000000 == 0xE0000000:
             self.executeStackOperation(command)
+        elif command & 0xF8000000 == 0xF0000000:
+            self.executeCallOp(command)
+        elif command & 0xF8000000 == 0xF8000000:
+            self.executeSwiOp(command)
         else:
             pass  # TODO: Invalid opcode
 
@@ -114,12 +112,12 @@ class Cpu(object):
                 assert address >= 0
                 self.register[rdest] = int8to32(self.mem[address:address+4])
 
-    def executeConditionalJumpOp(self, command):
-        condition = (command & 0x1E000000) >> 25
-        if conditionIsMet(self.flags, condition):
-            self.executeJumpOp(command)
-
     def executeJumpOp(self, command):
+        condition = (command & 0x3E000000) >> 25
+        if conditionIsMet(self.flags, condition):
+            self.doJump(command)
+
+    def doJump(self, command):
         self.pc -= 4
         op2 = getParamsJump(command)
         r, dest = op2decode(op2, 25, self.pc)
@@ -142,7 +140,7 @@ class Cpu(object):
 
     def executeCallOp(self, command):
         self.register[15] = self.pc & mask
-        self.executeJumpOp(command)
+        self.doJump(command)
 
     def executeAdrOp(self, command):
         rdest = (command >> 25) & 0xF
@@ -166,8 +164,8 @@ class Cpu(object):
 
 
 class Flags:
-    N = 0
-    Z = 1
+    Z = 0
+    N = 1
     C = 2
     O = 3
 
@@ -210,17 +208,10 @@ def op2decode(op2, size, relative=0):
 
 @purefunction
 def conditionIsMet(flags, condition):
-    if condition & 0xE == 0:
-        return (condition & 0x1) ^ flags[Flags.Z]
-    elif condition & 0xE == 0x8:
-        return (condition & 1) ^ flags[Flags.O]
-    elif condition & 0xE == 0x9:
-        return (condition & 1) ^ flags[Flags.C]
-    elif condition & 0xC == 0x4:  # lt, gt, ...
-        return ((condition & 1) and flags[Flags.Z])\
-            or ((condition & 0x2) >> 1) ^ flags[Flags.N]
-    else:
-        return False  # TODO: Invalid condition
+    return (condition & 0x1) ^((condition & 0x10 and flags[Flags.Z]) \
+                             | (condition & 0x08 and flags[Flags.N]) \
+                             | (condition & 0x04 and flags[Flags.C]) \
+                             | (condition & 0x02 and flags[Flags.O]))
 
 def getParamsAlu(command):
     statusFlag = command & 0x02000000 != 0
@@ -279,7 +270,7 @@ def executeAluOperation(opcode, src1, src2, c):
     carry = result & mask != result
     overflow = src1 & high == src2 & high and src1 & high != result & high
 
-    flags = [negative, zero, carry, overflow]
+    flags = [zero, negative, carry, overflow]
 
     return flags, result & mask
 

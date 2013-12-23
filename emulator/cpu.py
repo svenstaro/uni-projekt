@@ -149,14 +149,18 @@ class Cpu(object):
         self.register[rdest] = value & mask
 
     def executeStackOperation(self, command):
-        push = command & 0x02000000 == 0
-        rdest = command & 0xF
+        push = command & 0x08000000 == 0
         if push:
+            op2 = command & 0x01FFFFFF
+            r, src = op2decode(op2, 25)
+            if r == 1:
+                src = self.register[src]
             self.register[14] -= 4
             address = self.register[14]
             assert address >= 0
-            self.mem[address:address+4] = int32to8(self.register[rdest])
+            self.mem[address:address+4] = int32to8(src)
         else:
+            rdest = command & 0xF
             address = self.register[14]
             assert address >= 0
             self.register[rdest] = int8to32(self.mem[address:address+4])

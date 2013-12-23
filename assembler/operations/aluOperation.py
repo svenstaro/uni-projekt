@@ -26,7 +26,7 @@ class AluOperation(Operation):
         "and": "1000",
         "orr": "1001",
         "xor": "1010",
-        #"not": "1011"
+        "orn": "1011",
 
         "lsl": "1100",
         "asr": "1101",

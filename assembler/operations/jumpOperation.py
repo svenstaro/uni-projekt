@@ -1,10 +1,8 @@
 from .operation import Operation
-from operands import LabelOperand
+from operands import LabelOperand, Opcodes
 
 
 class JumpOperation(Operation):
-
-    argTypes = [LabelOperand]
 
     opcodes = {"call": "1111000"}
 
@@ -32,3 +30,6 @@ class JumpOperation(Operation):
 
     for (name, code) in conditions.items():
         opcodes["j" + name] = "01" + code
+
+
+    structure = [Opcodes(opcodes), LabelOperand]

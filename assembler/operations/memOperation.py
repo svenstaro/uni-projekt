@@ -1,5 +1,5 @@
 from .operation import Operation
-from operands import Register, LabelOperand
+from operands import Register, LabelOperand, Opcodes
 
 
 class MemOperation(Operation):
@@ -7,4 +7,4 @@ class MemOperation(Operation):
                "st":  "101",
                "adr": "110"}
 
-    argTypes = [Register, LabelOperand]
+    structure = [Opcodes(opcodes), Register, LabelOperand]

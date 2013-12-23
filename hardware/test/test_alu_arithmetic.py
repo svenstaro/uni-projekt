@@ -106,7 +106,7 @@ class TestAluArithmetic(TestCase):
                          (0b0000, 0b0101, 0b0101)],
                 0b1010: [(0b0000, 0b1010, 0b1010), #XOR
                          (0b1111, 0b0110, 0b1001)],
-                0b1011: [(0b0000, 0b000, intbv(-1))] #ORN
+                0b1011: [(0b0000, 0b0000, intbv(-1))] #ORN
                 }
 
             for opc, val in tests.iteritems():

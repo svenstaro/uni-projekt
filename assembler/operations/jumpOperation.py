@@ -6,27 +6,29 @@ class JumpOperation(Operation):
 
     argTypes = [LabelOperand]
 
-    opcodes = {"jmp": "1110000",
-               "call": "1110001"}
+    opcodes = {"call": "1111000"}
 
     conditions = {
+        "mp": "00001",
         # equal or zero
-        "eq": "0000",
-        "z": "0000",
-        "ne": "0001",
-        "nz": "0001",
+        "eq": "10000",
+        "z":  "10000",
+        "ne": "10001",
+        "nz": "10001",
         # lower than
-        "lt": "0100",
-        "le": "0101",
+        "lt": "01000",
+        "n":  "01000",
+        "le": "11000",
         # greater than
-        "gt": "0110",
-        "ge": "0111",
+        "gt": "11001",
+        "nn": "11001",
+        "ge": "01001",
         # overflow
-        "o": "1000",
-        "no": "1001",
+        "o":  "00010",
+        "no": "00011",
         # carry
-        "c": "1010",
-        "nc": "1011"}
+        "c":  "00100",
+        "nc": "00101"}
 
     for (name, code) in conditions.items():
-        opcodes["j" + name] = "110" + code
+        opcodes["j" + name] = "01" + code

@@ -1,14 +1,11 @@
 from .operation import Operation
 from .aluOperation import AluOperation
-from .twoOpAluOperation import TwoOpAluOperation
-from .compareOperation import CompareOperation
 from .memOperation import MemOperation
 from .jumpOperation import JumpOperation
-from .pseudoOperation import PseudoOperation
+from .pseudoOperation import PseudoOperations
 from .swiOperation import SwiOperation
 from. stackOperation import StackOperation
 
 
 def getOperations():
-    return [CompareOperation, TwoOpAluOperation, AluOperation, PseudoOperation, JumpOperation, MemOperation,
-                  SwiOperation, StackOperation]
+    return PseudoOperations() + [AluOperation, JumpOperation, MemOperation, SwiOperation, StackOperation]

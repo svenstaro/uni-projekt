@@ -253,7 +253,7 @@ def executeAluOperation(opcode, src1, src2, c):
     elif opcode == 0xA:
         result = src1 ^ src2
     elif opcode == 0xB:
-        result = ~src2
+        result = src1 | ~src2
     elif opcode == 0xC:
 	assert 0 <= src2 < 32
         result = src1 << src2

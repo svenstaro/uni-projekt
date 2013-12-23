@@ -1,21 +1,18 @@
 from errors import EncodingError
 from .operand2 import Operand2
-from .immediate import Immediate24
 import tools
 
 
-class LabelOperand(Operand2):
-    size = 25
-    immType = Immediate24
+class LabelOperand(Operand2(25)):
 
     @classmethod
     def isValidText(cls, arg):
-        return tools.labelPattern.match(arg) or Operand2.isValidText(arg)
+        return tools.labelPattern.match(arg) or super(LabelOperand, cls).isValidText(arg)
 
     @classmethod
     def fromText(cls, arg, state):
         try:
-            if Operand2.isValidText(arg):
+            if super(LabelOperand, cls).isValidText(arg):
                 return super(LabelOperand, cls).fromText(arg, state)
             else:
                 imm = "#" + str(tools.label2immediate(arg, state))

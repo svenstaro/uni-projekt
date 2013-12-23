@@ -20,6 +20,7 @@ class AsciiData(Data):
         if not cls.isValidText(arg):
             raise EncodingError(arg, "is not a valid %s" % cls.__name__)
         data = arg[len(cls.start):]
+        data = data.decode("string_escape")
 
         binary = ''.join(tools.tobin(ord(byte), width=8) for byte in data)
         return cls(arg, binary)

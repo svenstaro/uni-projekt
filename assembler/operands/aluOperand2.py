@@ -1,7 +1,5 @@
-from .labelOperand import LabelOperand
-from .immediate import Immediate16
+from .operand2 import Operand2
 
 
-class AluOperand2(LabelOperand):
-    size = 17
-    immType = Immediate16
+class AluOperand2(Operand2(17)):
+    pass

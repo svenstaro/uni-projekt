@@ -1,6 +1,5 @@
 from .data import Data
 from errors import EncodingError
-from operands import Immediate
 import tools
 
 
@@ -12,7 +11,7 @@ class BinaryData(Data):
             raise EncodingError(arg, "is not a valid %s" % cls.__name__)
         data = arg[len(cls.start):]
         number = str(tools.label2immediate(data, state) + state.position) if tools.labelPattern.match(data) else data
-        binary = Immediate.immediate2binary(number, cls.size)
+        binary = tools.immediate2binary(number, cls.size)
         if not binary:
             raise EncodingError(arg, "is not a valid %s" % cls.__name__)
         return cls(arg, binary)
@@ -30,6 +29,11 @@ class BinaryData(Data):
 class WordData(BinaryData):
     size = 32
     start = ".word "
+
+
+class HalfData(BinaryData):
+    size = 16
+    start = ".half "
 
 
 class ByteData(BinaryData):

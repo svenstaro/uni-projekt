@@ -71,6 +71,7 @@ def decodeCommandStream(stream):
         op = parseCommand(word, ops, encode=False)
         if op is None:
             op = WordData
+            word = word.ljust(32, "0")
         line = op.fromBinary(word, None).text
         result += line + "\n"
     return result

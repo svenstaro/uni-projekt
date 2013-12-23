@@ -7,9 +7,8 @@ class AluOperation(Operation):
     def buildAluOpcodes(opcodes):
         result = {}
         for (name, code) in opcodes.items():
-            code = "00" + code
-            result[name] = code + "0"
-            result[name + "s"] = code + "1"
+            result[name] = "000" + code
+            result[name + "s"] = "001" + code
         return result
 
     opcodes = buildAluOpcodes.__func__({

@@ -21,8 +21,8 @@ def irdecoder(ir, aluop, dest, source, op1, op2, source2, imm24, imm16, sUp, jum
 
     @always_comb
     def logic():
-        aluop.next   = ir[29:25]
-        dest.next    = ir[25:21]
+        aluop.next   = ir[25:21]
+        dest.next    = ir[29:25]
         source.next  = ir[21:17]
         op1.next     = ir[25]
         op2.next     = ir[16]

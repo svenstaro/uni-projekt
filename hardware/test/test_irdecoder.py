@@ -8,12 +8,13 @@ class DutClass():
         self.ir = Signal(intbv(0)[32:])
         self.aluop, self.dest, self.source, self.source2 = [Signal(intbv(0)[4:]) for _ in range(4)]
         self.op1, self.op2, self.statusUp = [Signal(intbv(0)[1:]) for _ in range(3)]
+        self.jumpOp = Signal(intbv(0)[5:])
         self.imm24 = Signal(intbv(0)[24:])
         self.imm16 = Signal(intbv(0)[16:])
 
     def Gens(self, trace = False):
         args = [self.ir,self.aluop,self.dest,self.source,self.op1,
-                self.op2,self.source2,self.imm24,self.imm16,self.statusUp]
+                self.op2,self.source2,self.imm24,self.imm16,self.statusUp,self.jumpOp]
         return traceSignals(irdecoder, *args) if trace else irdecoder(*args)
 
 def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
@@ -44,29 +45,30 @@ class TestIrDecoder(TestCase):
                     (6, cl.source2),
                     (7, cl.imm24),
                     (8, cl.imm16),
-                    (9, cl.statusUp)
+                    (9, cl.statusUp),
+                    (10,cl.jumpOp)
                 ]
 
             tests = [
                 #for order see 'order'
                 #'x' means "don't care"
 
-                ('00 0000 1 0001 0010 0 0000 0000 0000 0100', 
-                    0b0000, 0b0001, 0b0010, 'x', 0, 0b0100, 'x', 'x', 1),
-                ('00 0100 0 1111 0000 1 1000 0000 0010 1111',
-                    0b0100, 0b1111, 0b0000, 'x', 1, 'x', 'x', 0b1000000000101111, 0),
-                ('00 0111 1 0000 1111 1 1111 1111 0000 1111',
-                    0b0111, 0b000, 0b1111, 'x', 1, 'x', 'x', 0b1111111100001111, 1),
-                ('00 1010 0 1100 0011 0 0000 0000 0000 1111',
-                    0b1010, 0b1100, 0b0011, 'x', 0, 0b1111, 'x', 'x', 0),
-                ('11 00100 0 0000 0000 0000 0000 0000 1111',
-                    'x', 'x', 'x', 0, 'x', 0b1111, 'x', 'x', 'x'),
-                ('11 00101 1 1100 0011 1010 0101 1111 0000',
-                    'x', 'x', 'x', 1, 'x', 'x', 0b110000111010010111110000, 'x', 'x')
+                ('00 1 0000 0001 0010 0 0000 0000 0000 0100',
+                    0b0000, 0b0001, 0b0010, 'x', 0, 0b0100, 'x', 'x', 1, 'x'),
+                ('00 0 0100 1111 0000 1 1000 0000 0010 1111',
+                    0b0100, 0b1111, 0b0000, 'x', 1, 'x', 'x', 0b1000000000101111, 0, 'x'),
+                ('00 1 0111 0000 1111 1 1111 1111 0000 1111',
+                    0b0111, 0b000, 0b1111, 'x', 1, 'x', 'x', 0b1111111100001111, 1, 'x'),
+                ('00 0 1010 1100 0011 0 0000 0000 0000 1111',
+                    0b1010, 0b1100, 0b0011, 'x', 0, 0b1111, 'x', 'x', 0, 'x'),
+                ('01 00100 0 0000 0000 0000 0000 0000 1111',
+                    'x', 'x', 'x', 0, 'x', 0b1111, 'x', 'x', 'x', 0b00100),
+                ('01 00101 1 1100 0011 1010 0101 1111 0000',
+                    'x', 'x', 'x', 1, 'x', 'x', 0b110000111010010111110000, 'x', 'x', 0b00101)
                 ]
 
             for t in tests:
-                assert len(t) == 10 #check that we have preset all ports
+                assert len(t) == 11 #check that we have preset all ports
 
                 cl.ir.next = int(t[0].replace(' ', ''),2) if type(t[0]) == str else t[0]
                 yield delay(1)

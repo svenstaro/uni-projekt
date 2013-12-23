@@ -214,8 +214,8 @@ def conditionIsMet(flags, condition):
                              | (condition & 0x02 and flags[Flags.O]))
 
 def getParamsAlu(command):
-    statusFlag = command & 0x02000000 != 0
-    opcode = (command & 0x3C000000) >> 26
+    statusFlag = command & 0x20000000 != 0
+    opcode = (command & 0x1E000000) >> 25
     rdest = (command & 0x01E00000) >> 21
     rsrc1 = (command & 0x001E0000) >> 17
     op2 = (command & 0x0001FFFF)

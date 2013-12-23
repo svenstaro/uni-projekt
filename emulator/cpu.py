@@ -59,15 +59,14 @@ class Cpu(object):
         command = fetchInstruction(self.rom, self.pc)
         if command == 0x43000000:
             return False
-        self.execute(command)
-        self.pc += 4
+        self.pc = self.execute(command)
         return True
 
     def execute(self, command):
         if command & 0xC0000000 == 0x00000000:
             self.executeAluOp(command)
         elif command & 0xC0000000 == 0x40000000:
-            self.executeJumpOp(command)
+            return self.executeJumpOp(command)
         elif command & 0xC0000000 == 0x80000000:
             self.executeMemOp(command)
         elif command & 0xE0000000 == 0xC0000000:
@@ -75,11 +74,12 @@ class Cpu(object):
         elif command & 0xF0000000 == 0xE0000000:
             self.executeStackOperation(command)
         elif command & 0xF8000000 == 0xF0000000:
-            self.executeCallOp(command)
+            return self.executeCallOp(command)
         elif command & 0xF8000000 == 0xF8000000:
             self.executeSwiOp(command)
         else:
             pass  # TODO: Invalid opcode
+        return self.pc + 4
 
     def executeAluOp(self, command):
         opcode, statusFlag, rdest, rsrc1, op2 = getParamsAlu(command)
@@ -115,15 +115,15 @@ class Cpu(object):
     def executeJumpOp(self, command):
         condition = (command & 0x3E000000) >> 25
         if conditionIsMet(self.flags, condition):
-            self.doJump(command)
+            return self.calculateJump(command)
+        return self.pc + 4
 
-    def doJump(self, command):
-        self.pc -= 4
+    def calculateJump(self, command):
         op2 = getParamsJump(command)
         r, dest = op2decode(op2, 25, self.pc)
         if r == 1:
             dest = self.register[dest]
-        self.pc = dest
+        return dest
 
     def executeSwiOp(self, command):
         op2 = command & 0x01FFFFFF
@@ -139,8 +139,8 @@ class Cpu(object):
             os.write(1, str(value)+'\n')
 
     def executeCallOp(self, command):
-        self.register[15] = self.pc & mask
-        self.doJump(command)
+        self.register[15] = (self.pc + 4) & mask
+        return self.calculateJump(command)
 
     def executeAdrOp(self, command):
         rdest = (command >> 25) & 0xF

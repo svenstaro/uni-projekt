@@ -99,6 +99,16 @@ def parseCommand(line, ops, encode=True):
             return op
 
 
+def getTextOfEncodedCommand(bytes):
+    binary = ""
+    for byte in bytes:
+        binary += bin(ord(byte))[2:].zfill(8)
+    try:
+        return parseCommand(binary, getOperations(), encode=False).fromBinary(binary, None).text
+    except:
+        return None
+
+
 def writeStream(fd, stream):
     while stream:
         firstbyte, stream = stream[0:8], stream[8:]

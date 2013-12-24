@@ -1,9 +1,9 @@
 from .operation import Operation
-from operands import Zero, Register
+from operands import Zero, Register, Opcodes
 
 
 class StackOperation(Operation):
     opcodes = {"push": "1110000",
                "pop":  "1110100"}
 
-    argTypes = [Zero(21), Register]
+    structure = [Opcodes(opcodes), Zero(21), Register]

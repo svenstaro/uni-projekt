@@ -1,8 +1,8 @@
 from operations import Operation
-from operands import Operand2
+from operands import Operand2, Opcodes
 
 
 class SwiOperation(Operation):
     opcodes = {"swi": "1111100"}
-    argTypes = [Operand2(25)]
+    structure = [Opcodes(opcodes), Operand2(25)]
 

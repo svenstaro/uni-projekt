@@ -219,8 +219,8 @@ def conditionIsMet(flags, condition):
 
 def getParamsAlu(command):
     statusFlag = command & 0x20000000 != 0
-    opcode = (command & 0x1E000000) >> 25
-    rdest = (command & 0x01E00000) >> 21
+    opcode = (command & 0x01E00000) >> 21
+    rdest = (command & 0x1E000000) >> 25
     rsrc1 = (command & 0x001E0000) >> 17
     op2 = (command & 0x0001FFFF)
     return opcode, statusFlag, rdest, rsrc1, op2

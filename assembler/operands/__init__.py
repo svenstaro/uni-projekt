@@ -6,3 +6,5 @@ from .aluOperand2 import AluOperand2
 from .labelOperand import LabelOperand
 from .zero import Zero
 from .ignore import Ignore
+from .const import Const
+from .opcodes import Opcodes

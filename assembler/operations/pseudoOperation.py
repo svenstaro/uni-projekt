@@ -11,6 +11,8 @@ def PseudoOperations():
 
         @classmethod
         def translate(cls, s, src, dest):
+            src = src.replace("$", "\\$")
+
             srcPattern = "^" + re.sub(r'%(\d)', r'(?P<a\1>.*)', src) + "$"
             destPattern = re.sub(r'%(\d)', r'\\g<a\1>', dest)
             return re.sub(srcPattern, destPattern, s)
@@ -38,7 +40,12 @@ def PseudoOperations():
 
         @classmethod
         def isValidBinary(cls, arg):
-            return cls.underlyingType.isValidBinary(arg)
+            if not cls.underlyingType.isValidBinary(arg):
+                return False
+            inner = cls.underlyingType.fromBinary(arg, None)
+            text = cls.translate(inner.text, cls.real, cls.pseudo)
+            return inner.text != text
+
 
         @classmethod
         def fromBinary(cls, arg, state):

@@ -46,7 +46,8 @@ class TestIrDecoder(TestCase):
                     (7, cl.imm24),
                     (8, cl.imm16),
                     (9, cl.statusUp),
-                    (10,cl.jumpOp)
+                    (10,cl.prefix),
+                    (11,cl.jumpOp)
                 ]
 
             tests = [

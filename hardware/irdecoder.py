@@ -1,6 +1,6 @@
 from myhdl import *
 
-def irdecoder(ir, aluop, dest, source, op1, op2, source2, imm24, imm16, sUp, jumpOp):
+def irdecoder(ir, aluop, dest, source, op1, op2, source2, imm24, imm16, sUp, prefix, jumpOp):
     """
         This is the IR decoder
         All inputs are Signals as usual
@@ -15,6 +15,7 @@ def irdecoder(ir, aluop, dest, source, op1, op2, source2, imm24, imm16, sUp, jum
     imm24   (O24)   -- The decoded 24bit width imm
     imm16   (O16)   -- The decoded 16bit width imm (for alu)
     sUp     (Obool) -- True if the status bit should be updated
+    prefix  (O5)    -- The first five bits of the instruction
     jumpOp  (O5)    -- The ir for the jumpunit
 
     """
@@ -30,6 +31,7 @@ def irdecoder(ir, aluop, dest, source, op1, op2, source2, imm24, imm16, sUp, jum
         imm24.next   = ir[24:0]
         imm16.next   = ir[16:0]
         sUp.next     = ir[29]
+        prefix.next  = ir[32:27]
         jumpOp.next  = ir[30:25]
 
     return logic

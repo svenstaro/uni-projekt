@@ -1,6 +1,4 @@
 from myhdl import *
-from register import *
-from mux41 import *
 
 def programcounter(clk, reset, enable, imm24, reg, jumpunit, cpujump, op1, out):
     """Represents the programcounter (PC)

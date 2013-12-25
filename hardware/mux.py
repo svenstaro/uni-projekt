@@ -30,3 +30,26 @@ def mux41(s1, s0, i00, i01, i10, i11, out):
                 out.next = i11
 
     return logic
+
+def mux21(s, A, B, out):
+    """Simple 2:1 multiplexer
+
+    All parameters are Signals as usual
+
+    s0  (Ibool) -- selector
+    A   (I)     -- first input
+    B   (I)     -- second input
+    out (O)     -- output
+
+    the output is defined by the selector and the specific output.
+    all Is and O must have the same bitlength
+    """
+    @always_comb
+    def logic():
+        if not s:
+            out.next = A
+        else:
+            out.next = B
+
+    return logic
+

@@ -3,7 +3,7 @@ from myhdl import *
 
 
 def cpu(clk, addr,
-        addrymux1, addrymux0, pmux, pcmux1, pcmux0,
+        addrymux1, addrymux0, pmux,
         addrBuf, op2Buf, addr14Buf, ryBuf, aluBuf, pcBuf,
         enIr, enPc, enReg, enJump, enSup,
         enMRR, enMDR, enMAR, MRRbuf, MDRbuf, mWe, mOe):
@@ -45,8 +45,6 @@ def cpu(clk, addr,
         addrymux1.next = False
         addrymux0.next = False
         pmux.next = False
-        pcmux1.next = False
-        pcmux0.next = False
         addrBuf.next = False
         op2Buf.next = False
         addr14Buf.next = False
@@ -122,7 +120,17 @@ def cpu(clk, addr,
                     state.next = tState.ILLEGAL # TODO add more
             elif state == tState.FETCH:
                 pcBuf.next = True
-                loadFromRam()
+                enMAR.next = True
+                yield clk.posedge
+                presetSignals()
+                mOe.next = True
+                yield clk.posedge #TODO add delay for timing
+                presetSignals()
+                mOe.next = True
+                enMRR.next = True
+                yield clk.posedge
+                presetSignals()
+                MRRbuf.next = True
                 enIr.next = True
                 state.next = tState.DECODE
             elif state == tState.DECODE:
@@ -138,7 +146,17 @@ def cpu(clk, addr,
                 enPc.next = True
             elif state == tState.LOAD:
                 addrBuf.next = True
-                loadFromRam()
+                enMAR.next = True
+                yield clk.posedge
+                presetSignals()
+                mOe.next = True
+                yield clk.posedge #TODO add delay for timing
+                presetSignals()
+                mOe.next = True
+                enMRR.next = True
+                yield clk.posedge
+                presetSignals()
+                MRRbuf.next = True
                 enReg.next = True
                 state.next = tState.FETCH
             elif state == tState.STORE:
@@ -149,7 +167,14 @@ def cpu(clk, addr,
                 yield clk.posedge
                 presetSignals()
                 op2Buf.next = True #the actual value to bus
-                saveToRam()
+                enMDR.next = True
+                yield clk.posedge
+                enMDR.next  = True
+                yield clk.posedge
+                presetSignals()
+                MDRbuf.next = True
+                mWe.next    = True
+                yield clk.posedge #TODO add delay for timing
                 state.next = tState.FETCH
             elif state == tState.ADR:
                 enReg.next = True
@@ -166,12 +191,29 @@ def cpu(clk, addr,
                 yield clk.posedge
                 presetSignals()
                 op2Buf.next = True
-                saveToRam()
+                enMDR.next = True
+                yield clk.posedge
+                enMDR.next  = True
+                yield clk.posedge
+                presetSignals()
+                MDRbuf.next = True
+                mWe.next    = True
+                yield clk.posedge #TODO add delay for timing
             elif state == tState.POP:
                 addrymux0.next = True #put $14 to the bus
                 addrymux1.next = True
                 addr14Buf.next = True
-                loadFromRam()
+                enMAR.next = True
+                yield clk.posedge
+                presetSignals()
+                mOe.next = True
+                yield clk.posedge #TODO add delay for timing
+                presetSignals()
+                mOe.next = True
+                enMRR.next = True
+                yield clk.posedge
+                presetSignals()
+                MRRbuf.next = True
                 addrymux1.next = True
                 pmux.next = True #increment $14 by 4
                 enReg.next = True
@@ -182,8 +224,7 @@ def cpu(clk, addr,
                 addrymux0.next = True
                 enReg.next = True
                 yield clk.posedge
-                pcmux0.next = True
-                pcmux1.next = True
+                enJump.next = True
                 enPc.next = True
                 state.next = tState.FETCH
             elif state == tState.SWI:

@@ -1,5 +1,6 @@
 from adder import *
 from alu import *
+from andd import *
 from cpu import *
 from dff import *
 from irdecoder import *

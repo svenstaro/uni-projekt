@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from ctypes import c_bool
 from myhdl import *
 
 
-def cpu(clk, addr, addrymux1, addrymux0, pmux,
+def cpu(clk, addr,
+        addrymux1, addrymux0, pmux, pcmux1, pcmux0,
         addrBuf, op2Buf, addr14Buf, ryBuf, aluBuf, pcBuf,
-        enIr, enPC, enReg, enJump, pcmux1, pcmux0,
+        enIr, enPc, enReg, enJump, enSup,
         enMRR, enMDR, enMAR, MRRbuf, MDRbuf, mWe, mOe):
     """
         This is a cpu state maschine. Let's see how far we come.
@@ -16,6 +16,8 @@ def cpu(clk, addr, addrymux1, addrymux0, pmux,
         addrymux1 (Obool) -- mux1 for reginput
         addrymux0 (Obool) -- mux0 for reginput
         pmux      (Obool) -- if true, dx will be incremented by 4, decremented otherwise (used for push/pop)
+        pcmux1    (Obool) -- pcMuxSelector
+        pcmux0    (Obool) -- pcMuxSelector
         addrBuf   (Obool) -- bufbit for addr (pc+imm or reg)
         op2Buf    (Obool) -- bufbit for second opcode
         addr14Buf (Obool) -- bufbit for addr14buf
@@ -23,11 +25,10 @@ def cpu(clk, addr, addrymux1, addrymux0, pmux,
         aluBuf    (Obool) -- bufbit for alu
         pcBuf     (Obool) -- bufbit for pc (programcounter)
         enIr      (Obool) -- enable IR
-        enPC      (Obool) -- enable ProgrammCounter
+        enPc      (Obool) -- enable ProgrammCounter
         enReg     (Obool) -- enable registe write
         enJump    (Obool) -- enables jumping
-        pcmux1    (Obool) -- pcMuxSelector
-        pcmux0    (Obool) -- pcMuxSelector
+        enSup     (Obool) -- enable statusUpdate
         enMRR     (Obool) -- enable MemoryReadRegister
         enMDR     (Obool) -- enable MemoryDataRegister
         enMAR     (Obool) -- enable MemoryAddressRegister
@@ -44,6 +45,8 @@ def cpu(clk, addr, addrymux1, addrymux0, pmux,
         addrymux1.next = False
         addrymux0.next = False
         pmux.next = False
+        pcmux1.next = False
+        pcmux0.next = False
         addrBuf.next = False
         op2Buf.next = False
         addr14Buf.next = False
@@ -51,11 +54,10 @@ def cpu(clk, addr, addrymux1, addrymux0, pmux,
         aluBuf.next = False
         pcBuf.next = False
         enIr.next = False
-        enPC.next = False
+        enPc.next = False
         enReg.next = False
+        enSup.next = False
         enJump.next = False
-        pcmux1.next = False
-        pcmux0.next = False
         enMRR.next = False
         enMDR.next = False
         enMAR.next = False
@@ -89,102 +91,107 @@ def cpu(clk, addr, addrymux1, addrymux0, pmux,
         mWe.next    = True
         yield clk.posedge #TODO add delay for timing
 
-    @always(clk.posedge)
+    #always(clk.posedge)
+    #not possible, because of yields inside the functions
+    #therefore we emulate the always decorator
     def logic():
-        preset() #this is important!
+        while True:
+            yield clk.posedge
+            preset() #this is important!
 
-        if   state == tState.UNKNOWN: #TODO mir gefällt die Lösung mit dem unknown state nicht, mal gucken, ob ich das besser hinbekomme
-            if   addr[4:2] == 0b00:
-                state.next = tState.ALUOP
-            elif addr[4:2] == 0b01:
-                state.next = tState.JUMP
-            elif addr[4:1] == 0b100:
-                state.next = tState.LOAD
-            elif addr[4:1] == 0b101:
-                state.next = tState.STORE
-            elif addr[4:1] == 0b110:
-                state.next = tState.ADR
-            elif addr      == 0b11100:
-                state.next = tState.PUSH
-            elif addr      == 0b11101:
-                state.next = tState.POP
-            elif addr      == 0b11110:
-                state.next = tState.CALL
-            elif addr      == 0b11111:
-                state.next = tState.SWI
+            if   state == tState.UNKNOWN: #TODO mir gefällt die Lösung mit dem unknown state nicht, mal gucken, ob ich das besser hinbekomme
+                if   addr[4:2] == 0b00:
+                    state.next = tState.ALUOP
+                elif addr[4:2] == 0b01:
+                    state.next = tState.JUMP
+                elif addr[4:1] == 0b100:
+                    state.next = tState.LOAD
+                elif addr[4:1] == 0b101:
+                    state.next = tState.STORE
+                elif addr[4:1] == 0b110:
+                    state.next = tState.ADR
+                elif addr      == 0b11100:
+                    state.next = tState.PUSH
+                elif addr      == 0b11101:
+                    state.next = tState.POP
+                elif addr      == 0b11110:
+                    state.next = tState.CALL
+                elif addr      == 0b11111:
+                    state.next = tState.SWI
+                else:
+                    state.next = tState.ILLEGAL # TODO add more
+            elif state == tState.FETCH:
+                pcBuf.next = True
+                load()
+                enIr.next = True
+                state.next = tState.DECODE
+            elif state == tState.DECODE:
+                enPc.next   = True
+                state._next = tState.UNKNOWN
+            elif state == tState.ALUOP:
+                aluBuf.next = True
+                enReg.next  = True
+                enSup.next  = True
+                state.next = tState.FETCH
+            elif state == tState.JUMP:
+                enJump.next = True
+                enPc.next = True
+            elif state == tState.LOAD:
+                addrBuf.next = True
+                load()
+                enReg.next = True
+                state.next = tState.FETCH
+            elif state == tState.STORE:
+                addrymux0.next = True
+                addrymux1.next = True
+                ryBuf.next = True
+                enMAR.next = True
+                yield clk.posedge
+                preset()
+                op2Buf.next = True #the actual value to bus
+                save()
+                state.next = tState.FETCH
+            elif state == tState.ADR:
+                enReg.next = True
+                addrBuf.next = True
+            elif state == tState.PUSH:
+                addrymux1.next = True #decrement $14 by four
+                enReg.next = True
+                pmux.next = False #yep, false!
+                addrBuf.next = True
+                yield clk.posedge
+                addrymux0.next = True #put $14 as addr to bus
+                addrymux1.next = True
+                ryBuf.next = True
+                enMAR.next = True
+                yield clk.posedge
+                preset()
+                op2Buf.next = True
+                save()
+            elif state == tState.POP:
+                addrymux0.next = True #put $14 to the bus
+                addrymux1.next = True
+                addrBuf.next = True
+                load()
+                addrymux1.next = True
+                pmux.next = True #increment $14 by 4
+                enReg.next = True
+                addrBuf.next = True
+                state.next = tState.FETCH
+            elif state ==tState.CALL:
+                pcBuf.next = True
+                addrymux0.next = True
+                enReg.next = True
+                yield clk.posedge
+                pcmux0.next = True
+                pcmux1.next = True
+                enPc.next = True
+                state.next = tState.FETCH
+            elif state == tState.SWI:
+                pass
+            elif state == tState.HALT:
+                pass
             else:
-                state.next = tState.ILLEGAL # TODO add more
-        elif state == tState.FETCH:
-            pcBuf.next = True
-            load()
-            enIr.next = True
-            state.next = tState.DECODE
-        elif state == tState.DECODE:
-            enPC.next   = True
-            state._next = tState.UNKNOWN
-        elif state == tState.ALUOP:
-            aluBuf.next = True
-            enReg.next  = True
-            state.next = tState.FETCH
-        elif state == tState.JUMP:
-            enJump.next = True
-            enPC.next = True
-        elif state == tState.LOAD:
-            addrBuf.next = True
-            load()
-            enReg.next = True
-            state.next = tState.FETCH
-        elif state == tState.STORE:
-            addrymux0.next = True
-            addrymux1.next = True
-            ryBuf.next = True
-            enMAR.next = True
-            yield clk.posedge
-            preset()
-            op2Buf.next = True #the actual value to bus
-            save()
-            state.next = tState.FETCH
-        elif state == tState.ADR:
-            enReg.next = True
-            addrBuf.next = True
-        elif state == tState.PUSH:
-            addrymux1.next = True #decrement $14 by four
-            enReg.next = True
-            pmux.next = False #yep, false!
-            addrBuf.next = True
-            yield clk.posedge
-            addrymux0.next = True #put $14 as addr to bus
-            addrymux1.next = True
-            ryBuf.next = True
-            enMAR.next = True
-            yield clk.posedge
-            preset()
-            op2Buf.next = True
-            save()
-        elif state == tState.POP:
-            addrymux0.next = True #put $14 to the bus
-            addrymux1.next = True
-            addrBuf.next = True
-            load()
-            addrymux1.next = True
-            pmux.next = True #increment $14 by 4
-            enReg.next = True
-            addrBuf.next = True
-            state.next = tState.FETCH
-        elif state ==tState.CALL:
-            pcBuf.next = True
-            addrymux0.next = True
-            enReg.next = True
-            yield clk.posedge
-            pcmux0.next = True
-            pcmux1.next = True
-            enPC.next = True
-            state.next = tState.FETCH
-        elif state == tState.SWI:
-            pass
-        elif state == tState.HALT:
-            pass
-        else:
-            assert True == False
+                assert True == False
 
     return logic

@@ -41,7 +41,7 @@ def cpu(clk, addr,
     tState = enum('UNKNOWN', 'FETCH', 'DECODE', 'ALUOP', 'JUMP', 'LOAD', 'STORE', 'ADR', 'PUSH', 'POP', 'CALL', 'SWI', 'ILLEGAL', 'HALT')  # TODO add more
     state = Signal(tState.FETCH)
 
-    def preset():
+    def presetSignals():
         addrymux1.next = False
         addrymux0.next = False
         pmux.next = False
@@ -66,38 +66,38 @@ def cpu(clk, addr,
         mWe.next = False
         mOe.next = False
 
-    def load():
+    def loadFromRam():
         """Takes the addr from the bus and puts the value from the memory to the bus"""
         enMAR.next = True
         yield clk.posedge
-        preset()
+        presetSignals()
         mOe.next = True
         yield clk.posedge #TODO add delay for timing
-        preset()
+        presetSignals()
         mOe.next = True
         enMRR.next = True
         yield clk.posedge
-        preset()
+        presetSignals()
         MRRbuf.next = True
 
-    def save():
+    def saveToRam():
         """Takes the value from the bus and takes it to the addr. MAR must have the addr already"""
         enMDR.next = True
         yield clk.posedge
         enMDR.next  = True
         yield clk.posedge
-        preset()
+        presetSignals()
         MDRbuf.next = True
         mWe.next    = True
         yield clk.posedge #TODO add delay for timing
 
-    #always(clk.posedge)
-    #not possible, because of yields inside the functions
-    #therefore we emulate the always decorator
+    @instance
     def logic():
         while True:
-            yield clk.posedge
-            preset() #this is important!
+            yield clk.posedge #we emulate a @always(clk.posedge)
+
+
+            presetSignals() #this is important!
 
             if   state == tState.UNKNOWN: #TODO mir gefällt die Lösung mit dem unknown state nicht, mal gucken, ob ich das besser hinbekomme
                 if   addr[4:2] == 0b00:
@@ -122,12 +122,12 @@ def cpu(clk, addr,
                     state.next = tState.ILLEGAL # TODO add more
             elif state == tState.FETCH:
                 pcBuf.next = True
-                load()
+                loadFromRam()
                 enIr.next = True
                 state.next = tState.DECODE
             elif state == tState.DECODE:
                 enPc.next   = True
-                state._next = tState.UNKNOWN
+                state.next = tState.UNKNOWN
             elif state == tState.ALUOP:
                 aluBuf.next = True
                 enReg.next  = True
@@ -138,7 +138,7 @@ def cpu(clk, addr,
                 enPc.next = True
             elif state == tState.LOAD:
                 addrBuf.next = True
-                load()
+                loadFromRam()
                 enReg.next = True
                 state.next = tState.FETCH
             elif state == tState.STORE:
@@ -147,9 +147,9 @@ def cpu(clk, addr,
                 ryBuf.next = True
                 enMAR.next = True
                 yield clk.posedge
-                preset()
+                presetSignals()
                 op2Buf.next = True #the actual value to bus
-                save()
+                saveToRam()
                 state.next = tState.FETCH
             elif state == tState.ADR:
                 enReg.next = True
@@ -164,14 +164,14 @@ def cpu(clk, addr,
                 ryBuf.next = True
                 enMAR.next = True
                 yield clk.posedge
-                preset()
+                presetSignals()
                 op2Buf.next = True
-                save()
+                saveToRam()
             elif state == tState.POP:
                 addrymux0.next = True #put $14 to the bus
                 addrymux1.next = True
                 addr14Buf.next = True
-                load()
+                loadFromRam()
                 addrymux1.next = True
                 pmux.next = True #increment $14 by 4
                 enReg.next = True

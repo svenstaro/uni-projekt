@@ -5,26 +5,18 @@ from adder import *
 
 class DutClass():
     """Wrapper around DUT"""
-    def __init__(self, bitwidth=8):
+    def __init__(self):
         self.clk = Signal(bool(0))
         self.reset = ResetSignal(0, 1, True)
 
-        self.enabled, self.s1, self.s0 = [Signal(bool(0)) for _ in range(3)]
-        self.i10, self.i11, self.out = [Signal(intbv(0)[bitwidth:]) for _ in range(3)]
-
-        self.add = adder(self.out, Signal(intbv(2)[bitwidth:]), self.i10)
-        self.bitwidth = bitwidth
+        self.enabled, self.jumpunit, self.cpujump, self.op1 = [Signal(bool(0)) for _ in range(4)]
+        self.imm24 = Signal(intbv(0)[24:])
+        self.reg   = Signal(intbv(0)[32:])
+        self.out   = Signal(intbv(0)[32:])
 
     def Gens(self, trace = False):
-        args = [self.clk, self.reset, self.enabled,
-                Signal(intbv(0)[self.bitwidth:]), Signal(intbv(1)[self.bitwidth:]),
-                self.i10, self.i11, self.s1, self.s0, self.out,8]
-
-        """It's not connect like this:
-        00: always 0
-        01: always 1
-        10: self.out + 2
-        11: self.i11"""
+        args = [self.clk, self.reset, self.enabled, self.imm24, self.reg, self.jumpunit,
+                self.cpujump, self.op1, self.out]
 
         return traceSignals(programcounter, *args) if trace else programcounter(*args)
 
@@ -40,45 +32,30 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
     @instance
     def stimulus():
         dut_cl.reset.next = True
-        yield delay(4*clkfreq)
+        yield delay(3*clkfreq)
         dut_cl.reset.next = False
 
         yield verifyMethod(dut_cl, dut)
         raise StopSimulation
 
     dut = dut_cl.Gens(trace=trace)
-    return Simulation(dut, clkGen, dut_cl.add, stimulus)
+    return Simulation(dut, clkGen, stimulus)
 
 
 class TestPc(TestCase):
     def testCounting(self):
         def verify(cl, dut):
+            assert isinstance(cl, DutClass)
             cl.enabled.next = True
-            cl.s0.next = cl.s1.next = False
-            yield cl.clk.negedge
-            self.assertEquals(0, cl.out)
 
-            cl.s0.next = True
-            yield cl.clk.negedge
-            self.assertEquals(1, cl.out)
-
-            cl.s0.next = cl.s1.next = False
-            cl.reset.next = True
-            yield cl.clk.negedge
-            cl.reset.next = False
-            yield cl.clk.negedge
-            self.assertEquals(0, cl.out)
-
-            cl.s1.next = cl.s0.next = True
-            cl.i11.next = 2
-            yield cl.clk.negedge
-            self.assertEquals(2, cl.out)
-
-            cl.s1.next = True #check if the clk is doing something
-            cl.s0.next = False
-            pc = 2
+            pc = 0
+            cl.cpujump.next = False #check if the clk is doing something
             for i in range(64):
-                pc += 2
+                if i % 2 == 0:
+                    cl.jumpunit.next = True
+                else:
+                    cl.jumpunit.next = False #check if jumpunit is making any difference (it should not!)
+                pc += 4
                 yield cl.clk.negedge
                 self.assertEquals(pc, cl.out)
 
@@ -86,6 +63,19 @@ class TestPc(TestCase):
             for i in range(5):
                 yield cl.clk.negedge
                 self.assertEquals(pc, cl.out)
+
+            cl.enabled.next = True
+            cl.cpujump.next = True
+            cl.jumpunit.next = True
+            cl.op1.next = False
+            cl.reg.next = 178
+            yield cl.clk.negedge
+            self.assertEquals(178, cl.out)
+
+            cl.op1.next = True
+            cl.imm24.next = 22
+            yield  cl.clk.negedge
+            self.assertEquals(200, cl.out)
 
         genSim(verify).run()
 

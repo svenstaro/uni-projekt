@@ -33,12 +33,12 @@ def programcounter(clk, reset, enable, imm24, reg, jumpunit, cpujump, op1, out):
     def write():
         if enable:
             if (not cpujump) or (not jumpunit):
-                data.next = data + 4
+                data.next = intbv(data + 4)[32:]
             else: #cpujump == jumpunit == 1
                 if not op1:
                     data.next = reg
                 else:
-                    data.next = data + imm24 #possible because we use a modbv
+                    data.next = intbv(data + imm24)[32:] #possible because we use a modbv
 
     @always_comb
     def read():

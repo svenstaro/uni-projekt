@@ -4,7 +4,7 @@ def pseudoram(clk, we, oe, cs, addr, data_in, data_out, mem=[Signal(intbv(0)[32:
     """This is a pseudoram
     """
 
-    @always(clk.posegde)
+    @always(clk.posedge)
     def write():
         assert addr < len(mem)
         if cs and we:

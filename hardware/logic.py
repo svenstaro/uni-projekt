@@ -1,6 +1,26 @@
 from myhdl import *
 
-def contradiction(A, B, R):
+#unary funtction
+def identity(A, R):
+
+    @always_comb
+    def logic():
+        R.next = A
+
+    return logic
+
+def negation(A, R):
+
+    @always_comb
+    def logic():
+        R.next = ~A
+
+    return logic
+
+
+#binary function
+
+def false(A, B, R):
 
     @always_comb
     def logic():

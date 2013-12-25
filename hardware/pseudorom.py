@@ -1,6 +1,6 @@
 from myhdl import *
 
-def pseudorom(clk, we, oe, cs, addr, data_in, data_out, mem=[]):
+def pseudorom(oe, cs, addr, data_out, mem=[]):
     """This is a pseudorom
     """
     @always_comb

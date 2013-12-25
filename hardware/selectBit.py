@@ -6,6 +6,6 @@ def selectBit(A, R, bit=0):
     def logic():
         assert bit < len(A)
 
-        R.next = a[bit]
+        R.next = A[bit]
 
     return logic

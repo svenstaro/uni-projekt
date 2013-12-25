@@ -154,14 +154,13 @@ def cpu(clk, addr,
             elif state == tState.ADR:
                 enReg.next = True
                 addrBuf.next = True
-            elif state == tState.PUSH:
+            elif state == tState.PUSH: #TODO Push pop is maybe incorrect
                 addrymux1.next = True #decrement $14 by four
-                enReg.next = True
                 pmux.next = False #yep, false!
-                addrBuf.next = True
+                enReg.next = True
+                addr14Buf.next = True
                 yield clk.posedge
-                addrymux0.next = True #put $14 as addr to bus
-                addrymux1.next = True
+                addrymux1.next = True #put $14 as addr to bus
                 ryBuf.next = True
                 enMAR.next = True
                 yield clk.posedge
@@ -171,12 +170,12 @@ def cpu(clk, addr,
             elif state == tState.POP:
                 addrymux0.next = True #put $14 to the bus
                 addrymux1.next = True
-                addrBuf.next = True
+                addr14Buf.next = True
                 load()
                 addrymux1.next = True
                 pmux.next = True #increment $14 by 4
                 enReg.next = True
-                addrBuf.next = True
+                addr14Buf.next = True
                 state.next = tState.FETCH
             elif state ==tState.CALL:
                 pcBuf.next = True

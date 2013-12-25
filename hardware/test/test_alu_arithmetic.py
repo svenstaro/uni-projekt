@@ -8,25 +8,18 @@ from register import *
 class DutClass():
     """Wrapper around DUT"""
     def __init__(self):
-        self.zwe, self.nwe, self.cwe, self.vwe     = [Signal(bool(0)) for _ in range(4)]
-        self.zin, self.nin, self.cin, self.vin     = [Signal(bool(0)) for _ in range(4)]
-        self.zout, self.nout, self.cout, self.vout = [Signal(bool(0)) for _ in range(4)]
+        self.z, self.n, self.cin, self.v = [Signal(bool(0)) for _ in range(4)]
+        self.cout = Signal(bool(0))
 
         self.clk = Signal(bool(0))
         self.reset = ResetSignal(0,1,True)
 
         self.opc = Signal(intbv(0)[4:])
-        self.ups = Signal(bool(0))
         self.A, self.B, self.R = [Signal(intbv(0,-(2**31),2**31-1)) for _ in range(3)]
 
-        self.zero = register(self.clk,self.reset,self.zwe,self.zin,self.zout)
-        self.negative = register(self.clk,self.reset,self.nwe,self.nin,self.nout)
-        self.carry = register(self.clk,self.reset,self.cwe,self.cin,self.cout)
-        self.overflow = register(self.clk,self.reset,self.vwe,self.vin,self.vout)
-
     def Gens(self, trace = False):
-        args = [self.opc,self.ups,self.A,self.B,self.cout,self.R,
-                self.zin,self.nin,self.cin,self.vin]
+        args = [self.opc,self.A,self.B,self.cout,self.R,
+                self.z,self.n,self.cin,self.v]
 
         return traceSignals(alu, *args) if trace else alu(*args)
 

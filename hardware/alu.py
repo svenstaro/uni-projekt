@@ -1,12 +1,11 @@
 from myhdl import *
 
-def alu(opc, ups, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
+def alu(opc, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
     """This represents the ALU of the microcontroller.
 
     All Parameters are Signals as usual.
 
     opc (I4)    -- The opcode (must be a valid alu opcode)
-    ups (Ibool) -- Signal which says if to update the status flags
     A   (Obw)   -- First input
     B   (Obw)   -- Second input
     Cin (Ibool) -- Carry input
@@ -54,15 +53,14 @@ def alu(opc, ups, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
         elif opc == 0b1111: #ROR
             result = A << (bitwidth - B)
 
-        if ups: #update status flags
-            amsb = A[bitwidth-1]
-            bmsb = B[bitwidth-1]
-            rmsb = intbv(result)[bitwidth-1]
+        amsb = A[bitwidth-1]
+        bmsb = B[bitwidth-1]
+        rmsb = intbv(result)[bitwidth-1]
 
-            Z.next = result == 0
-            N.next = result < 0
-            C.next = intbv(result)[bitwidth]
-            V.next = (amsb == bmsb) and (amsb == (not rmsb))
+        Z.next = result == 0
+        N.next = result < 0
+        C.next = intbv(result)[bitwidth]
+        V.next = (amsb == bmsb) and (amsb == (not rmsb))
 
         Res.next = intbv(result)[bitwidth:].signed()
 

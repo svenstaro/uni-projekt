@@ -9,6 +9,7 @@ from mux import *
 from pc import *
 from pseudoram import *
 from pseudorom import *
+from selectBit import *
 from register import *
 from registerbank import *
 from tristate import *

@@ -31,6 +31,7 @@ def mux41(s1, s0, i00, i01, i10, i11, out):
 
     return logic
 
+
 def mux21(s, A, B, out):
     """Simple 2:1 multiplexer
 

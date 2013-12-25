@@ -17,6 +17,7 @@ def adder(A, B, S):
 
     return logic
 
+
 def adderC(A, B, cin, S, cout, bitwidth=32):
     """Simple fulladder with carryin and carryout
 

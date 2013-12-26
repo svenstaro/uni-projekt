@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from unittest import TestCase
-from myhdl import Simulation
+from myhdl import *
 from alu import *
 from register import *
 
@@ -15,7 +15,7 @@ class DutClass():
         self.reset = ResetSignal(0,1,True)
 
         self.opc = Signal(intbv(0)[4:])
-        self.A, self.B, self.R = [Signal(intbv(0,-(2**31),2**31-1)) for _ in range(3)]
+        self.A, self.B, self.R = [Signal(intbv(0)[32:]) for _ in range(3)]
 
     def Gens(self, trace = False):
         args = [self.opc,self.A,self.B,self.cout,self.R,
@@ -77,12 +77,12 @@ class TestAluArithmetic(TestCase):
             for opc, val in tests.iteritems():
                 for tup in val:
                     cl.opc.next = opc
-                    cl.A.next = tup[0]
-                    cl.B.next = tup[1]
+                    cl.A.next = intbv(tup[0])[32:]
+                    cl.B.next = intbv(tup[1])[32:]
                     cl.cout.next = tup[2]
                     yield delay(1)
                     #self.assertEquals(tup[3], cl.R, msg = "%s != %s (%s⊕%s⊕%s opc:%s) " % (tup[3],cl.R,cl.A,cl.B,cl.cout,bin(opc,4)))
-                    self.assertEquals(tup[3], cl.R)
+                    self.assertEquals(tup[3], cl.R.signed())
 
         genSim(verify).run()
 
@@ -108,7 +108,7 @@ class TestAluArithmetic(TestCase):
                     cl.A.next = tup[0]
                     cl.B.next = tup[1]
                     yield delay(1)
-                    self.assertEquals(tup[2], cl.R)
+                    self.assertEquals(tup[2], cl.R.signed())
 
         genSim(verify).run()
 
@@ -140,11 +140,11 @@ class TestAluArithmetic(TestCase):
             for opc, val in tests.iteritems():
                 for tup in val:
                     cl.opc.next = opc
-                    cl.A.next = tup[0]
-                    cl.B.next = tup[1]
+                    cl.A.next = intbv(tup[0])[32:]
+                    cl.B.next = intbv(tup[1])[32:]
                     yield delay(1)
                     #self.assertEquals(tup[2], cl.R, msg = "%s != %s (%s⊕%s opc:%s) " % (tup[2],cl.R,cl.A,cl.B,bin(opc,4)))
-                    self.assertEquals(tup[2], cl.R)
+                    self.assertEquals(tup[2], cl.R.signed())
 
         genSim(verify).run()
 

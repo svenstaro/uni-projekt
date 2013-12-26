@@ -54,7 +54,6 @@ def alu(opc, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
             result = ((intbv(a)[bitwidth+1:] & (2**bitwidth-1)) >> b)[bitwidth:] #TODO unhuebsch
         elif opc == 0b1111: #ROR
             result = a << (bitwidth + ~b + 1)
-            #pass
 
         amsb = A[bitwidth-1]
         bmsb = B[bitwidth-1]
@@ -65,6 +64,6 @@ def alu(opc, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
         C.next = intbv(result)[bitwidth]
         V.next = (amsb == bmsb) and (amsb == (not rmsb))
 
-        Res.next = intbv(result)[bitwidth:].signed()
+        Res.next = intbv(result)[bitwidth:]
 
     return logic

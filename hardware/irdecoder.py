@@ -25,7 +25,7 @@ def irdecoder(ir, aluop, dest, source, op1, op2, source2, imm24, imm16, sUp, pre
         aluop.next   = ir[25:21]
         dest.next    = ir[29:25]
         source.next  = ir[21:17]
-        op1.next     = ir[25]
+        op1.next     = ir[24]
         op2.next     = ir[16]
         source2.next = ir[4:0]
         imm24.next   = ir[24:0]

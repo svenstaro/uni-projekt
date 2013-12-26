@@ -13,7 +13,7 @@ def negation(A, R):
 
     @always_comb
     def logic():
-        R.next = ~A
+        R.next = not A
 
     return logic
 
@@ -130,7 +130,7 @@ def xnB(A, B, R):
     def logic():
         R.next = ~(~A & B)
 
-    return logicbi
+    return logic
 
 def orr(A, B, R):
 

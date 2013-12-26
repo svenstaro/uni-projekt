@@ -98,15 +98,17 @@ def cpu(clk, addr,
             presetSignals() #this is important!
 
             if   state == tState.UNKNOWN: #TODO mir gefällt die Lösung mit dem unknown state nicht, mal gucken, ob ich das besser hinbekomme
-                if   addr[4:2] == 0b00:
+                print "UNKOWN"
+                assert len(addr) == 5
+                if   addr[5:3] == 0b00:
                     state.next = tState.ALUOP
-                elif addr[4:2] == 0b01:
+                elif addr[5:3] == 0b01:
                     state.next = tState.JUMP
-                elif addr[4:1] == 0b100:
+                elif addr[5:2] == 0b100:
                     state.next = tState.LOAD
-                elif addr[4:1] == 0b101:
+                elif addr[5:2] == 0b101:
                     state.next = tState.STORE
-                elif addr[4:1] == 0b110:
+                elif addr[5:2] == 0b110:
                     state.next = tState.ADR
                 elif addr      == 0b11100:
                     state.next = tState.PUSH
@@ -119,6 +121,7 @@ def cpu(clk, addr,
                 else:
                     state.next = tState.ILLEGAL # TODO add more
             elif state == tState.FETCH:
+                print "FETCH"
                 pcBuf.next = True
                 enMAR.next = True
                 yield clk.posedge
@@ -134,17 +137,21 @@ def cpu(clk, addr,
                 enIr.next = True
                 state.next = tState.DECODE
             elif state == tState.DECODE:
+                print "DECODE"
                 enPc.next   = True
                 state.next = tState.UNKNOWN
             elif state == tState.ALUOP:
+                print "ALUOP"
                 aluBuf.next = True
                 enReg.next  = True
                 enSup.next  = True
                 state.next = tState.FETCH
             elif state == tState.JUMP:
+                print "JUMP"
                 enJump.next = True
                 enPc.next = True
             elif state == tState.LOAD:
+                print "LOAD"
                 addrBuf.next = True
                 enMAR.next = True
                 yield clk.posedge
@@ -160,6 +167,7 @@ def cpu(clk, addr,
                 enReg.next = True
                 state.next = tState.FETCH
             elif state == tState.STORE:
+                print "STORE"
                 addrymux0.next = True
                 addrymux1.next = True
                 ryBuf.next = True
@@ -177,9 +185,11 @@ def cpu(clk, addr,
                 yield clk.posedge #TODO add delay for timing
                 state.next = tState.FETCH
             elif state == tState.ADR:
+                print "ADR"
                 enReg.next = True
                 addrBuf.next = True
             elif state == tState.PUSH: #TODO Push pop is maybe incorrect
+                print "PUSH"
                 addrymux1.next = True #decrement $14 by four
                 pmux.next = False #yep, false!
                 enReg.next = True
@@ -200,6 +210,7 @@ def cpu(clk, addr,
                 mWe.next    = True
                 yield clk.posedge #TODO add delay for timing
             elif state == tState.POP:
+                print "POP"
                 addrymux0.next = True #put $14 to the bus
                 addrymux1.next = True
                 addr14Buf.next = True
@@ -220,6 +231,7 @@ def cpu(clk, addr,
                 addr14Buf.next = True
                 state.next = tState.FETCH
             elif state ==tState.CALL:
+                print "CALL"
                 pcBuf.next = True
                 addrymux0.next = True
                 enReg.next = True
@@ -228,8 +240,10 @@ def cpu(clk, addr,
                 enPc.next = True
                 state.next = tState.FETCH
             elif state == tState.SWI:
+                print "SWI"
                 pass
             elif state == tState.HALT:
+                print "HALT"
                 pass
             else:
                 assert True == False

@@ -38,11 +38,9 @@ def programcounter(clk, reset, enable, imm24, reg, cpucall,jumpunit, cpujump, op
             if not (cpucall or (cpujump and jumpunit)): #yeah, de morgan
                 data.next = intbv(data + 4)[32:]
             else: #cpujump == jumpunit == 1
-                print 'peter'
                 if not op1:
                     data.next = reg
                 else:
-                    print 'PC: ' + str(data + imm24.signed())
                     data.next = intbv(data + imm24.signed())[32:]
 
     @always_comb

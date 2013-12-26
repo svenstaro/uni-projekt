@@ -9,13 +9,13 @@ class DutClass():
         self.clk = Signal(bool(0))
         self.reset = ResetSignal(0, 1, True)
 
-        self.enabled, self.jumpunit, self.cpujump, self.op1 = [Signal(bool(0)) for _ in range(4)]
+        self.enabled, self.cpucall, self.jumpunit, self.cpujump, self.op1 = [Signal(bool(0)) for _ in range(5)]
         self.imm24 = Signal(intbv(0)[24:])
         self.reg   = Signal(intbv(0)[32:])
         self.out   = Signal(intbv(0)[32:])
 
     def Gens(self, trace = False):
-        args = [self.clk, self.reset, self.enabled, self.imm24, self.reg, self.jumpunit,
+        args = [self.clk, self.reset, self.enabled, self.imm24, self.reg, self.cpucall, self.jumpunit,
                 self.cpujump, self.op1, self.out]
 
         return traceSignals(programcounter, *args) if trace else programcounter(*args)
@@ -31,9 +31,9 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
 
     @instance
     def stimulus():
-        dut_cl.reset.next = True
-        yield delay(3*clkfreq)
-        dut_cl.reset.next = False
+        #dut_cl.reset.next = True
+        #yield delay(3*clkfreq)
+        #dut_cl.reset.next = False
 
         yield verifyMethod(dut_cl, dut)
         raise StopSimulation

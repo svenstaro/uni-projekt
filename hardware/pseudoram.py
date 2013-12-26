@@ -4,8 +4,6 @@ def pseudoram(clk, we, oe, cs, addr, data_in, data_out, depth=128):
     """This is a pseudoram
     """
 
-    out = data_out.driver()
-
     mem = [Signal(intbv(0)[32:]) for _ in range(depth)]
 
     @always(clk.posedge)
@@ -19,6 +17,6 @@ def pseudoram(clk, we, oe, cs, addr, data_in, data_out, depth=128):
         assert addr < len(mem)
 
         if cs and oe:
-            out.next = mem[int(addr)]
+            data_out.next = mem[int(addr)]
 
     return write, read

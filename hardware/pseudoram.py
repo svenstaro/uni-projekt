@@ -9,15 +9,15 @@ def pseudoram(clk, we, oe, cs, addr, data_in, data_out, depth=128):
     @always(clk.posedge)
     def write():
         if cs and we:
-            assert addr < len(mem)
+            assert addr//4 < len(mem)
 
-            mem[int(addr)].next = data_in
+            mem[int(addr)//4].next = data_in
 
     @always_comb
     def read():
         if cs and oe:
-            assert addr < len(mem)
-            
-            data_out.next = mem[int(addr)]
+            assert addr//4 < len(mem)
+
+            data_out.next = mem[int(addr)//4]
 
     return write, read

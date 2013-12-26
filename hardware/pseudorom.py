@@ -7,8 +7,8 @@ def pseudorom(oe, cs, addr, data_out, mem):
     @always_comb
     def read():
         if cs and oe:
-            assert addr < len(mem)
+            assert int(addr)//4 < len(mem)
 
-            data_out.next = mem[int(addr)]
+            data_out.next = mem[int(addr)//4]
 
     return read

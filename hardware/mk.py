@@ -32,11 +32,12 @@ def mk(clk, reset, romContent=()):
     enMRR, enMAR, enMDR, MRRbuf, MDRbuf, mWe, mOe = [Signal(bool(0)) for _ in range(7)]
 
     def createCPU():
-        return cpu(clk, reset, irPrefix,
+        Cpu = cpu(clk, reset, irPrefix,
                   addrymux1, addrymux0, pmux,
                   bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC,
                   enIr, enPc, enReg, enJump, enCall, enSup,
                   enMRR, enMDR, enMAR, MRRbuf, MDRbuf, mWe, mOe)
+        return Cpu
 
 
     ### statusflags
@@ -170,7 +171,7 @@ def mk(clk, reset, romContent=()):
         outputE, outputW, msbSig, msbSigI= [Signal(bool(0)) for _ in range(4)]
 
         msbSignSelector = selectBit(memaddr, msbSig, 31)
-        msbSignNegate = negation1(msbSig, msbSigI)
+        msbSignNegate = negation(msbSig, msbSigI)
 
         ffmOe = dff(clk, mOe, outputE)
         ffmWe = dff(clk, mWe, outputW)

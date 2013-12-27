@@ -12,7 +12,7 @@ labelPattern = re.compile("^(?P<label>[a-zA-Z._][a-zA-Z0-9._-]*)$")
 def label2immediate(arg, state):
     labelname = labelPattern.match(arg).group('label')
     labelpos = state.labels[labelname]
-    diff = labelpos - state.position
+    diff = labelpos - state.position - 4
     return diff
 
 

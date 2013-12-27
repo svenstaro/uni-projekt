@@ -8,3 +8,4 @@ from .zero import Zero
 from .ignore import Ignore
 from .const import Const
 from .opcodes import Opcodes
+from .jumpLabelOperand import JumpLabelOperand

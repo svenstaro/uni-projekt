@@ -1,5 +1,5 @@
 from .operation import Operation
-from operands import LabelOperand, Opcodes
+from operands import JumpLabelOperand, Opcodes
 
 
 class JumpOperation(Operation):
@@ -32,4 +32,4 @@ class JumpOperation(Operation):
         opcodes["j" + name] = "01" + code
 
 
-    structure = [Opcodes(opcodes), LabelOperand]
+    structure = [Opcodes(opcodes), JumpLabelOperand]

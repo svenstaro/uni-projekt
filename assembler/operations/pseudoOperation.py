@@ -56,7 +56,7 @@ def PseudoOperations():
 
     ops = [("ret", "jmp $15", JumpOperation),
 
-           ("halt", "jmp #0", JumpOperation),
+           ("halt", "jmp #-4", JumpOperation),
 
            ("nop", "add $0, $0, $0", AluOperation),
 

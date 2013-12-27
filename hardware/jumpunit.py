@@ -25,6 +25,6 @@ def jumpunit(code, Z, N, C, V, out):
         if code[0]:
             result = not result
 
-        out.next = result #TODO here it crashs. If I write int(result) everything works fine :/
+        out.next = bool(result)
 
     return logic

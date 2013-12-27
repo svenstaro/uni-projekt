@@ -13,7 +13,7 @@ def adder(A, B, S):
 
     @always_comb
     def logic():
-        S.next = intbv(A.signed() + B.signed())[32:]
+        S.next = A.signed() + B.signed()
 
     return logic
 
@@ -32,7 +32,7 @@ def adderC(A, B, cin, S, cout, bitwidth=32):
 
     @always_comb
     def logic():
-        S.next = intbv(A.signed() + B.signed())[32:]
+        S.next = A.signed() + B.signed()
         cout.next = intbv(A.signed() + B.signed())[bitwidth]
 
     return logic

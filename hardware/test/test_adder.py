@@ -9,9 +9,9 @@ class DutClass():
         self.bitwidth = bitwidth
 
     def Gens(self, trace = False):
-        args = [self.a, self.b, self.s]
+        self.args = [self.a, self.b, self.s]
 
-        return traceSignals(adder, *args) if trace else adder(*args)
+        return traceSignals(adder, *self.args) if trace else adder(*self.args)
 
 def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
     """ Generates a Simulation Object """
@@ -36,6 +36,12 @@ class AdderTest(TestCase):
             yield delay(1)
 
             self.assertEquals(8, cl.s)
+
+        genSim(verify).run()
+
+    def testVHDL(self):
+        def verify(cl, dut):
+            self.assertEquals(0, conversion.analyze(adder, *cl.args))
 
         genSim(verify).run()
 

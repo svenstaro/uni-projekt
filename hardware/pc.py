@@ -1,6 +1,6 @@
 from myhdl import *
 
-def programcounter(clk, reset, enable, imm24, reg, cpucall,jumpunit, cpujump, op1, out):
+def programcounter(clk, reset, enable, imm24, reg, cpucall, jumpunit, cpujump, op1, outs):
     """Represents the programcounter (PC)
 
     All parameters are Signals as usual
@@ -36,15 +36,15 @@ def programcounter(clk, reset, enable, imm24, reg, cpucall,jumpunit, cpujump, op
     def write():
         if enable:
             if not (cpucall or (cpujump and jumpunit)): #yeah, de morgan
-                data.next = intbv(data + 4)[32:]
+                data.next = data + 4
             else: #cpujump == jumpunit == 1
                 if not op1:
                     data.next = reg
                 else:
-                    data.next = intbv(data + imm24.signed())[32:]
+                    data.next = data + imm24.signed()
 
     @always_comb
     def read():
-        out.next = data
+        outs.next = data
 
     return write, read

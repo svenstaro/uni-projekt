@@ -2,46 +2,48 @@
 #  
 [name] PC
 [components]
-hades.models.io.Ipin pcBuf 10200 2550 @N 1001 null 0
-hades.models.io.Ipin jmpunit 450 -7200 @N 1001 null 0
+hades.models.io.Ipin pcBuf 10200 2550 @N 1001  0
+hades.models.io.Ipin jmpunit 450 -7200 @N 1001  0
 hades.models.rtlib.io.SmallConstant Four 14850 -10950 @N 1001 32 00000000000000000000000000000100_B 1.0E-8
 hades.models.rtlib.io.IpinVector RegY 450 -8700 @N 1001 32 00000000000000000000000000000101_B 1.0E-9 0
 hades.models.io.Ipin clk 450 -1050 @N 1001 0 0
-hades.models.io.Ipin enable 450 -2250 @N 1001 null 0
+hades.models.io.Ipin enable 450 -2250 @N 1001  0
 hades.models.rtlib.io.IpinVector Imm24 450 -10350 @N 1001 32 00000000000000000000000000001010_B 1.0E-9 0
-hades.models.io.Ipin op1 450 -3450 @N 1001 null 0
-hades.models.io.PowerOnReset i8 450 150 @N 1001 0.005 0.005 null
+hades.models.io.Ipin op1 450 -3450 @N 1001  0
+hades.models.io.PowerOnReset i8 450 150 @N 1001 0.005 0.005 
 hades.models.gates.InvSmall i7 1050 -4050 @N 1001 5.0E-9
 hades.models.rtlib.io.OpinVector bus 19800 3600 @N 1001 32 1.0E-9 0
-hades.models.gates.And2 i6 3300 -7800 @N 1001 1.0E-8
+hades.models.gates.And2 i6 1200 -7800 @N 1001 1.0E-8
 hades.models.gates.InvSmall i5 1050 -450 @N 1001 5.0E-9
 hades.models.rtlib.muxes.Mux41 i4 9600 -5250 @N 1001 32 00000000000000000000000000000100_B 1.0E-8
 hades.models.rtlib.muxes.TriBuf i3 11400 1950 @N 1001 32 ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ_B 1.0E-8
-hades.models.gates.And2 i2 3300 -5250 @N 1001 1.0E-8
+hades.models.gates.Or2 i2 5400 -5850 @N 1001 1.0E-8
 hades.models.rtlib.arith.Add i1 9000 -9300 @N 1001 32 00000000000000000000000000001010_B 1.0E-8
 hades.models.rtlib.arith.Add i0 14250 -9300 @N 1001 32 00000000000000000000000000000100_B 1.0E-8
 hades.models.rtlib.register.RegRE PC 10200 -2250 @N 1001 32 00000000000000000000000000000000_B 1.0E-8
-hades.models.io.Ipin cpujmp 450 -5250 @N 1001 null 0
+hades.models.io.Ipin cpucall 450 -4650 @N 1001  0
+hades.models.io.Ipin cpujmp 450 -6000 @N 1001  0
 [end components]
 [signals]
 hades.signals.SignalStdLogic1164 n9 2 enable Y PC ENA 3 2 450 -2250 9150 -2250 2 9150 -2250 9150 -1650 2 9150 -1650 10200 -1650 0 
 hades.signals.SignalStdLogic1164 n8 2 clk Y PC CLK 1 2 450 -1050 10200 -1050 0 
 hades.signals.SignalStdLogic1164 n7 2 i5 Y PC NR 3 2 2850 150 9150 150 2 9150 150 9150 -450 2 9150 -450 10200 -450 0 
 hades.signals.SignalStdLogic1164 n6 2 i8 nreset i5 A 1 2 450 150 1050 150 0 
-hades.signals.SignalStdLogicVector n19 32 2 i3 Y bus A 7 2 19800 3600 19200 3600 2 19200 3600 18900 4200 2 18900 4200 18900 4800 2 12000 3150 12000 4800 2 12000 4800 5700 4800 2 12000 4800 18900 4800 2 21000 4800 18900 4800 2 18900 4800 12000 4800 
 hades.signals.SignalStdLogic1164 n5 2 pcBuf Y i3 S 1 2 10200 2550 11400 2550 0 
+hades.signals.SignalStdLogicVector n19 32 2 i3 Y bus A 7 2 19800 3600 19200 3600 2 19200 3600 18900 4200 2 18900 4200 18900 4800 2 12000 3150 12000 4800 2 12000 4800 5700 4800 2 12000 4800 18900 4800 2 21000 4800 18900 4800 2 18900 4800 12000 4800 
+hades.signals.SignalStdLogic1164 n4 2 jmpunit Y i6 A 1 2 450 -7200 1200 -7200 0 
 hades.signals.SignalStdLogicVector n18 32 2 RegY Y i4 A3 6 2 10200 -5250 10200 -6600 2 10200 -6600 8550 -6600 2 8550 -6600 8400 -6600 2 8400 -6600 8400 -8700 2 8400 -8700 7800 -8700 2 7800 -8700 450 -8700 0 
 hades.signals.SignalStdLogicVector n3 32 4 PC Q i3 A i0 B i1 B 16 2 12000 900 12000 150 2 12000 1950 12000 900 2 12000 900 18300 900 2 18300 900 20100 -450 2 20100 -450 20100 -10050 2 20100 -10050 19500 -10650 2 19500 -10650 18600 -10650 2 18600 -10650 17850 -10200 2 17850 -10200 17850 -9300 2 20100 -10050 20100 -12000 2 20100 -12000 19500 -12750 2 19500 -12750 14250 -12750 2 14250 -12750 13650 -12750 2 13650 -12750 13350 -12750 2 13350 -12750 12600 -12150 2 12600 -12150 12600 -9300 2 12000 900 20100 -10050 
 hades.signals.SignalStdLogicVector n17 32 3 i0 SUM i4 A1 i4 A0 5 2 12600 -5250 12600 -5850 2 12600 -5850 13800 -5850 2 16650 -6900 16650 -5850 2 16650 -5850 13800 -5850 2 13800 -5850 13800 -5250 1 13800 -5850 
 hades.signals.SignalStdLogicVector n2 32 2 i4 Y PC D 2 2 12000 -3450 12000 -2400 2 12000 -2400 12000 -2250 0 
 hades.signals.SignalStdLogicVector n16 32 2 Imm24 Y i1 A 3 2 450 -10350 9750 -10350 2 9750 -10350 10200 -10050 2 10200 -10050 10200 -9300 0 
-hades.signals.SignalStdLogic1164 n1 2 i7 Y i2 B 1 2 2850 -3450 3300 -3450 0 
+hades.signals.SignalStdLogic1164 n1 2 i7 Y i4 S0 4 2 2850 -3450 3300 -3450 2 3300 -3450 9300 -3450 2 9300 -3450 9300 -4050 2 9300 -4050 9600 -4050 0 
 hades.signals.SignalStdLogic1164 n15 2 op1 Y i7 A 1 2 1050 -3450 450 -3450 0 
+hades.signals.SignalStdLogic1164 n14 2 cpucall Y i2 B 3 2 450 -4650 5100 -4650 2 5100 -4650 5100 -4050 2 5100 -4050 5400 -4050 0 
 hades.signals.SignalStdLogicVector n0 32 2 Four Y i0 A 1 2 15450 -9750 15450 -9300 0 
-hades.signals.SignalStdLogic1164 n14 3 cpujmp Y i6 B i2 A 5 2 450 -5250 2400 -5250 2 2400 -5250 2400 -6000 2 2400 -6000 3300 -6000 2 2400 -5250 2400 -4650 2 2400 -4650 3300 -4650 1 2400 -5250 
-hades.signals.SignalStdLogic1164 n13 2 i6 Y i4 S1 3 2 9600 -4650 7650 -4650 2 7650 -4650 7650 -6600 2 7650 -6600 6900 -6600 0 
-hades.signals.SignalStdLogic1164 n12 2 i2 Y i4 S0 1 2 6900 -4050 9600 -4050 0 
-hades.signals.SignalStdLogic1164 n11 2 jmpunit Y i6 A 1 2 450 -7200 3300 -7200 0 
+hades.signals.SignalStdLogic1164 n13 2 i6 Y i2 A 3 2 4800 -6600 5100 -6600 2 5100 -6600 5100 -5250 2 5100 -5250 5400 -5250 0 
+hades.signals.SignalStdLogic1164 n12 2 i2 Y i4 S1 1 2 9600 -4650 9000 -4650 0 
+hades.signals.SignalStdLogic1164 n11 2 cpujmp Y i6 B 2 2 1200 -6000 600 -6000 2 600 -6000 450 -6000 0 
 hades.signals.SignalStdLogicVector n10 32 2 i1 SUM i4 A2 1 2 11400 -6900 11400 -5250 0 
 [end signals]
 [end]

@@ -57,16 +57,17 @@ class Cpu(object):
     def tick(self):
         self.counter += 1
         command = fetchInstruction(self.rom, self.pc)
-        if command == 0x43000000:
+        if command == 0x43fffffc:
             return False
-        self.pc = self.execute(command)
+        self.execute(command)
+        self.pc += 4
         return True
 
     def execute(self, command):
         if command & 0xC0000000 == 0x00000000:
             self.executeAluOp(command)
         elif command & 0xC0000000 == 0x40000000:
-            return self.executeJumpOp(command)
+            self.executeJumpOp(command)
         elif command & 0xC0000000 == 0x80000000:
             self.executeMemOp(command)
         elif command & 0xE0000000 == 0xC0000000:
@@ -74,12 +75,11 @@ class Cpu(object):
         elif command & 0xF0000000 == 0xE0000000:
             self.executeStackOperation(command)
         elif command & 0xF8000000 == 0xF0000000:
-            return self.executeCallOp(command)
+            self.executeCallOp(command)
         elif command & 0xF8000000 == 0xF8000000:
             self.executeSwiOp(command)
         else:
             pass  # TODO: Invalid opcode
-        return self.pc + 4
 
     def executeAluOp(self, command):
         opcode, statusFlag, rdest, rsrc1, op2 = getParamsAlu(command)
@@ -115,15 +115,14 @@ class Cpu(object):
     def executeJumpOp(self, command):
         condition = (command & 0x3E000000) >> 25
         if conditionIsMet(self.flags, condition):
-            return self.calculateJump(command)
-        return self.pc + 4
+            self.doJump(command)
 
-    def calculateJump(self, command):
+    def doJump(self, command):
         op2 = getParamsJump(command)
         r, dest = op2decode(op2, 25, self.pc)
         if r == 1:
-            dest = self.register[dest]
-        return dest
+            dest = self.register[dest] - 4
+        self.pc = dest
 
     def executeSwiOp(self, command):
         op2 = command & 0x01FFFFFF
@@ -135,12 +134,12 @@ class Cpu(object):
         elif src == 1:
             value = self.register[1]
             if value & high == high:
-                value -= 2 **32
+                value -= 2 ** 32
             os.write(1, str(value)+'\n')
 
     def executeCallOp(self, command):
         self.register[15] = (self.pc + 4) & mask
-        return self.calculateJump(command)
+        self.doJump(command)
 
     def executeAdrOp(self, command):
         rdest = (command >> 25) & 0xF

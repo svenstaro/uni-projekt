@@ -1,6 +1,6 @@
 from myhdl import *
 
-def jumpunit(code, Z, N, C, V, out):
+def jumpunit(code, Z, N, C, V, R):
     """This jumpunit determines if the condition for jumping is met
 
     code (I5) -- The inputcode
@@ -8,23 +8,23 @@ def jumpunit(code, Z, N, C, V, out):
     N    (I1) -- Negative flag
     C    (I1) -- Carry flag
     V    (I1) -- Overflow flag
-    out  (O1) -- The result
+    R    (O1) -- The result
     """
 
     @always_comb
     def logic():
         result = False
         if code[4]:
-            result |= Z
+            result = result or bool(Z)
         if code[3]:
-            result |= N
+            result = result or bool(N)
         if code[2]:
-            result |= C
+            result = result or bool(C)
         if code[1]:
-            result |= V
+            result = result or bool(V)
         if code[0]:
             result = not result
 
-        out.next = bool(result)
+        R.next = result
 
     return logic

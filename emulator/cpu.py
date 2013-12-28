@@ -59,8 +59,8 @@ class Cpu(object):
         command = fetchInstruction(self.rom, self.pc)
         if command == 0x43fffffc:
             return False
-        self.execute(command)
         self.pc += 4
+        self.execute(command)
         return True
 
     def execute(self, command):
@@ -121,7 +121,7 @@ class Cpu(object):
         op2 = getParamsJump(command)
         r, dest = op2decode(op2, 25, self.pc)
         if r == 1:
-            dest = self.register[dest] - 4
+            dest = self.register[dest]
         self.pc = dest
 
     def executeSwiOp(self, command):
@@ -138,7 +138,7 @@ class Cpu(object):
             os.write(1, str(value)+'\n')
 
     def executeCallOp(self, command):
-        self.register[15] = (self.pc + 4) & mask
+        self.register[15] = self.pc & mask
         self.doJump(command)
 
     def executeAdrOp(self, command):

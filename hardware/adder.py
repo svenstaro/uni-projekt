@@ -8,31 +8,10 @@ def adder(A, B, S):
     A (I)   -- First input
     B (I)   -- Second input
     S (O)   -- Result A+B
-
     """
 
     @always_comb
     def logic():
-        S.next = A.signed() + B.signed()
-
-    return logic
-
-
-def adderC(A, B, cin, S, cout, bitwidth=32):
-    """Simple fulladder with carryin and carryout
-
-    All parameters are Signals as usual
-
-    A (I)   -- First input
-    B (I)   -- Second input
-    cin     -- Carry in
-    S (O)   -- Result A+B
-    cout    -- Carry out
-    """
-
-    @always_comb
-    def logic():
-        S.next = A.signed() + B.signed()
-        cout.next = intbv(A.signed() + B.signed())[bitwidth]
+        S.next = A + B
 
     return logic

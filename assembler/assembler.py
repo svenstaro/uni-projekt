@@ -104,6 +104,10 @@ def getTextOfEncodedCommand(bytes):
     binary = ""
     for byte in bytes:
         binary += bin(ord(byte))[2:].zfill(8)
+    return getTextOfCommand(binary)
+
+
+def getTextOfCommand(binary):
     try:
         return parseCommand(binary, getOperations(), encode=False).fromBinary(binary, None).text
     except:

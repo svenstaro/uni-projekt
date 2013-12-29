@@ -1,6 +1,6 @@
 from myhdl import *
 
-def pseudorom(oe, cs, addr, data_out, mem):
+def pseudorom(oe, cs, addr, dout, mem):
     """This is a pseudorom
     """
 
@@ -8,7 +8,7 @@ def pseudorom(oe, cs, addr, data_out, mem):
     def read():
         if cs and oe:
             assert int(addr)//4 < len(mem)
-
-            data_out.next = mem[int(addr)//4]
+            
+            dout.next = mem[int(addr)//4]
 
     return read

@@ -1,5 +1,5 @@
 from .operation import Operation
-from operands import LabelOperand, Opcodes
+from ..operands import LabelOperand, Opcodes
 
 
 class JumpOperation(Operation):

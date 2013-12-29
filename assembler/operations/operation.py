@@ -1,9 +1,9 @@
 import re
 
-from structure import Structure
-from errors import EncodingError
-from operands import Ignore, Operand
-from operands.opcodes import OpcodesBaseClass
+from ..structure import Structure
+from ..errors import EncodingError
+from ..operands import Ignore, Operand
+from ..operands.opcodes import OpcodesBaseClass
 
 
 class Operation(Structure):

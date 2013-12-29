@@ -1,5 +1,5 @@
 from .operation import Operation
-from operands import Register, AluOperand2, Const, Opcodes
+from ..operands import Register, AluOperand2, Const, Opcodes
 
 
 class AluOperation(Operation):

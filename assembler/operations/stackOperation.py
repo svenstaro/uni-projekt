@@ -1,5 +1,5 @@
 from .operation import Operation
-from operands import Zero, Register, Opcodes
+from ..operands import Zero, Register, Opcodes
 
 
 class StackOperation(Operation):

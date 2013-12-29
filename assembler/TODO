@@ -2,6 +2,8 @@ TODO:
  - Test cases!
  - Decode: Insert labels to improve readability. (jne #-8 sucks!)
  - Support multiple input files
- - Support .globl (Global labels across file boundaries)
+   * Support .globl (Global labels across file boundaries)
  - Improve error handling
  - Improve error messages
+ - Macro support
+ - Standard library

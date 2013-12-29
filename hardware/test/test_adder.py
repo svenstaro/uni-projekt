@@ -39,10 +39,4 @@ class AdderTest(TestCase):
 
         genSim(verify).run()
 
-    def testVHDL(self):
-        def verify(cl, dut):
-            self.assertEquals(0, conversion.analyze(adder, *cl.args))
-
-        genSim(verify).run()
-
 # vim: set ft=python:

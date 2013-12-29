@@ -18,10 +18,10 @@ class DutClass():
         self.A, self.B, self.R = [Signal(intbv(0)[32:]) for _ in range(3)]
 
     def Gens(self, trace = False):
-        args = [self.opc,self.A,self.B,self.cout,self.R,
+        self.args = [self.opc,self.A,self.B,self.cout,self.R,
                 self.z,self.n,self.cin,self.v]
 
-        return traceSignals(alu, *args) if trace else alu(*args)
+        return traceSignals(alu, *self.args) if trace else alu(*self.args)
 
 def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
     """ Generates a Simulation Object """
@@ -108,6 +108,7 @@ class TestAluArithmetic(TestCase):
                     cl.A.next = tup[0]
                     cl.B.next = tup[1]
                     yield delay(1)
+                    #self.assertEquals(tup[2], cl.R, msg = "%s != %s (%s⊕%s opc:%s) " % (tup[2],cl.R,cl.A,cl.B,bin(opc,4)))
                     self.assertEquals(tup[2], cl.R.signed())
 
         genSim(verify).run()
@@ -143,8 +144,8 @@ class TestAluArithmetic(TestCase):
                     cl.A.next = intbv(tup[0])[32:]
                     cl.B.next = intbv(tup[1])[32:]
                     yield delay(1)
-                    #self.assertEquals(tup[2], cl.R, msg = "%s != %s (%s⊕%s opc:%s) " % (tup[2],cl.R,cl.A,cl.B,bin(opc,4)))
-                    self.assertEquals(tup[2], cl.R.signed())
+                    self.assertEquals(tup[2], cl.R.signed(), msg = "%s != %s (%s⊕%s opc:%s) " % (tup[2],cl.R,cl.A,cl.B,bin(opc,4)))
+                    #self.assertEquals(tup[2], cl.R)
 
         genSim(verify).run()
 

@@ -14,10 +14,10 @@ class DutClass():
         self.numChannel = numChannel
 
     def Gens(self, trace = False):
-        args = [self.clk,self.we,self.addrX,self.addrY,self.addrZ,
+        self.args = [self.clk,self.we,self.addrX,self.addrY,self.addrZ,
                 self.X,self.Y,self.Z,self.numChannel,self.bitwidth]
 
-        return traceSignals(registerbank, *args) if trace else registerbank(*args)
+        return traceSignals(registerbank, *self.args) if trace else registerbank(*self.args)
 
 
 def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):

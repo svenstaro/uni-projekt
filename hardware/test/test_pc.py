@@ -15,10 +15,11 @@ class DutClass():
         self.imm24 = Signal(intbv(0)[24:])
         self.reg   = Signal(intbv(0)[32:])
         self.out   = Signal(intbv(0)[32:])
-        self.args = [self.clk, self.reset, self.enabled, self.imm24, self.reg, self.cpucall, self.jumpunit,
-                self.cpujump, self.op1, self.out]
 
     def Gens(self, trace = False):
+        self.args = [self.clk, self.reset, self.enabled, self.imm24, self.reg, self.cpucall, self.jumpunit,
+                     self.cpujump, self.op1, self.out]
+
         return traceSignals(programcounter, *self.args) if trace else programcounter(*self.args)
 
 def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):

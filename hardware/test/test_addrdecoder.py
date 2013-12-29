@@ -2,6 +2,7 @@ from unittest import TestCase
 from myhdl import *
 from addrdecoder import *
 
+
 class DutClass():
     """Wrapper around DUT"""
     def __init__(self):
@@ -9,9 +10,9 @@ class DutClass():
         self.enRam, self.enRom = [Signal(bool(0)) for _ in range(2)]
 
     def Gens(self, trace = False):
-        args = [self.addr,self.enRam,self.enRom,8]
+        self.args = [self.addr,self.enRam,self.enRom,8]
 
-        return traceSignals(addrdecoder, *args) if trace else addrdecoder(*args)
+        return traceSignals(addrdecoder, *self.args) if trace else addrdecoder(*self.args)
 
 def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
     """ Generates a Simulation Object """

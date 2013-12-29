@@ -13,9 +13,9 @@ class DutClass():
         self.imm16 = Signal(intbv(0)[16:])
 
     def Gens(self, trace = False):
-        args = [self.ir,self.aluop,self.dest,self.source,self.op1,
+        self.args = [self.ir,self.aluop,self.dest,self.source,self.op1,
                 self.op2,self.source2,self.imm24,self.imm16,self.statusUp,self.prefix,self.jumpOp]
-        return traceSignals(irdecoder, *args) if trace else irdecoder(*args)
+        return traceSignals(irdecoder, *self.args) if trace else irdecoder(*self.args)
 
 def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
     """ Generates a Simulation Object """

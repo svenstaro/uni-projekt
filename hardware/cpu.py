@@ -92,183 +92,169 @@ def cpu(clk, reset, addr,
         mWe.next    = True
         yield clk.posedge #TODO add delay for timing
 
-    def logic():
-        presetSignals() #this is important!
-
-        if   state == tState.UNKNOWN: #TODO mir gefällt die Lösung mit dem unknown state nicht, mal gucken, ob ich das besser hinbekomme
-            print "UNKOWN"
-            assert len(addr) == 5
-            print bin(addr, width=5)
-            if   addr[5:3] == 0b00:
-                state.next = tState.ALUOP
-            elif addr[5:3] == 0b01:
-                state.next = tState.JUMP
-            elif addr[5:2] == 0b100:
-                state.next = tState.LOAD
-            elif addr[5:2] == 0b101:
-                state.next = tState.STORE
-            elif addr[5:2] == 0b110:
-                state.next = tState.ADR
-            elif addr      == 0b11100:
-                state.next = tState.PUSH
-            elif addr      == 0b11101:
-                state.next = tState.POP
-            elif addr      == 0b11110:
-                state.next = tState.CALL
-            elif addr      == 0b11111:
-                state.next = tState.SWI
-            else:
-                state.next = tState.ILLEGAL # TODO add more
-        elif state == tState.FETCH:
-            print "FETCH"
-            pcBuf.next = True
-            enMAR.next = True
-            yield clk.posedge
-            presetSignals()
-            mOe.next = True
-            yield clk.posedge #TODO add delay for timing
-            presetSignals()
-            mOe.next = True
-            enMRR.next = True
-            yield clk.posedge
-            presetSignals()
-            MRRbuf.next = True
-            enIr.next = True
-            state.next = tState.DECODE
-        elif state == tState.DECODE:
-            print "DECODE"
-            enPc.next   = True
-            state.next = tState.UNKNOWN
-        elif state == tState.ALUOP:
-            print "ALUOP"
-            aluBuf.next = True
-            enReg.next  = True
-            enSup.next  = True
-            state.next = tState.FETCH
-        elif state == tState.JUMP:
-            print "JUMP"
-            enJump.next = True
-            enPc.next = True
-            state.next = tState.FETCH
-        elif state == tState.LOAD:
-            print "LOAD"
-            addrBuf.next = True
-            enMAR.next = True
-            yield clk.posedge
-            presetSignals()
-            mOe.next = True
-            yield clk.posedge #TODO add delay for timing
-            presetSignals()
-            mOe.next = True
-            enMRR.next = True
-            yield clk.posedge
-            presetSignals()
-            MRRbuf.next = True
-            enReg.next = True
-            state.next = tState.FETCH
-        elif state == tState.STORE:
-            print "STORE"
-            addrymux0.next = True
-            addrymux1.next = True
-            ryBuf.next = True
-            enMAR.next = True
-            yield clk.posedge
-            presetSignals()
-            op2Buf.next = True #the actual value to bus
-            enMDR.next = True
-            yield clk.posedge
-            enMDR.next  = True
-            yield clk.posedge
-            presetSignals()
-            MDRbuf.next = True
-            mWe.next    = True
-            yield clk.posedge #TODO add delay for timing
-            state.next = tState.FETCH
-        elif state == tState.ADR:
-            print "ADR"
-            enReg.next = True
-            addrBuf.next = True
-            state.next = tState.FETCH
-        elif state == tState.PUSH: #TODO Push pop is maybe incorrect
-            print "PUSH"
-            addrymux1.next = True #decrement $14 by four
-            pmux.next = False #yep, false!
-            enReg.next = True
-            addr14Buf.next = True
-            yield clk.posedge
-            addrymux1.next = True #put $14 as addr to bus
-            ryBuf.next = True
-            enMAR.next = True
-            yield clk.posedge
-            presetSignals()
-            op2Buf.next = True
-            enMDR.next = True
-            yield clk.posedge
-            enMDR.next  = True
-            yield clk.posedge
-            presetSignals()
-            MDRbuf.next = True
-            mWe.next    = True
-            yield clk.posedge #TODO add delay for timing
-            state.next = tState.FETCH
-        elif state == tState.POP:
-            print "POP"
-            addrymux0.next = True #put $14 to the bus
-            addrymux1.next = True
-            addr14Buf.next = True
-            enMAR.next = True
-            yield clk.posedge
-            presetSignals()
-            mOe.next = True
-            yield clk.posedge #TODO add delay for timing
-            presetSignals()
-            mOe.next = True
-            enMRR.next = True
-            yield clk.posedge
-            presetSignals()
-            MRRbuf.next = True
-            addrymux1.next = True
-            pmux.next = True #increment $14 by 4
-            enReg.next = True
-            addr14Buf.next = True
-            state.next = tState.FETCH
-        elif state ==tState.CALL:
-            print "CALL"
-            pcBuf.next = True
-            addrymux0.next = True
-            enReg.next = True
-            yield clk.posedge
-            enCall.next = True
-            enPc.next = True
-            state.next = tState.FETCH
-        elif state == tState.SWI:
-            print "SWI"
-            pass
-        elif state == tState.HALT:
-            print "HALT"
-            pass
-        else:
-            assert True == False
-
     @instance
-    def genFunction():
-        #we emulate a @always_seq(clk.posedge)
-        senslist = [clk.posedge]
-
-        if reset.async:
-            if reset.active:
-                senslist.append(reset.posedge)
-            else:
-                senslist.append(reset.negedge)
-
+    def logic():
         while True:
-            yield senslist
+            yield clk.posedge, reset.posedge
 
-            if reset == reset.active:
+            if reset == reset.posedge:
                 presetSignals()
                 state.next = tState.FETCH
+                continue
+
+            presetSignals() #this is important!
+
+            if   state == tState.UNKNOWN: #TODO mir gefällt die Lösung mit dem unknown state nicht, mal gucken, ob ich das besser hinbekomme
+                print "UNKOWN"
+                if   addr[5:3] == 0b00:
+                    state.next = tState.ALUOP
+                elif addr[5:3] == 0b01:
+                    state.next = tState.JUMP
+                elif addr[5:2] == 0b100:
+                    state.next = tState.LOAD
+                elif addr[5:2] == 0b101:
+                    state.next = tState.STORE
+                elif addr[5:2] == 0b110:
+                    state.next = tState.ADR
+                elif addr      == 0b11100:
+                    state.next = tState.PUSH
+                elif addr      == 0b11101:
+                    state.next = tState.POP
+                elif addr      == 0b11110:
+                    state.next = tState.CALL
+                elif addr      == 0b11111:
+                    state.next = tState.SWI
+                else:
+                    state.next = tState.ILLEGAL # TODO add more
+            elif state == tState.FETCH:
+                print "FETCH"
+                pcBuf.next = True
+                enMAR.next = True
+                yield clk.posedge
+                presetSignals()
+                mOe.next = True
+                yield clk.posedge #TODO add delay for timing
+                presetSignals()
+                mOe.next = True
+                enMRR.next = True
+                yield clk.posedge
+                presetSignals()
+                MRRbuf.next = True
+                enIr.next = True
+                state.next = tState.DECODE
+            elif state == tState.DECODE:
+                print "DECODE"
+                enPc.next   = True
+                state.next = tState.UNKNOWN
+            elif state == tState.ALUOP:
+                print "ALUOP"
+                aluBuf.next = True
+                enReg.next  = True
+                enSup.next  = True
+                state.next = tState.FETCH
+            elif state == tState.JUMP:
+                print "JUMP"
+                enJump.next = True
+                enPc.next = True
+                state.next = tState.FETCH
+            elif state == tState.LOAD:
+                print "LOAD"
+                addrBuf.next = True
+                enMAR.next = True
+                yield clk.posedge
+                presetSignals()
+                mOe.next = True
+                yield clk.posedge #TODO add delay for timing
+                presetSignals()
+                mOe.next = True
+                enMRR.next = True
+                yield clk.posedge
+                presetSignals()
+                MRRbuf.next = True
+                enReg.next = True
+                state.next = tState.FETCH
+            elif state == tState.STORE:
+                print "STORE"
+                addrymux0.next = True
+                addrymux1.next = True
+                ryBuf.next = True
+                enMAR.next = True
+                yield clk.posedge
+                presetSignals()
+                op2Buf.next = True #the actual value to bus
+                enMDR.next = True
+                yield clk.posedge
+                enMDR.next  = True
+                yield clk.posedge
+                presetSignals()
+                MDRbuf.next = True
+                mWe.next    = True
+                yield clk.posedge #TODO add delay for timing
+                state.next = tState.FETCH
+            elif state == tState.ADR:
+                print "ADR"
+                enReg.next = True
+                addrBuf.next = True
+                state.next = tState.FETCH
+            elif state == tState.PUSH: #TODO Push pop is maybe incorrect
+                print "PUSH"
+                addrymux1.next = True #decrement $14 by four
+                pmux.next = False #yep, false!
+                enReg.next = True
+                addr14Buf.next = True
+                yield clk.posedge
+                addrymux1.next = True #put $14 as addr to bus
+                ryBuf.next = True
+                enMAR.next = True
+                yield clk.posedge
+                presetSignals()
+                op2Buf.next = True
+                enMDR.next = True
+                yield clk.posedge
+                enMDR.next  = True
+                yield clk.posedge
+                presetSignals()
+                MDRbuf.next = True
+                mWe.next    = True
+                yield clk.posedge #TODO add delay for timing
+                state.next = tState.FETCH
+            elif state == tState.POP:
+                print "POP"
+                addrymux0.next = True #put $14 to the bus
+                addrymux1.next = True
+                addr14Buf.next = True
+                enMAR.next = True
+                yield clk.posedge
+                presetSignals()
+                mOe.next = True
+                yield clk.posedge #TODO add delay for timing
+                presetSignals()
+                mOe.next = True
+                enMRR.next = True
+                yield clk.posedge
+                presetSignals()
+                MRRbuf.next = True
+                addrymux1.next = True
+                pmux.next = True #increment $14 by 4
+                enReg.next = True
+                addr14Buf.next = True
+                state.next = tState.FETCH
+            elif state ==tState.CALL:
+                print "CALL"
+                pcBuf.next = True
+                addrymux0.next = True
+                enReg.next = True
+                yield clk.posedge
+                enCall.next = True
+                enPc.next = True
+                state.next = tState.FETCH
+            elif state == tState.SWI:
+                print "SWI"
+                pass
+            elif state == tState.HALT:
+                print "HALT"
+                pass
             else:
-                yield logic()
+                assert False
 
-
-    return genFunction
+    return logic

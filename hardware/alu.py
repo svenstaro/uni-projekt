@@ -5,7 +5,7 @@ def alu(opc, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
 
     All Parameters are Signals as usual.
 
-    opc (I4)    -- The opcode (must be a valid alu opcode)
+    opc (I4)    -- The opcode (must be A valid alu opcode)
     A   (Obw)   -- First input
     B   (Obw)   -- Second input
     Cin (Ibool) -- Carry input
@@ -19,53 +19,51 @@ def alu(opc, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
     @always_comb
     def logic():
         result = 0
-        a = A.signed()
-        b = B.signed()
 
         if   opc == 0b0000: #ADD
-            result = a + b
+            result = A + B
         elif opc == 0b0001: #ADC
-            result = a + b + Cin
+            result = A + B + Cin
         elif opc == 0b0100: #SUB
-            result = a - b
+            result = A - B
         elif opc == 0b0101: #SBC
-            result = a - b - Cin
+            result = A - B - Cin
         elif opc == 0b0110: #RSB
-            result = b - a
+            result = B - A
         elif opc == 0b0111: #RSC
-            result = b + Cin - a
+            result = B + Cin - A
         elif opc == 0b0010: #MUL
-            result = a * b  #TODO hardware nutzen
+            result = A * B  #TODO hardware nutzen
         elif opc == 0b0011: #ADN
-            result = a & ~b
+            result = A & ~B
         elif opc == 0b1000: #AND
-            result = a & b
+            result = A & B
         elif opc == 0b1001: #ORR
-            result = a | b
+            result = A | B
         elif opc == 0b1010: #XOR
-            result = a ^ b
+            result = A ^ B
         elif opc == 0b1011: #NOT
-            result = a | ~b
+            result = A | ~B
         elif opc == 0b1100: #LSL
-            result = a << b
+            assert B < 32
+            result = A << B
         elif opc == 0b1101: #ASR
-            result = a >> b
+            assert B < 32
+            result = A.signed() >> B
         elif opc == 0b1110: #LSR
-            result = ((intbv(a)[bitwidth+1:] & (2**bitwidth-1)) >> b)[bitwidth:] #TODO unhuebsch
+            assert B < 32
+            result = A >> B
         elif opc == 0b1111: #ROR
-            result = a << (bitwidth + ~b + 1)
+            assert bitwidth >= B
+            result = A << (bitwidth - B)
         else:
             assert False
-
-        amsb = A[bitwidth-1]
-        bmsb = B[bitwidth-1]
-        rmsb = intbv(result)[bitwidth-1]
 
         Z.next = result == 0
         N.next = result < 0
         C.next = intbv(result)[bitwidth]
-        V.next = (amsb == bmsb) and (amsb == (not rmsb))
+        V.next = (A[bitwidth-1] == B[bitwidth-1]) and (A[bitwidth-1] == (not intbv(result)[bitwidth-1]))
 
-        Res.next = intbv(result)[bitwidth:]
+        Res.next = intbv(result)[32:]
 
     return logic

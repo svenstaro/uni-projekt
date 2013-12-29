@@ -55,7 +55,7 @@ def alu(opc, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
             result = A >> B
         elif opc == 0b1111: #ROR
             assert bitwidth >= B
-            result = A << (bitwidth - B)
+            result = A << (bitwidth - B) | A >> B
         else:
             assert False
 

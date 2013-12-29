@@ -1,7 +1,7 @@
 from myhdl import *
 
 def registerbank(clk, we, addrx, addry, addrz, xout, yout, zin, amount = 16, bitwidth = 32):
-    reg_data = [Signal(intbv(0)[bitwidth:]) for _ in range(1, amount)]
+    reg_data = [Signal(intbv(0)[bitwidth:]) for _ in range(amount)]
 
     @always(clk.posedge)
     def write():
@@ -10,7 +10,7 @@ def registerbank(clk, we, addrx, addry, addrz, xout, yout, zin, amount = 16, bit
         assert addrz < amount
 
         if we and addrz != 0:
-            reg_data[addrz-1].next = zin[bitwidth:]
+            reg_data[addrz].next = zin[bitwidth:]
 
     @always_comb
     def read():
@@ -18,7 +18,7 @@ def registerbank(clk, we, addrx, addry, addrz, xout, yout, zin, amount = 16, bit
         assert addry < amount
         assert addry < amount
 
-        xout.next = 0 if addrx == 0 else reg_data[addrx-1]
-        yout.next = 0 if addry == 0 else reg_data[addry-1]
+        xout.next = reg_data[addrx]
+        yout.next = reg_data[addry]
 
     return write, read

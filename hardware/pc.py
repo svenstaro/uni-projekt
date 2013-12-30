@@ -18,11 +18,11 @@ def programcounter(clk, reset, enable, imm24, reg, cpucall, jumpunit, cpujump, o
 
     The result will be calculated in the following way.
 
-    cpujump, cpucall, junpunit, op1, result
+    cpucall, cpujump, junpunit, op1, result
      c | j | u | o | r
     ===+===+===+===
      0 | 0 | * | * | +4
-     0 | 1 | 0 | * | +4
+     0 | 1 | 0 | * | pc
      0 | 1 | 1 | 0 | reg
      0 | 1 | 1 | 1 | pc+imm24
      1 | * | * | 0 | reg
@@ -35,9 +35,9 @@ def programcounter(clk, reset, enable, imm24, reg, cpucall, jumpunit, cpujump, o
     @always_seq(clk.posedge, reset=reset)
     def write():
         if enable:
-            if not (cpucall or (cpujump and jumpunit)): #yeah, de morgan
+            if not (cpucall or cpujump):
                 data.next = data + 4
-            else: #cpujump == jumpunit == 1
+            elif cpucall or (cpujump and jumpunit):
                 if not op1:
                     data.next = reg
                 else:

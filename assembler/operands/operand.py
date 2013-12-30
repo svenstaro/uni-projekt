@@ -1,4 +1,4 @@
-from ..structure import Structure
+from structure import Structure
 
 
 class Operand(Structure):

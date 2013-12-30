@@ -1,5 +1,5 @@
 from .operand import Operand
-from ..errors import DecodingError
+from errors import DecodingError
 
 
 class Ignore(Operand):

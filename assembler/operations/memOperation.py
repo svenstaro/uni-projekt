@@ -1,5 +1,5 @@
 from .operation import Operation
-from ..operands import Register, LabelOperand, Opcodes
+from operands import Register, LabelOperand, Opcodes
 
 
 class MemOperation(Operation):

@@ -1,7 +1,5 @@
-from ..operands import Zero, Register, AluOperand2, Opcodes, Const
-from .operation import Operation
-from .jumpOperation import JumpOperation
-from .aluOperation import AluOperation, AluSOperation
+from operands import Zero, Register, AluOperand2, Opcodes, Const
+from operations import Operation, JumpOperation, AluOperation, AluSOperation
 import re
 
 

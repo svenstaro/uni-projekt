@@ -1,5 +1,5 @@
-from .operand import Operand
-from ..errors import EncodingError, DecodingError
+from operands import Operand
+from errors import EncodingError, DecodingError
 
 
 class Register(Operand):

@@ -265,7 +265,8 @@ def cpu(clk, reset, addr,
             enPc.next = True
             state.next = tState.FETCH
         elif state == tState.SWI:
-            pass
+            #TODO
+            state.next = tState.FETCH
         elif state == tState.HALT:
             pass
         else:

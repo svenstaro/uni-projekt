@@ -1,7 +1,5 @@
-from .operand import Operand
-from .register import Register
-from .immediate import Immediate
-from ..errors import EncodingError, DecodingError
+from operands import Operand, Register, Immediate
+from errors import EncodingError, DecodingError
 
 
 def Operand2(size):

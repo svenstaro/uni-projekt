@@ -1,5 +1,5 @@
-from .operation import Operation
-from ..operands import Operand2, Opcodes
+from operations import Operation
+from operands import Operand2, Opcodes
 
 
 class SwiOperation(Operation):

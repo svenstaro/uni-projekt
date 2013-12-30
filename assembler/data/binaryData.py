@@ -1,6 +1,6 @@
 from .data import Data
-from ..errors import EncodingError
-from .. import tools
+from errors import EncodingError
+import tools
 
 
 class BinaryData(Data):

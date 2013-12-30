@@ -58,10 +58,14 @@ if __name__ == "__main__":
 
     def verify(cl, dut):
         while True:
-            if cl.bus._val == 0b01000011111111111111111111111100:
-                raise StopSimulation("HALT DETECTED") #halt
-
             yield cl.clk.posedge
+            if cl.bus == 0b01000011111111111111111111111100: #halt
+                raise StopSimulation("HALT DETECTED")
+            elif (not (cl.bus._val is None)) and cl.bus[32:27] == 0b11111: #swi
+                yield cl.clk.posedge
+                yield cl.clk.posedge
+                yield cl.clk.posedge
+                print "SWI: " + str(cl.bus)
 
     #     d = DutClass(data)
     #     conversion.analyze(mk.mk, d.clk, d.reset, d.data

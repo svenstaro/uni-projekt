@@ -105,7 +105,8 @@ def cpu(clk, reset, addr,
         mWe.next = False
         mOe.next = False
 
-        print state
+        if __debug__:
+            print state
 
         ##### UNKNOWN
         if   state == tState.UNKNOWN: #TODO mir gefällt die Lösung mit dem unknown state nicht, mal gucken, ob ich das besser hinbekomme
@@ -266,6 +267,7 @@ def cpu(clk, reset, addr,
             state.next = tState.FETCH
         elif state == tState.SWI:
             #TODO
+            ryBuf.next = True
             state.next = tState.FETCH
         elif state == tState.HALT:
             pass

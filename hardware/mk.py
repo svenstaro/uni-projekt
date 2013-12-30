@@ -88,7 +88,8 @@ def mk(clk, reset, romContent=()):
     jumpResult = Signal(bool(0))
 
     def createJumpUnit():
-        return jumpunit(irJumpOp, zOut, nOut, cOut, vOut, jumpResult)
+        ju = jumpunit(irJumpOp, zOut, nOut, cOut, vOut, jumpResult)
+        return ju
 
 
     ### programmcounter
@@ -110,7 +111,7 @@ def mk(clk, reset, romContent=()):
         const4.driven  = True
 
         plusminusMuxOut = Signal(intbv(0)[32:])
-        addr14 = Signal(intbv(0)[32:])
+        addr14 = Signal(modbv(0)[32:])
 
         plusminusMux = mux21(pmux, const_5, const4, plusminusMuxOut)
         add = adder(plusminusMuxOut, rgY, addr14)
@@ -132,7 +133,7 @@ def mk(clk, reset, romContent=()):
     ### addrbuf
 
     def createAddrBuf():
-        addOut = Signal(intbv(0)[32:])
+        addOut = Signal(modbv(0)[32:])
         addrMuxOut = Signal(intbv(0)[32:])
 
         add = adder(pcOut, irImm24, addOut)

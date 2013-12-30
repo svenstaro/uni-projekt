@@ -1,11 +1,11 @@
 from myhdl import *
 from allimport import *
 
-def mk(clk, reset, romContent=()):
+def mk(clk, reset, romContent=(), bus = TristateSignal(intbv(0)[32:])):
     """ Oh crap! """
 
     ### the overall bbus
-    bbus = TristateSignal(intbv(0)[32:])
+    bbus = bus
 
     ### irdecoder
     enIr = Signal(bool(0))

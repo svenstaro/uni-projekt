@@ -1,11 +1,8 @@
 from myhdl import *
 from allimport import *
 
-def mk(clk, reset, romContent=(), bus = TristateSignal(intbv(0)[32:])):
+def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
     """ Oh crap! """
-
-    ### the overall bbus
-    bbus = bus
 
     ### irdecoder
     enIr = Signal(bool(0))
@@ -169,18 +166,20 @@ def mk(clk, reset, romContent=(), bus = TristateSignal(intbv(0)[32:])):
 
     def createMemory():
         #TODO just use the first n bits of the addr for the ram/rom
-        outputE, outputW, msbSig, msbSigI= [Signal(bool(0)) for _ in range(4)]
+        outputE, outputW, csRam, csRom= [Signal(bool(0)) for _ in range(4)]
+        realaddr = Signal(intbv(0)[31:])
 
-        msbSignSelector = selectBit(memaddr, msbSig, 31)
-        msbSignNegate = negation(msbSig, msbSigI)
+        msbSignSelector = selectBit(memaddr, csRam, 31)
+        msbSignNegate = negation(csRam, csRom)
+        addrSelector = bitrange(memaddr, realaddr, 0, 31)
 
         ffmOe = dff(clk, mOe, outputE)
         ffmWe = dff(clk, mWe, outputW)
 
-        ram = pseudoram(clk, outputW, outputE, msbSig, memaddr, membus, membus.driver())
-        rom = pseudorom(mOe, msbSigI, memaddr, membus.driver(), romContent) #TODO swap msbSig
+        ram = pseudoram(clk, outputW, outputE, csRam, realaddr, membus, membus.driver(), depth=64)
+        rom = pseudorom(outputE, csRom, realaddr, membus.driver(), romContent) #TODO swap csRam
 
-        return msbSignSelector, msbSignNegate, ffmOe, ffmWe, ram, rom
+        return msbSignSelector, msbSignNegate, addrSelector, ffmOe, ffmWe, ram, rom
 
     result = createIR(), createCPU(), createStatusFlags(), createRegisterBank(), createALUBuf(), createJumpUnit(), createPcBuf(), createAddr14Buf(), createOp2Buf(), createAddrBuf(),\
              createMAR(), createMDR(), createMRR(), createMemory()

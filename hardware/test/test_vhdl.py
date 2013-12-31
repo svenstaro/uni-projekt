@@ -42,7 +42,7 @@ def verifyIrDecoder():
 if __name__ == '__main__':
     verify(adder, Signal(intbv(0)[32:]), Signal(intbv(0)[32:]), Signal(modbv(0)[32:]))
     verify(addrdecoder, Signal(intbv(0)[32:]), Signal(bool(0)), Signal(bool(0)))
-    #verifyALU()
+    verifyALU()
     verify(counter, Signal(bool(0)), ResetSignal(0, 1, True), Signal(bool(0)), Signal(intbv(0)[32:]))
     verifyCpu()
     verify(dff, Signal(bool(0)), Signal(intbv(0)[32:]), Signal(intbv(0)[32:]))

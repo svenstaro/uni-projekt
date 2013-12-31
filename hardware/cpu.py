@@ -44,10 +44,10 @@ def cpu(clk, reset, addr,
                   'FETCH', 'FETCH2', 'FETCH3', 'FETCH4',
                   'DECODE', 'ALUOP', 'JUMP',
                   'LOAD', 'LOAD2', 'LOAD3', 'LOAD4',
-                  'STORE', 'STORE2', 'STORE3', 'STORE4', 'STORE5',
+                  'STORE', 'STORE2', 'STORE3', 'STORE4',
                   'ADR',
-                  'PUSH',
-                  'POP',
+                  'PUSH', 'PUSH2', 'PUSH3', 'PUSH4',
+                  'POP', 'POP2', 'POP3', 'POP4', 'POP5',
                   'CALL', 'CALL2',
                   'SWI', 'ILLEGAL', 'HALT')  # TODO add more
     state = Signal(tState.FETCH)
@@ -198,12 +198,10 @@ def cpu(clk, reset, addr,
             state.next = tState.STORE3
         elif state== tState.STORE3:
             enMDR.next  = True
+            mWe.next    = True #1 cycle delay
             state.next = tState.STORE4
         elif state == tState.STORE4:
             MDRbuf.next = True
-            mWe.next    = True
-            state.next = tState.STORE5
-        elif state == tState.STORE5:
             state.next = tState.FETCH
 
         ##### ADRESS INSTR
@@ -218,41 +216,43 @@ def cpu(clk, reset, addr,
             pmux.next = False #yep, false!
             enReg.next = True
             addr14Buf.next = True
-            #yield clk.posedge
-            #addrymux1.next = True #put $14 as addr to bus
+            state.next = tState.PUSH2
+        elif state == tState.PUSH2:
+            addrymux1.next = True #put $14 to memaddr
             ryBuf.next = True
             enMAR.next = True
-            #yield clk.posedge
-            #presetSignals()
+            state.next = tState.PUSH3
+        elif state == tState.PUSH3:
             op2Buf.next = True
             enMDR.next = True
-            #yield clk.posedge
-            enMDR.next  = True
-            #yield clk.posedge
-            #presetSignals()
+            state.next = tState.PUSH4
+            mWe.next    = True #1 cycle delay!
+        elif state == tState.PUSH4:
             MDRbuf.next = True
-            mWe.next    = True
-            #yield clk.posedge #TODO add delay for timing
             state.next = tState.FETCH
 
         ##### POP
         elif state == tState.POP:
-            addrymux0.next = True #put $14 to the bus
-            addrymux1.next = True
-            addr14Buf.next = True
+            addrymux1.next = True #put $14 to memaddr
+            ryBuf.next = True
             enMAR.next = True
-            #yield clk.posedge
-            #presetSignals()
+            state.next = tState.POP2
+        elif state == tState.POP2:
             mOe.next = True
-            #yield clk.posedge #TODO add delay for timing
-            #presetSignals()
+            state.next = tState.POP3
+        elif state == tState.POP3:
             mOe.next = True
             enMRR.next = True
-            #yield clk.posedge
-            #presetSignals()
+            state.next = tState.POP4
+        elif state == tState.POP4:
             MRRbuf.next = True
             addrymux1.next = True
-            pmux.next = True #increment $14 by 4
+            addrymux0.next = True
+            enReg.next = True
+            state.next = tState.POP5
+        elif state == tState.POP5:
+            addrymux1.next = True #increment $14 by 4
+            pmux.next = True
             enReg.next = True
             addr14Buf.next = True
             state.next = tState.FETCH

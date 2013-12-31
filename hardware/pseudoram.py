@@ -19,5 +19,7 @@ def pseudoram(clk, we, oe, cs, addr, data_in, data_out, depth=128):
             assert addr//4 < len(mem)
 
             data_out.next = mem[int(addr)//4]
+        elif not cs:
+            data_out.next = None
 
     return write, read

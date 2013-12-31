@@ -12,8 +12,10 @@ def pseudorom(oe, cs, addr, dout, mem):
 
             if __debug__:
                 a = bin(mem[int(addr)//4], width=32)
-                print "ROM (" + '0x%02X' % addr + "): " + ' '.join(map(lambda *xs: ''.join(xs), *[iter(a)]*8)) + ' | ' + getTextOfCommand(a)
+                print "ROM (" + '0x%02X' % addr + "): " + ' '.join(map(lambda *xs: ''.join(xs), *[iter(a)]*8)) + ' | ' + str(getTextOfCommand(a))
 
             dout.next = mem[int(addr)//4]
+        elif not cs:
+            dout.next = None
 
     return read

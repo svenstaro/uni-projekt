@@ -12,6 +12,6 @@ def adder(A, B, S):
 
     @always_comb
     def logic():
-        S.next = A + B
+        S.next = A.signed() + B.signed()
 
     return logic

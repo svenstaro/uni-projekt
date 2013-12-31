@@ -17,10 +17,6 @@ def label2immediate(arg, state):
 
 
 def immediate2binary(number, size):
-    sign = ""
-    if number.startswith("-"):
-        sign = "-"
-        number = number[1:]
     base = 10
     if number.startswith("0b"):
         base = 2
@@ -29,7 +25,7 @@ def immediate2binary(number, size):
     elif number.startswith("0"):
         base = 8
     try:
-        result = int(sign + number, base=base)
+        result = int(number, base=base)
     except ValueError:
         return False
     if not -2 ** (size - 1) <= result <= 2 ** (size - 1) - 1:

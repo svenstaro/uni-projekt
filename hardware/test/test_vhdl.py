@@ -1,8 +1,8 @@
 from myhdl import *
 import sys
-sys.path.append(".")
-sys.path.append("..")
-sys.path.append("hardware")
+sys.path.append("/home/marcel/studium/WISE1314/Projekt/")
+sys.path.append("/home/marcel/studium/WISE1314/Projekt/assembler/")
+sys.path.append("/home/marcel/studium/WISE1314/Projekt/assembler/operations/")
 from hardware.allimport import *
 
 def verify(dut, *args):
@@ -11,9 +11,9 @@ def verify(dut, *args):
 def verifyALU():
     opc = Signal(intbv(0)[4:])
     A, B, R = [Signal(intbv(0)[32:]) for _ in range(3)]
-    Cin, Z, N, C, V = [Signal(bool(0)) for _ in range (5)]
+    en, Cin, Z, N, C, V = [Signal(bool(0)) for _ in range (6)]
 
-    verify(alu, opc, A, B, Cin, R, Z, N, C, V)
+    verify(alu, opc, en, A, B, Cin, R, Z, N, C, V)
 
 def verifyCpu():
     clk = Signal(bool(0))
@@ -21,11 +21,11 @@ def verifyCpu():
     addr = Signal(intbv(0)[5:])
     addrymux1, addrymux0, pmux = [Signal(bool(0)) for _ in range(3)]
     bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC = [Signal(bool(0)) for _ in range(6)]
-    enIr, enPc, enReg, enJump, enCall, enSup = [Signal(bool(0)) for _ in range(6)]
+    enAlu, enIr, enPc, enReg, enJump, enCall, enSup = [Signal(bool(0)) for _ in range(7)]
     enMRR, enMAR, enMDR, MRRbuf, MDRbuf, mWe, mOe = [Signal(bool(0)) for _ in range(7)]
 
     verify(cpu, clk, reset, addr, addrymux1, addrymux0, pmux, bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC,
-           enIr, enPc, enReg, enJump, enCall, enSup, enMRR, enMAR, enMDR, MRRbuf, MDRbuf, mWe, mOe)
+           enAlu, enIr, enPc, enReg, enJump, enCall, enSup, enMRR, enMAR, enMDR, MRRbuf, MDRbuf, mWe, mOe)
 
 def verifyIrDecoder():
     ir = Signal(intbv(0)[32:])

@@ -2,14 +2,15 @@ import sys
 import os
 
 sys.path.append("/home/marcel/studium/WISE1314/Projekt/")
+sys.path.append("/home/marcel/studium/WISE1314/Projekt/assembler/")
+sys.path.append("/home/marcel/studium/WISE1314/Projekt/assembler/operations/")
 
 from myhdl import *
 import logging
-from allimport import *
 import mk
 import time
 import struct
-from unittest import TestCase
+from allimport import *
 
 class DutClass():
     """Wrapper around DUT"""

@@ -28,14 +28,14 @@ def mk(clk, reset, romContent=(), bus = TristateSignal(intbv(0)[32:])):
     ### cpu
     addrymux1, addrymux0, pmux = [Signal(bool(0)) for _ in range(3)]
     bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC = [Signal(bool(0)) for _ in range(6)]
-    enIr, enPc, enReg, enJump, enCall, enSup = [Signal(bool(0)) for _ in range(6)]
+    enAlu, enIr, enPc, enReg, enJump, enCall, enSup = [Signal(bool(0)) for _ in range(7)]
     enMRR, enMAR, enMDR, MRRbuf, MDRbuf, mWe, mOe = [Signal(bool(0)) for _ in range(7)]
 
     def createCPU():
         Cpu = cpu(clk, reset, irPrefix,
                   addrymux1, addrymux0, pmux,
                   bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC,
-                  enIr, enPc, enReg, enJump, enCall, enSup,
+                  enAlu, enIr, enPc, enReg, enJump, enCall, enSup,
                   enMRR, enMDR, enMAR, MRRbuf, MDRbuf, mWe, mOe)
         return Cpu
 
@@ -76,10 +76,10 @@ def mk(clk, reset, romContent=(), bus = TristateSignal(intbv(0)[32:])):
 
     def createALUBuf():
         BmuxOut = Signal(intbv(0)[32:])
-        aluRes = Signal(intbv(0)[32:])
+        aluRes = Signal(modbv(0)[32:])
 
         Bmux = mux21(irOp2, rgY, irImm16, BmuxOut)
-        Alu = alu(irAluop, rgX, BmuxOut, cOut, aluRes, zIn, nIn, cIn, vIn)
+        Alu = alu(irAluop, enAlu, rgX, BmuxOut, cOut, aluRes, zIn, nIn, cIn, vIn)
         aluTristate = tristate(aluRes, bufAlu, bbus.driver())
         return Bmux, Alu, aluTristate
 

@@ -8,17 +8,18 @@ from register import *
 class DutClass():
     """Wrapper around DUT"""
     def __init__(self):
-        self.z, self.n, self.cin, self.v = [Signal(bool(0)) for _ in range(4)]
+        self.en, self.z, self.n, self.cin, self.v = [Signal(bool(0)) for _ in range(5)]
         self.cout = Signal(bool(0))
 
         self.clk = Signal(bool(0))
         self.reset = ResetSignal(0,1,True)
 
         self.opc = Signal(intbv(0)[4:])
-        self.A, self.B, self.R = [Signal(intbv(0)[32:]) for _ in range(3)]
+        self.A, self.B= [Signal(intbv(0)[32:]) for _ in range(2)]
+        self.R = Signal(modbv(0)[32:])
 
     def Gens(self, trace = False):
-        self.args = [self.opc,self.A,self.B,self.cout,self.R,
+        self.args = [self.opc,self.en,self.A,self.B,self.cout,self.R,
                 self.z,self.n,self.cin,self.v]
 
         return traceSignals(alu, *self.args) if trace else alu(*self.args)
@@ -34,6 +35,7 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
 
     @instance
     def stimulus():
+        dut_cl.en.next = True
         yield verifyMethod(dut_cl, dut)
         raise StopSimulation
 

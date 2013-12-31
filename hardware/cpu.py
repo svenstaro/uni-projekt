@@ -5,7 +5,7 @@ from myhdl import *
 def cpu(clk, reset, addr,
         addrymux1, addrymux0, pmux,
         addrBuf, op2Buf, addr14Buf, ryBuf, aluBuf, pcBuf,
-        enIr, enPc, enReg, enJump, enCall, enSup,
+        enAlu, enIr, enPc, enReg, enJump, enCall, enSup,
         enMRR, enMDR, enMAR, MRRbuf, MDRbuf, mWe, mOe):
     """
         This is a cpu state maschine. Let's see how far we come.
@@ -91,6 +91,7 @@ def cpu(clk, reset, addr,
         ryBuf.next = False
         aluBuf.next = False
         pcBuf.next = False
+        enAlu.next = False
         enIr.next = False
         enPc.next = False
         enReg.next = False
@@ -155,6 +156,7 @@ def cpu(clk, reset, addr,
 
         ##### ALUOP
         elif state == tState.ALUOP:
+            enAlu.next = True
             aluBuf.next = True
             enReg.next  = True
             enSup.next  = True

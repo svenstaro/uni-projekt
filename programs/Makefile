@@ -1,4 +1,4 @@
-AS = "../assembler/assembler.py"
+AS = "../assembler/as.py"
 EMU = "../emulator/emulator.py"
 
 SOURCES = $(wildcard *.s) $(wildcard */*.s)

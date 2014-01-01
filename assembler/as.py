@@ -150,7 +150,7 @@ def entry_point(argv):
 
     stream = encodeCommandStream(lines)
 
-    fout = os.open(filename + ".out", os.O_WRONLY | os.O_CREAT, 0644)
+    fout = os.open(filename + ".out", os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0644)
     writeStream(fout, stream)
     os.close(fout)
 

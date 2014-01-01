@@ -1,5 +1,5 @@
 from .operation import Operation
-from operands import Zero, Register, Opcodes, Operand2
+from ..operands import Zero, Register, Opcodes, Operand2
 
 
 class PopOperation(Operation):

@@ -1,4 +1,4 @@
-from errors import CodingError
+from .codingerror import CodingError
 
 
 class EncodingError(CodingError):

@@ -7,6 +7,8 @@ def pseudorom(oe, cs, addr, dout, mem):
 
     @always_comb
     def read():
+        dout.next = None
+
         if cs and oe:
             print int(addr)//4
             assert int(addr)//4 < len(mem)

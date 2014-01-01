@@ -1,5 +1,5 @@
 from myhdl import *
-from assembler.assembler import getTextOfCommand
+from assembler import getTextOfCommand
 
 def pseudorom(oe, cs, addr, dout, mem):
     """This is a pseudorom

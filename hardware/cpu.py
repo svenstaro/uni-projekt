@@ -41,7 +41,7 @@ def cpu(clk, reset, addr,
     """
 
     tState = enum('UNKNOWN',
-                  'FETCH', 'FETCH2', 'FETCH3', 'FETCH4',
+                  'FETCH', 'FETCH2', 'FETCH3',
                   'DECODE', 'ALUOP', 'JUMP',
                   'LOAD', 'LOAD2', 'LOAD3', 'LOAD4',
                   'STORE', 'STORE2', 'STORE3', 'STORE4',
@@ -136,15 +136,12 @@ def cpu(clk, reset, addr,
         elif state == tState.FETCH:
             pcBuf.next = True
             enMAR.next = True
+            mOe.next = True
             state.next = tState.FETCH2
         elif state == tState.FETCH2:
-            mOe.next = True
+            enMRR.next = True
             state.next = tState.FETCH3
         elif state ==tState.FETCH3:
-            mOe.next = True
-            enMRR.next = True
-            state.next = tState.FETCH4
-        elif state.next == tState.FETCH4:
             MRRbuf.next = True
             enIr.next = True
             state.next = tState.DECODE
@@ -177,7 +174,6 @@ def cpu(clk, reset, addr,
             mOe.next = True
             state.next = tState.LOAD3
         elif state == tState.LOAD3:
-            mOe.next = True
             enMRR.next = True
             state.next = tState.LOAD4
         elif state== tState.LOAD4:
@@ -195,11 +191,9 @@ def cpu(clk, reset, addr,
         elif state == tState.STORE2:
             op2Buf.next = True #the actual value to bus
             enMDR.next = True
+            mWe.next    = True #1 cycle delay
             state.next = tState.STORE3
         elif state== tState.STORE3:
-            mWe.next    = True #1 cycle delay
-            state.next = tState.STORE4
-        elif state == tState.STORE4:
             MDRbuf.next = True
             state.next = tState.FETCH
 
@@ -224,8 +218,8 @@ def cpu(clk, reset, addr,
         elif state == tState.PUSH3:
             op2Buf.next = True
             enMDR.next = True
-            state.next = tState.PUSH4
             mWe.next    = True #1 cycle delay!
+            state.next = tState.PUSH4
         elif state == tState.PUSH4:
             MDRbuf.next = True
             state.next = tState.FETCH
@@ -266,12 +260,18 @@ def cpu(clk, reset, addr,
             enCall.next = True
             enPc.next = True
             state.next = tState.FETCH
+
+        ##### SWI
         elif state == tState.SWI:
             #TODO
             ryBuf.next = True
             state.next = tState.FETCH
+
+        ##### HALT
         elif state == tState.HALT:
             pass
+
+        ##### ILLEGAL
         else:
             assert False
 

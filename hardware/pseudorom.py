@@ -8,6 +8,7 @@ def pseudorom(oe, cs, addr, dout, mem):
     @always_comb
     def read():
         if cs and oe:
+            print int(addr)//4
             assert int(addr)//4 < len(mem)
 
             if __debug__:
@@ -15,7 +16,5 @@ def pseudorom(oe, cs, addr, dout, mem):
                 print "ROM (" + '0x%02X' % addr + "): " + ' '.join(map(lambda *xs: ''.join(xs), *[iter(a)]*8)) + ' | ' + str(getTextOfCommand(a))
 
             dout.next = mem[int(addr)//4]
-        elif not cs:
-            dout.next = None
 
     return read

@@ -1,8 +1,5 @@
 from myhdl import *
 
-class Error(Exception):
-    pass
-
 def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
     """This unit can be used to abstract the actual memory access. Also we can implement some caching here
 
@@ -41,13 +38,15 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
             if state == tState.LISTEN:
                 ready.next = False
 
-                addr.next = din
+                addr.next = din[31:]
                 csRam.next = din[31]
                 csRom.next = not din[31]
                 state.next = tState.CALC
             elif state == tState.CALC:
                 with_data.next = True
                 in_data.next = din
+            else:
+                print "Something went wrong!"
         elif state == tState.CALC:
             waitingtimer.next = waitingtimer + 1
             if not with_data:
@@ -55,14 +54,15 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
                 enO.next = True
                 if waitingtimer == 0: # 0 is the number of cycles to wait for the result from cache (which should be significant lower than memory)
                     pass
-                elif waitingtimer == 1: # 1 is the number of cycles to wait for the result from memory
+                elif waitingtimer == 5: # 5 is the number of cycles to wait for the result from memory
                     in_data.next = io
                     state.next = tState.FINISH
             else:
                 #writing to memory
                 enW.next = True
+                io.next = in_data
 
-                if waitingtimer == 1: # 1 is the number of cycles to wait for the result to be written in memory
+                if waitingtimer == 2: # 2 is the number of cycles to wait for the result to be written in memory
                     state.next = tState.FINISH
 
         elif state == tState.FINISH:

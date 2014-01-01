@@ -83,27 +83,27 @@ def cpu(clk, reset, addr,
             print state
 
         ##### UNKNOWN
-        if   state == tState.UNKNOWN: #TODO mir gefällt die Lösung mit dem unknown state nicht, mal gucken, ob ich das besser hinbekomme
+        if   state == tState.UNKNOWN: # TODO mir gefällt die Lösung mit dem unknown state nicht, mal gucken, ob ich das besser hinbekomme
             if   addr[5:3] == 0b00:
-                state.next = tState.ALUOP
+                state.next  = tState.ALUOP
             elif addr[5:3] == 0b01:
-                state.next = tState.JUMP
+                state.next  = tState.JUMP
             elif addr[5:2] == 0b100:
-                state.next = tState.LOAD
+                state.next  = tState.LOAD
             elif addr[5:2] == 0b101:
-                state.next = tState.STORE
+                state.next  = tState.STORE
             elif addr[5:2] == 0b110:
-                state.next = tState.ADR
+                state.next  = tState.ADR
             elif addr      == 0b11100:
-                state.next = tState.PUSH
+                state.next  = tState.PUSH
             elif addr      == 0b11101:
-                state.next = tState.POP
+                state.next  = tState.POP
             elif addr      == 0b11110:
-                state.next = tState.CALL
+                state.next  = tState.CALL
             elif addr      == 0b11111:
-                state.next = tState.SWI
+                state.next  = tState.SWI
             else:
-                state.next = tState.ILLEGAL # TODO add more
+                state.next  = tState.ILLEGAL # TODO add more
 
         ##### FETCHING
         elif state == tState.FETCH:
@@ -164,11 +164,11 @@ def cpu(clk, reset, addr,
             enMAR.next = True
             state.next = tState.STORE2
         elif state == tState.STORE2:
-            op2Buf.next = True #the actual value to bus
+            op2Buf.next = True # the actual value to bus
             enMDR.next = True
             state.next = tState.STORE3
         elif state == tState.STORE3:
-            mWe.next    = True #1 cycle delay
+            mWe.next    = True # 1 cycle delay
             state.next = tState.STORE4
         elif state == tState.STORE4:
             MDRbuf.next = True
@@ -181,21 +181,21 @@ def cpu(clk, reset, addr,
             state.next = tState.FETCH
 
         ##### PUSH
-        elif state == tState.PUSH: #TODO Push pop is maybe incorrect
-            addrymux1.next = True #decrement $14 by four
-            pmux.next = False #yep, false!
+        elif state == tState.PUSH: # TODO Push pop is maybe incorrect
+            addrymux1.next = True # decrement $14 by four
+            pmux.next = False # yep, false!
             enReg.next = True
             addr14Buf.next = True
             state.next = tState.PUSH2
         elif state == tState.PUSH2:
-            addrymux1.next = True #put $14 to memaddr
+            addrymux1.next = True # put $14 to memaddr
             ryBuf.next = True
             enMAR.next = True
             state.next = tState.PUSH3
         elif state == tState.PUSH3:
             op2Buf.next = True
             enMDR.next = True
-            mWe.next    = True #1 cycle delay!
+            mWe.next    = True # 1 cycle delay!
             state.next = tState.PUSH4
         elif state == tState.PUSH4:
             MDRbuf.next = True
@@ -203,7 +203,7 @@ def cpu(clk, reset, addr,
 
         ##### POP
         elif state == tState.POP:
-            addrymux1.next = True #put $14 to memaddr
+            addrymux1.next = True # put $14 to memaddr
             ryBuf.next = True
             enMAR.next = True
             state.next = tState.POP2
@@ -220,7 +220,7 @@ def cpu(clk, reset, addr,
             enReg.next = True
             state.next = tState.POP5
         elif state == tState.POP5:
-            addrymux1.next = True #increment $14 by 4
+            addrymux1.next = True # increment $14 by 4
             pmux.next = True
             enReg.next = True
             addr14Buf.next = True

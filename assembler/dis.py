@@ -26,7 +26,7 @@ def entry_point(argv):
 
     stream = decodeCommandStream(binary)
 
-    fout = os.open(filename + ".dec", os.O_WRONLY | os.O_CREAT, 0644)
+    fout = os.open(filename + ".dec", os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0644)
     os.write(fout, stream)
     os.close(fout)
 

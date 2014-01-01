@@ -1,6 +1,6 @@
 from myhdl import *
 
-def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
+def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit=None):
     """This unit can be used to abstract the actual memory access. Also we can implement some caching here
 
         clk   (Ibool) -- The clock
@@ -24,13 +24,16 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
           3. disable the mmu
           4. wait for the ready bit
           5. get the result
+
+        You have to wait at least 1 cycle for initializing all the things before you can wait for the ready signal!
     """
 
     tState = enum('LISTEN', 'CALC', 'FINISH')
-    state = Signal(tState.LST_ADDR)
-    waitingtimer = Signal(intbv(0)[4:]) # increase the bitwidth of the timer, if loading takes longer
+    state = Signal(tState.LISTEN)
+    waitingtimer = Signal(intbv(0)[8:]) # increase the bitwidth of the timer, if loading takes longer
     with_data = Signal(bool(0))
     in_data = Signal(intbv(0)[32:])
+    iodriver = io.driver()
 
     @always(clk.posedge)
     def write():
@@ -43,10 +46,12 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
                 csRom.next = not din[31]
                 state.next = tState.CALC
             elif state == tState.CALC:
+                assert bool(csRam)
+
                 with_data.next = True
                 in_data.next = din
             else:
-                print "Something went wrong!"
+                print "Something went wrong! (Did you read the protocoll?)"
         elif state == tState.CALC:
             waitingtimer.next = waitingtimer + 1
             if not with_data:
@@ -54,15 +59,15 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
                 enO.next = True
                 if waitingtimer == 0: # 0 is the number of cycles to wait for the result from cache (which should be significant lower than memory)
                     pass
-                elif waitingtimer == 5: # 5 is the number of cycles to wait for the result from memory
+                elif waitingtimer == 10: # 10 is the number of cycles to wait for the result from memory
                     in_data.next = io
                     state.next = tState.FINISH
             else:
                 #writing to memory
                 enW.next = True
-                io.next = in_data
+                iodriver.next = in_data
 
-                if waitingtimer == 2: # 2 is the number of cycles to wait for the result to be written in memory
+                if waitingtimer == 15: # 15 is the number of cycles to wait for the result to be written in memory
                     state.next = tState.FINISH
 
         elif state == tState.FINISH:
@@ -71,6 +76,7 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
             enO.next = False
             enW.next = False
             ready.next = True
+            iodriver.next = None
             state.next = tState.LISTEN
 
     @always_comb

@@ -1,8 +1,11 @@
 from myhdl import *
 from allimport import *
 
-def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
+def mk(clk, reset, romContent=(), interesting=[]):
     """ Oh crap! """
+
+    ### the actual bus
+    bbus = TristateSignal(intbv(0)[32:])
 
     ### irdecoder
     enIr = Signal(bool(0))
@@ -23,17 +26,18 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
 
 
     ### cpu
+    readybit = Signal(bool(1)) # it must be true!
     addrymux1, addrymux0, pmux = [Signal(bool(0)) for _ in range(3)]
     bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC = [Signal(bool(0)) for _ in range(6)]
     enAlu, enIr, enPc, enReg, enJump, enCall, enSup = [Signal(bool(0)) for _ in range(7)]
-    enMRR, enMAR, enMDR, MRRbuf, MDRbuf, mWe, mOe = [Signal(bool(0)) for _ in range(7)]
+    enMmu, mmuBuf = [Signal(bool(0)) for _ in range(2)]
 
     def createCPU():
-        Cpu = cpu(clk, reset, irPrefix,
+        Cpu = cpu(clk, reset, irPrefix, readybit,
                   addrymux1, addrymux0, pmux,
                   bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC,
                   enAlu, enIr, enPc, enReg, enJump, enCall, enSup,
-                  enMRR, enMDR, enMAR, MRRbuf, MDRbuf, mWe, mOe)
+                  enMmu, mmuBuf)
         return Cpu
 
 
@@ -139,49 +143,44 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
 
         return add, addrMux, addrTristate
 
-    ### RAM/ROM
-    membus = TristateSignal(intbv(0)[32:])
-    memaddr = Signal(intbv(0)[32:])
-
-    def createMAR():
-        mar = registerr(clk, reset, enMAR, bbus, memaddr)
-
-        return mar
-
-    def createMDR():
-        mdr2tristate = Signal(intbv(0)[32:])
-
-        mdr = registerr(clk, reset, enMDR, bbus, mdr2tristate)
-        mdrTristate = tristate(mdr2tristate, MDRbuf, membus.driver())
-
-        return mdr, mdrTristate
-
-    def createMRR():
-        mrr2tristate = Signal(intbv(0)[32:])
-
-        mrr = registerr(clk, reset, enMRR, membus, mrr2tristate)
-        mrrTristate = tristate(mrr2tristate, MRRbuf, bbus.driver())
-
-        return mrr, mrrTristate
+    ##############
+    ### MEMORY ###
+    ##############
 
     def createMemory():
-        #TODO just use the first n bits of the addr for the ram/rom
-        outputE, outputW, csRam, csRom= [Signal(bool(0)) for _ in range(4)]
-        realaddr = Signal(intbv(0)[31:])
+        membus = TristateSignal(intbv(0)[32:])
+        memaddr = Signal(intbv(0)[32:])
 
-        msbSignSelector = selectBit(memaddr, csRam, 31)
-        msbSignNegate = negation(csRam, csRom)
-        addrSelector = bitrange(memaddr, realaddr, 0, 31)
+        ### MMU
+        enO, enW, csA, csO = [Signal(bool(0)) for _ in range(4)]
 
-        ffmOe = dff(clk, mOe, outputE)
-        ffmWe = dff(clk, mWe, outputW)
+        def createMmuTristate():
+            mmuOut = Signal(intbv(0)[32:])
 
-        ram = pseudoram(clk, outputW, outputE, csRam, realaddr, membus, membus.driver(), depth=512)
-        rom = pseudorom(outputE, csRom, realaddr, membus.driver(), romContent)
 
-        return msbSignSelector, msbSignNegate, addrSelector, ffmOe, ffmWe, ram, rom
+            Mmu = mmu(clk, enMmu, bbus, mmuOut, readybit, memaddr, membus, enO, enW, csA, csO)
+            mmuTristate = tristate(mmuOut, mmuBuf, bbus.driver())
+
+            return Mmu, mmuTristate
+
+        ### RAM
+        def createRam():
+            ram = pseudoram(clk, enW, enO, csA, memaddr, membus, membus.driver(), depth=1024)
+
+            return ram
+
+        ### ROM
+        def createRom():
+            rom = pseudorom(enO, csO, memaddr, membus.driver(), romContent)
+
+            return rom
+
+        result = createMmuTristate(), createRam(), createRom()
+        return result
 
     result = createIR(), createCPU(), createStatusFlags(), createRegisterBank(), createALUBuf(), createJumpUnit(), createPcBuf(), createAddr14Buf(), createOp2Buf(), createAddrBuf(),\
-             createMAR(), createMDR(), createMRR(), createMemory()
+             createMemory()
 
+    interesting.append(bbus)
+    interesting.append(readybit)
     return result

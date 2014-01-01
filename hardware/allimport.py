@@ -9,6 +9,7 @@ from irdecoder import irdecoder
 from jumpunit import jumpunit
 from logic import *
 from mux import mux21, mux41
+from mmu import mmu
 from pc import programcounter
 from pseudoram import pseudoram
 from pseudorom import pseudorom

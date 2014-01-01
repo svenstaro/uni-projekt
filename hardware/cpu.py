@@ -2,11 +2,11 @@
 from myhdl import *
 
 
-def cpu(clk, reset, addr,
+def cpu(clk, reset, addr, readybit,
         addrymux1, addrymux0, pmux,
         addrBuf, op2Buf, addr14Buf, ryBuf, aluBuf, pcBuf,
         enAlu, enIr, enPc, enReg, enJump, enCall, enSup,
-        enMRR, enMDR, enMAR, MRRbuf, MDRbuf, mWe, mOe):
+        enMMU, mmuBuf):
     """
         This is a cpu state maschine. Let's see how far we come.
         All parameters are Signals as usual.
@@ -14,6 +14,7 @@ def cpu(clk, reset, addr,
         clk       (Ibool) -- The clock
         reset     (Ireset)-- The reset signal
         addr      (I5)    -- Next action
+        readybit  (Ibool) -- readybit from MMU
         addrymux1 (Obool) -- mux1 for reginput
         addrymux0 (Obool) -- mux0 for reginput
         pmux      (Obool) -- if true, dx will be incremented by 4, decremented otherwise (used for push/pop)
@@ -31,13 +32,7 @@ def cpu(clk, reset, addr,
         enJump    (Obool) -- enable jumping
         enCall    (Obool) -- force jumping
         enSup     (Obool) -- enable statusUpdate
-        enMRR     (Obool) -- enable MemoryReadRegister
-        enMDR     (Obool) -- enable MemoryDataRegister
-        enMAR     (Obool) -- enable MemoryAddressRegister
-        MRRbuf    (Obool) -- bufbit MemoryReadRegister
-        MDRbuf    (Obool) -- bufbit MemoryDataRegister
-        mWe       (Obool) -- memoryWriteEnable
-        mOe       (Obool) -- memoryOutputEnable
+        enMMU     (Obool) -- enable Memory managment unit
     """
 
     tState = enum('UNKNOWN', 'FETCH', 'DECODE', 'ALUOP', 'JUMP', 'LOAD', 'STORE',
@@ -64,13 +59,8 @@ def cpu(clk, reset, addr,
         enSup.next = False
         enJump.next = False
         enCall.next = False
-        enMRR.next = False
-        enMDR.next = False
-        enMAR.next = False
-        MRRbuf.next = False
-        MDRbuf.next = False
-        mWe.next = False
-        mOe.next = False
+        enMMU.next = False
+        mmuBuf.next = False
 
         if __debug__:
             print state
@@ -100,19 +90,22 @@ def cpu(clk, reset, addr,
 
         ##### FETCHING
         elif state == tState.FETCH:
-            substate.next = substate + 1
-            if   substate == 0:
-                pcBuf.next = True
-                enMAR.next = True
-            elif substate == 1:
-                mOe.next = True
-            elif substate == 2:
-                enMRR.next = True
-            elif substate == 3:
-                MRRbuf.next = True
-                enIr.next = True
-                substate.next = 0
-                state.next = tState.DECODE
+            if not readybit and substate == 0: #check if we can begin
+                pass
+            else:
+                if substate == 0:
+                    enMMU.next = True
+                    pcBuf.next = True
+                    substate.next = substate + 1
+                elif substate == 1:
+                    substate.next = substate + 1 # specification says, wait at least 1 cycle!
+                elif not readybit:
+                    pass
+                elif readybit:
+                    mmuBuf.next = True
+                    enIr.next = True
+                    substate.next = 0
+                    state.next = tState.DECODE
 
         ##### DECODING
         elif state == tState.DECODE:
@@ -135,37 +128,40 @@ def cpu(clk, reset, addr,
 
         ##### LOADING
         elif state == tState.LOAD:
-            substate.next = substate + 1
-            if substate == 0:
-                addrBuf.next = True
-                enMAR.next = True
-            elif substate == 1:
-                mOe.next = True
-            elif substate == 2:
-                enMRR.next = True
-            elif substate == 3:
-                MRRbuf.next = True
-                enReg.next = True
-                substate.next = 0
-                state.next = tState.FETCH
+            if not readybit and substate == 0: # check if we can begin
+                pass
+            else:
+                if substate == 0:
+                    enMMU.next = True
+                    addrBuf.next = True
+                    substate.next = substate + 1
+                elif substate == 1:
+                    substate.next = substate + 1 # specification says, wait at least 1 cycle!
+                elif not readybit:
+                    pass
+                elif readybit:
+                    mmuBuf.next = True
+                    enReg.next = True
+                    substate.next = 0
+                    state.next = tState.FETCH
 
         ##### STORING DATA INTO RAM
         elif state == tState.STORE:
-            substate.next = substate + 1
-            if substate == 0:
-                addrymux0.next = True
-                addrymux1.next = True
-                ryBuf.next = True
-                enMAR.next = True
-            elif substate == 1:
-                op2Buf.next = True # the actual value to bus
-                enMDR.next = True
-            elif substate == 2:
-                mWe.next    = True # 1 cycle delay
-            elif substate == 3:
-                MDRbuf.next = True
-                substate.next = 0
-                state.next = tState.FETCH
+            if not readybit and substate == 0: # check if we can begin
+                pass
+            else:
+                if substate == 0:
+                    addrymux0.next = True
+                    addrymux1.next = True
+                    ryBuf.next = True
+                    enMMU.next = True
+                    substate.next = substate + 1
+                elif substate == 1:
+                    op2Buf.next = True # the actual value to bus
+                    enMMU.next = True
+                    substate.next = 0
+                    state.next = tState.FETCH
+
 
         ##### ADRESS INSTR
         elif state == tState.ADR:
@@ -175,48 +171,51 @@ def cpu(clk, reset, addr,
 
         ##### PUSH
         elif state == tState.PUSH:
-            substate.next = substate + 1
-            if substate == 0:
-                addrymux1.next = True # decrement $14 by four
-                pmux.next = False # yep, false!
-                enReg.next = True
-                addr14Buf.next = True
-            elif substate == 1:
-                addrymux1.next = True # put $14 to memaddr
-                ryBuf.next = True
-                enMAR.next = True
-            elif substate == 2:
-                op2Buf.next = True
-                enMDR.next = True
-                mWe.next    = True # 1 cycle delay!
-            elif substate == 3:
-                MDRbuf.next = True
-                substate.next = 0
-                state.next = tState.FETCH
+            if not readybit and substate == 0: # check if we can begin
+                pass
+            else:
+                if substate == 0:
+                    addrymux1.next = True # decrement $14 by four
+                    pmux.next = False # yep, false!
+                    enReg.next = True
+                    addr14Buf.next = True
+                    substate.next = substate + 1
+                elif substate == 1:
+                    addrymux1.next = True # put $14 to memaddr
+                    ryBuf.next = True
+                    enMMU.next = True
+                    substate.next = substate + 1
+                elif substate == 2:
+                    op2Buf.next = True
+                    enMMU.next = True
+                    substate.next = 0
+                    state.next = tState.FETCH
 
         ##### POP
         elif state == tState.POP:
-            substate.next = substate + 1
-            if substate == 0:
-                addrymux1.next = True # put $14 to memaddr
-                ryBuf.next = True
-                enMAR.next = True
-            elif substate == 1:
-                mOe.next = True
-            elif substate == 2:
-                enMRR.next = True
-            elif substate == 3:
-                MRRbuf.next = True
-                addrymux1.next = True
-                addrymux0.next = True
-                enReg.next = True
-            elif substate == 4:
-                addrymux1.next = True # increment $14 by 4
-                pmux.next = True
-                enReg.next = True
-                addr14Buf.next = True
-                substate.next = 0
-                state.next = tState.FETCH
+            if not readybit and substate == 0: # check if we can begin
+                pass
+            else:
+                if substate == 0:
+                    addrymux1.next = True # put $14 to memaddr
+                    ryBuf.next = True
+                    enMMU.next = True
+                    substate.next = substate + 1
+                elif substate == 1: # while we wait, we increment $14 by 4
+                    addrymux1.next = True
+                    pmux.next = True
+                    enReg.next = True
+                    addr14Buf.next = True
+                    substate.next = substate + 1
+                elif not readybit:
+                    pass
+                elif readybit:
+                    mmuBuf.next = True
+                    addrymux1.next = True
+                    addrymux0.next = True
+                    enReg.next = True
+                    substate.next = 0
+                    state.next = tState.FETCH
 
         ##### CALL
         elif state == tState.CALL:

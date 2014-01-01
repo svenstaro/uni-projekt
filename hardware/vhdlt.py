@@ -1,4 +1,5 @@
 import sys
+import time
 
 sys.path.append("/home/marcel/studium/WISE1314/Projekt/")
 sys.path.append("/home/marcel/studium/WISE1314/Projekt/assembler/")
@@ -14,11 +15,18 @@ class DutClass():
         self.clk = Signal(bool(0))
         self.reset = ResetSignal(0, 1, True)
         self.data = data
-        self.bus = TristateSignal(intbv(0)[32:])
-    def Gens(self, trace = False):
-        args = [self.clk, self.reset, self.data, self.bus]
 
-        return traceSignals(mk.mk, *args) if trace else mk.mk(*args)
+
+    def Gens(self, trace = False):
+        interesting = []
+        args = [self.clk, self.reset, self.data, interesting]
+
+        result = traceSignals(mk.mk, *args) if trace else mk.mk(*args)
+        self.bus = interesting[0]
+        self.ready = interesting[1]
+
+        return result
+
 
 def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False, data=()):
     """ Generates a Simulation Object """
@@ -28,7 +36,7 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False, data=()):
 
     @always(delay(clkfreq))
     def clkGen():
-        #time.sleep(0.05)
+        #time.sleep(0.01)
         dut_cl.clk.next = not dut_cl.clk
 
     @instance
@@ -55,12 +63,13 @@ if __name__ == "__main__":
         while True:
             yield cl.clk.posedge
             if cl.bus == 0b01000011111111111111111111111100: #halt
-                raise StopSimulation("HALT DETECTED")
-            elif (not (cl.bus._val is None)) and cl.bus[32:27] == 0b11111: #swi
+                raise StopSimulation("HALT DETECTED (%s)" % now())
+            elif (not (cl.bus._val is None)) and cl.bus[32:26] == 0b111110: #swi
                 yield cl.clk.posedge
                 yield cl.clk.posedge
                 yield cl.clk.posedge
-                print "SWI: " + str(cl.bus)
+                yield cl.clk.negedge
+                print "SWI (%s): %s" % (now(), str(cl.bus._val))
 
     #     d = DutClass(data)
     #     conversion.analyze(mk.mk, d.clk, d.reset, d.data

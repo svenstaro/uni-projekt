@@ -28,7 +28,6 @@ def pseudoram(clk, we, oe, cs, addr, din, dout, depth=128):
                 a = bin(mem[int(addr)] << 24 | mem[int(addr)+1] << 16 | mem[int(addr)+2] << 8 | mem[int(addr)+3], width=32)
                 print "RAM (" + '0x%02X' % addr + "): " + ' '.join(map(lambda *xs: ''.join(xs), *[iter(a)]*8))
 
-            #dout.next = mem[int(addr)]
             dout.next = mem[int(addr)] << 24 | mem[int(addr)+1] << 16 | mem[int(addr)+2] << 8 | mem[int(addr)+3]
 
     return write, read

@@ -40,17 +40,10 @@ def cpu(clk, reset, addr,
         mOe       (Obool) -- memoryOutputEnable
     """
 
-    tState = enum('UNKNOWN',
-                  'FETCH', 'FETCH2', 'FETCH3', 'FETCH4',
-                  'DECODE', 'ALUOP', 'JUMP',
-                  'LOAD', 'LOAD2', 'LOAD3', 'LOAD4',
-                  'STORE', 'STORE2', 'STORE3', 'STORE4',
-                  'ADR',
-                  'PUSH', 'PUSH2', 'PUSH3', 'PUSH4',
-                  'POP', 'POP2', 'POP3', 'POP4', 'POP5',
-                  'CALL', 'CALL2',
-                  'SWI', 'ILLEGAL', 'HALT')  # TODO add more
+    tState = enum('UNKNOWN', 'FETCH', 'DECODE', 'ALUOP', 'JUMP', 'LOAD', 'STORE',
+                  'ADR', 'PUSH', 'POP', 'CALL', 'SWI', 'ILLEGAL', 'HALT')  # TODO add more
     state = Signal(tState.FETCH)
+    substate = Signal(intbv(0)[4:])
 
     @always_seq(clk.posedge, reset=reset)
     def logic():
@@ -107,19 +100,19 @@ def cpu(clk, reset, addr,
 
         ##### FETCHING
         elif state == tState.FETCH:
-            pcBuf.next = True
-            enMAR.next = True
-            state.next = tState.FETCH2
-        elif state == tState.FETCH2:
-            mOe.next = True
-            state.next = tState.FETCH3
-        elif state == tState.FETCH3:
-            enMRR.next = True
-            state.next = tState.FETCH4
-        elif state == tState.FETCH4:
-            MRRbuf.next = True
-            enIr.next = True
-            state.next = tState.DECODE
+            substate.next = substate + 1
+            if   substate == 0:
+                pcBuf.next = True
+                enMAR.next = True
+            elif substate == 1:
+                mOe.next = True
+            elif substate == 2:
+                enMRR.next = True
+            elif substate == 3:
+                MRRbuf.next = True
+                enIr.next = True
+                substate.next = 0
+                state.next = tState.DECODE
 
         ##### DECODING
         elif state == tState.DECODE:
@@ -142,37 +135,37 @@ def cpu(clk, reset, addr,
 
         ##### LOADING
         elif state == tState.LOAD:
-            addrBuf.next = True
-            enMAR.next = True
-            state.next = tState.LOAD2
-        elif state.next == tState.LOAD2:
-            mOe.next = True
-            state.next = tState.LOAD3
-        elif state == tState.LOAD3:
-            enMRR.next = True
-            state.next = tState.LOAD4
-        elif state== tState.LOAD4:
-            MRRbuf.next = True
-            enReg.next = True
-            state.next = tState.FETCH
+            substate.next = substate + 1
+            if substate == 0:
+                addrBuf.next = True
+                enMAR.next = True
+            elif substate == 1:
+                mOe.next = True
+            elif substate == 2:
+                enMRR.next = True
+            elif substate == 3:
+                MRRbuf.next = True
+                enReg.next = True
+                substate.next = 0
+                state.next = tState.FETCH
 
         ##### STORING DATA INTO RAM
         elif state == tState.STORE:
-            addrymux0.next = True
-            addrymux1.next = True
-            ryBuf.next = True
-            enMAR.next = True
-            state.next = tState.STORE2
-        elif state == tState.STORE2:
-            op2Buf.next = True # the actual value to bus
-            enMDR.next = True
-            state.next = tState.STORE3
-        elif state == tState.STORE3:
-            mWe.next    = True # 1 cycle delay
-            state.next = tState.STORE4
-        elif state == tState.STORE4:
-            MDRbuf.next = True
-            state.next = tState.FETCH
+            substate.next = substate + 1
+            if substate == 0:
+                addrymux0.next = True
+                addrymux1.next = True
+                ryBuf.next = True
+                enMAR.next = True
+            elif substate == 1:
+                op2Buf.next = True # the actual value to bus
+                enMDR.next = True
+            elif substate == 2:
+                mWe.next    = True # 1 cycle delay
+            elif substate == 3:
+                MDRbuf.next = True
+                substate.next = 0
+                state.next = tState.FETCH
 
         ##### ADRESS INSTR
         elif state == tState.ADR:
@@ -181,61 +174,62 @@ def cpu(clk, reset, addr,
             state.next = tState.FETCH
 
         ##### PUSH
-        elif state == tState.PUSH: # TODO Push pop is maybe incorrect
-            addrymux1.next = True # decrement $14 by four
-            pmux.next = False # yep, false!
-            enReg.next = True
-            addr14Buf.next = True
-            state.next = tState.PUSH2
-        elif state == tState.PUSH2:
-            addrymux1.next = True # put $14 to memaddr
-            ryBuf.next = True
-            enMAR.next = True
-            state.next = tState.PUSH3
-        elif state == tState.PUSH3:
-            op2Buf.next = True
-            enMDR.next = True
-            mWe.next    = True # 1 cycle delay!
-            state.next = tState.PUSH4
-        elif state == tState.PUSH4:
-            MDRbuf.next = True
-            state.next = tState.FETCH
+        elif state == tState.PUSH:
+            substate.next = substate + 1
+            if substate == 0:
+                addrymux1.next = True # decrement $14 by four
+                pmux.next = False # yep, false!
+                enReg.next = True
+                addr14Buf.next = True
+            elif substate == 1:
+                addrymux1.next = True # put $14 to memaddr
+                ryBuf.next = True
+                enMAR.next = True
+            elif substate == 2:
+                op2Buf.next = True
+                enMDR.next = True
+                mWe.next    = True # 1 cycle delay!
+            elif substate == 3:
+                MDRbuf.next = True
+                substate.next = 0
+                state.next = tState.FETCH
 
         ##### POP
         elif state == tState.POP:
-            addrymux1.next = True # put $14 to memaddr
-            ryBuf.next = True
-            enMAR.next = True
-            state.next = tState.POP2
-        elif state == tState.POP2:
-            mOe.next = True
-            state.next = tState.POP3
-        elif state == tState.POP3:
-            enMRR.next = True
-            state.next = tState.POP4
-        elif state == tState.POP4:
-            MRRbuf.next = True
-            addrymux1.next = True
-            addrymux0.next = True
-            enReg.next = True
-            state.next = tState.POP5
-        elif state == tState.POP5:
-            addrymux1.next = True # increment $14 by 4
-            pmux.next = True
-            enReg.next = True
-            addr14Buf.next = True
-            state.next = tState.FETCH
+            substate.next = substate + 1
+            if substate == 0:
+                addrymux1.next = True # put $14 to memaddr
+                ryBuf.next = True
+                enMAR.next = True
+            elif substate == 1:
+                mOe.next = True
+            elif substate == 2:
+                enMRR.next = True
+            elif substate == 3:
+                MRRbuf.next = True
+                addrymux1.next = True
+                addrymux0.next = True
+                enReg.next = True
+            elif substate == 4:
+                addrymux1.next = True # increment $14 by 4
+                pmux.next = True
+                enReg.next = True
+                addr14Buf.next = True
+                substate.next = 0
+                state.next = tState.FETCH
 
         ##### CALL
         elif state == tState.CALL:
-            pcBuf.next = True
-            addrymux0.next = True
-            enReg.next = True
-            state.next = tState.CALL2
-        elif state == tState.CALL2:
-            enCall.next = True
-            enPc.next = True
-            state.next = tState.FETCH
+            substate.next = substate + 1
+            if substate == 0:
+                pcBuf.next = True
+                addrymux0.next = True
+                enReg.next = True
+            elif substate == 1:
+                enCall.next = True
+                enPc.next = True
+                substate.next = 0
+                state.next = tState.FETCH
 
         ##### SWI
         elif state == tState.SWI:

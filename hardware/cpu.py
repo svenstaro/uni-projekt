@@ -197,7 +197,6 @@ def cpu(clk, reset, addr,
             enMDR.next = True
             state.next = tState.STORE3
         elif state== tState.STORE3:
-            enMDR.next  = True
             mWe.next    = True #1 cycle delay
             state.next = tState.STORE4
         elif state == tState.STORE4:

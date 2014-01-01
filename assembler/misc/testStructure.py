@@ -1,5 +1,5 @@
-from errors import EncodingError, DecodingError
-from state import DecodingState, EncodingState
+from assembler.errors import EncodingError, DecodingError
+from assembler.misc.state import DecodingState, EncodingState
 
 
 #noinspection PyUnresolvedReferences

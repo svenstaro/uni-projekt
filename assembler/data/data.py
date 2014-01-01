@@ -1,4 +1,4 @@
-from ..structure import Structure
+from ..misc.structure import Structure
 
 
 class Data(Structure):

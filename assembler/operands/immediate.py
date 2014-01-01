@@ -1,8 +1,7 @@
 import string
-
+from ..misc import tools
 from .operand import Operand
 from ..errors import EncodingError, DecodingError
-from .. import tools
 
 
 def Immediate(size):

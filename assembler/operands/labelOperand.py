@@ -1,6 +1,6 @@
+from ..misc import tools
 from ..errors import EncodingError
 from .operand2 import Operand2
-from .. import tools
 
 
 class LabelOperand(Operand2(25)):

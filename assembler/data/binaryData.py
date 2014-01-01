@@ -1,7 +1,8 @@
+import ast
+
+from ..misc import tools
 from .data import Data
 from ..errors import EncodingError
-from .. import tools
-import ast
 
 
 class BinaryData(Data):

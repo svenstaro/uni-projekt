@@ -1,8 +1,8 @@
 import unittest
 
 
-from asm.testStructure import TestStructure
-from asm.operands import Register
+from assembler.misc.testStructure import TestStructure
+from assembler.operands import Register
 
 class TestRegister(unittest.TestCase, TestStructure):
     def setUp(self):

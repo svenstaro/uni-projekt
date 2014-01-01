@@ -1,6 +1,6 @@
 import re
 
-from ..structure import Structure
+from ..misc.structure import Structure
 from ..errors import EncodingError
 from ..operands import Ignore, Operand
 from ..operands.opcodes import OpcodesBaseClass

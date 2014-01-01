@@ -1,8 +1,8 @@
 # TODO
 import unittest
 
-from asm.testStructure import TestStructure
-from asm.operands import Operand2
+from assembler.misc.testStructure import TestStructure
+from assembler.operands import Operand2
 
 
 class TestOperand2(TestStructure, unittest.TestCase):

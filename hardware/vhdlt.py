@@ -1,15 +1,11 @@
 import sys
-import os
 
 sys.path.append("/home/marcel/studium/WISE1314/Projekt/")
 sys.path.append("/home/marcel/studium/WISE1314/Projekt/assembler/")
 sys.path.append("/home/marcel/studium/WISE1314/Projekt/assembler/operations/")
 
+import mk, struct, os
 from myhdl import *
-import logging
-import mk
-import time
-import struct
 from allimport import *
 
 class DutClass():
@@ -47,8 +43,6 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False, data=()):
     return Simulation(dut, clkGen, stimulus)
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
-
     try:
         with open(sys.argv[1]) as f:
             size = os.path.getsize(f.name)//4

@@ -1,6 +1,7 @@
 from .data import Data
 from ..errors import EncodingError
 from .. import tools
+import ast
 
 
 class AsciiData(Data):
@@ -17,10 +18,15 @@ class AsciiData(Data):
 
     @classmethod
     def fromText(cls, arg, state):
+        ex = EncodingError(arg, "is not a valid %s" % cls.__name__)
         if not cls.isValidText(arg):
-            raise EncodingError(arg, "is not a valid %s" % cls.__name__)
-        data = arg[len(cls.start):]
-        data = data.decode("string_escape")
+            raise ex
+        try:
+            data = ast.literal_eval(arg[len(cls.start):])
+        except SyntaxError:
+            raise ex
+	if not isinstance(data, str):
+            raise ex
 
         binary = ''.join(tools.tobin(ord(byte), width=8) for byte in data)
         return cls(arg, binary)

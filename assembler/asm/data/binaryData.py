@@ -19,6 +19,8 @@ class BinaryData(Data):
                 number = ast.literal_eval(data)
             except SyntaxError:
                 raise ex
+            if not isinstance(number, (int,long)):
+                raise ex
         if not -2 ** (cls.size - 1) <= number <= 2 ** cls.size - 1:
             raise ex
         binary = tools.tobin(number, cls.size)

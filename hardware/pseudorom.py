@@ -10,7 +10,6 @@ def pseudorom(oe, cs, addr, dout, mem):
         dout.next = None
 
         if cs and oe:
-            print int(addr)//4
             assert int(addr)//4 < len(mem)
 
             if __debug__:

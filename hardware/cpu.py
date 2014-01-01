@@ -52,33 +52,6 @@ def cpu(clk, reset, addr,
                   'SWI', 'ILLEGAL', 'HALT')  # TODO add more
     state = Signal(tState.FETCH)
 
-    def loadFromRam():
-        """Takes the addr from the bus and puts the value from the memory to the bus"""
-        assert False #DO NOT USE!
-        enMAR.next = True
-        yield clk.posedge
-        #presetSignals()
-        mOe.next = True
-        yield clk.posedge #TODO add delay for timing
-        #presetSignals()
-        mOe.next = True
-        enMRR.next = True
-        yield clk.posedge
-        #presetSignals()
-        MRRbuf.next = True
-
-    def saveToRam():
-        """Takes the value from the bus and takes it to the addr. MAR must have the addr already"""
-        assert False #DO NOT USE!
-        enMDR.next = True
-        yield clk.posedge
-        enMDR.next  = True
-        yield clk.posedge
-        #presetSignals()
-        MDRbuf.next = True
-        mWe.next    = True
-        yield clk.posedge #TODO add delay for timing
-
     @always_seq(clk.posedge, reset=reset)
     def logic():
         ##### Presetting signals!

@@ -74,11 +74,14 @@ class Cpu(object):
             self.executeAdrOp(command)
         elif command & 0xF0000000 == 0xE0000000:
             self.executeStackOperation(command)
-        elif command & 0xF8000000 == 0xF0000000:
+        elif command & 0xFC000000 == 0xF0000000:
             self.executeCallOp(command)
-        elif command & 0xF8000000 == 0xF8000000:
+        elif command & 0xFC000000 == 0xF8000000:
             self.executeSwiOp(command)
+        elif command & 0xFC000000 == 0xFC000000:
+            self.executeClkOp(command)
         else:
+            print "INVALID OPCODE!"
             pass  # TODO: Invalid opcode
 
     def executeAluOp(self, command):
@@ -136,6 +139,11 @@ class Cpu(object):
             if value & high == high:
                 value -= 2 ** 32
             os.write(1, str(value)+'\n')
+
+    def executeClkOp(self, command):
+        op2 = command & 0x01FFFFFF
+        _, src = op2decode(op2, 25)
+        self.register[src] = self.counter
 
     def executeCallOp(self, command):
         self.register[15] = self.pc & mask

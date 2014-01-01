@@ -11,9 +11,6 @@ class DutClass():
         self.en, self.z, self.n, self.cin, self.v = [Signal(bool(0)) for _ in range(5)]
         self.cout = Signal(bool(0))
 
-        self.clk = Signal(bool(0))
-        self.reset = ResetSignal(0,1,True)
-
         self.opc = Signal(intbv(0)[4:])
         self.A, self.B= [Signal(intbv(0)[32:]) for _ in range(2)]
         self.R = Signal(modbv(0)[32:])
@@ -29,10 +26,6 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
 
     dut_cl = cl()
 
-    @always(delay(clkfreq))
-    def clkGen():
-        dut_cl.clk.next = not dut_cl.clk
-
     @instance
     def stimulus():
         dut_cl.en.next = True
@@ -40,7 +33,7 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
         raise StopSimulation
 
     dut = dut_cl.Gens(trace=trace)
-    return Simulation(dut, clkGen, stimulus)
+    return Simulation(dut, stimulus)
 
 class TestAluArithmetic(TestCase):
     def testArithmetic(self):
@@ -93,7 +86,9 @@ class TestAluArithmetic(TestCase):
         def verify(cl, dut):
             #opcode, A, B, result
             tests = {
-                0b0011: [(0b0101, 0b1000, 0b0101)], #ADN
+                0b0011: [(0b0101, 0b1000, 0b0101), #ADN
+                         (0b0000, 0b0000, 0b0000),
+                         (0b1001, 0b0000, 0b1001)],
                 0b1000: [(0b0010, 0b1111, 0b0010), #AND
                          (0b1100, 0b0101, 0b0100),
                          (0b1110, 0b0001, 0b0000)],
@@ -152,4 +147,32 @@ class TestAluArithmetic(TestCase):
         genSim(verify).run()
 
     def testStatusFlags(self):
-        pass #TODO
+        """Check if the status flags are set properly"""
+        def verify(cl, dut):
+            """@type cl: DutClass"""
+
+            n = None
+            t = True
+            f = False
+
+            # opcode:    (A, B, Cin, R, Z, N, C, V)
+            cases = {
+                0b0000: [(0, 0, f, 0, t, f, f, f)]
+            }
+
+            cl.en.next = True
+            for opc,tests in cases.iteritems():
+                cl.opc.next = opc
+                for e in tests:
+                    cl.A.next = e[0]
+                    cl.B.next = e[1]
+                    cl.cin.next = e[2]
+                    yield delay(1)
+                    self.assertEquals(e[3], cl.R)
+                    self.assertEquals(e[4], cl.z)
+                    self.assertEquals(e[5], cl.n)
+                    self.assertEquals(e[6], cl.cout)
+                    self.assertEquals(e[7], cl.v)
+
+
+        genSim(verify).run()

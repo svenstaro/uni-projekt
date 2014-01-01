@@ -41,7 +41,7 @@ def cpu(clk, reset, addr,
     """
 
     tState = enum('UNKNOWN',
-                  'FETCH', 'FETCH2', 'FETCH3',
+                  'FETCH', 'FETCH2', 'FETCH3', 'FETCH4',
                   'DECODE', 'ALUOP', 'JUMP',
                   'LOAD', 'LOAD2', 'LOAD3', 'LOAD4',
                   'STORE', 'STORE2', 'STORE3', 'STORE4',
@@ -136,12 +136,14 @@ def cpu(clk, reset, addr,
         elif state == tState.FETCH:
             pcBuf.next = True
             enMAR.next = True
-            mOe.next = True
             state.next = tState.FETCH2
         elif state == tState.FETCH2:
-            enMRR.next = True
+            mOe.next = True
             state.next = tState.FETCH3
-        elif state ==tState.FETCH3:
+        elif state == tState.FETCH3:
+            enMRR.next = True
+            state.next = tState.FETCH4
+        elif state == tState.FETCH4:
             MRRbuf.next = True
             enIr.next = True
             state.next = tState.DECODE
@@ -236,7 +238,6 @@ def cpu(clk, reset, addr,
             mOe.next = True
             state.next = tState.POP3
         elif state == tState.POP3:
-            mOe.next = True
             enMRR.next = True
             state.next = tState.POP4
         elif state == tState.POP4:

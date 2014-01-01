@@ -191,9 +191,11 @@ def cpu(clk, reset, addr,
         elif state == tState.STORE2:
             op2Buf.next = True #the actual value to bus
             enMDR.next = True
-            mWe.next    = True #1 cycle delay
             state.next = tState.STORE3
-        elif state== tState.STORE3:
+        elif state == tState.STORE3:
+            mWe.next    = True #1 cycle delay
+            state.next = tState.STORE4
+        elif state == tState.STORE4:
             MDRbuf.next = True
             state.next = tState.FETCH
 

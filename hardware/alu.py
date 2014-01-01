@@ -61,9 +61,9 @@ def alu(opc, en, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
                 assert False
 
             Z.next = result == 0
-            N.next = result < 0
-            #C.next = intbv(result)[bitwidth]
-            #V.next = (A[bitwidth-1] == B[bitwidth-1]) and (A[bitwidth-1] == (not intbv(result)[bitwidth-1]))
+            N.next = intbv(result)[bitwidth-1]
+            C.next = intbv(result)[bitwidth]
+            V.next = (A[bitwidth-1] == B[bitwidth-1]) and (A[bitwidth-1] == (not intbv(result)[bitwidth-1]))
 
             Res.next = result
 

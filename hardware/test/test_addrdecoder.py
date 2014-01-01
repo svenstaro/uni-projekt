@@ -1,6 +1,6 @@
 from unittest import TestCase
 from myhdl import *
-from addrdecoder import *
+from hardware.addrdecoder import *
 
 
 class DutClass():

@@ -1,7 +1,7 @@
 from unittest import TestCase
 from myhdl import *
 from random import randrange
-from mux import *
+from hardware.mux import *
 
 class DutClass41():
     """Wrapper around DUT"""

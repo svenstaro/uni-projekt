@@ -1,8 +1,6 @@
 from unittest import TestCase
 from myhdl import *
-from pc import *
-from adder import *
-from pc import programcounter
+from hardware.pc import *
 
 
 class DutClass():

@@ -2,8 +2,7 @@
 
 from unittest import TestCase
 from myhdl import *
-from alu import *
-from register import *
+from hardware.alu import *
 
 class DutClass():
     """Wrapper around DUT"""
@@ -171,7 +170,9 @@ class TestAluArithmetic(TestCase):
                     cl.A.next = e[0]
                     cl.B.next = e[1]
                     cl.cin.next = e[2]
+
                     yield delay(1)
+
                     if e[3] is not None:
                         self.assertEquals(e[3], cl.R)
                     if e[4] is not None:

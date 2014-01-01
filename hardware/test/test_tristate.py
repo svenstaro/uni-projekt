@@ -1,6 +1,6 @@
 from unittest import TestCase
 from myhdl import *
-from tristate import *
+from hardware.tristate import *
 
 class DutClass():
     """Wrapper around DUT"""

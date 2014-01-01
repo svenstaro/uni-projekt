@@ -1,6 +1,6 @@
 from unittest import TestCase
 from myhdl import *
-from irdecoder import *
+from hardware.irdecoder import *
 
 class DutClass():
     """Wrapper around DUT"""

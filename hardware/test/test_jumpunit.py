@@ -1,6 +1,6 @@
 from unittest import TestCase
 from myhdl import *
-from jumpunit import *
+from hardware.jumpunit import *
 
 class DutClass():
     """Wrapper around DUT"""

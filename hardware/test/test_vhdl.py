@@ -1,8 +1,4 @@
 from myhdl import *
-import sys
-sys.path.append("/home/marcel/studium/WISE1314/Projekt/")
-sys.path.append("/home/marcel/studium/WISE1314/Projekt/assembler/")
-sys.path.append("/home/marcel/studium/WISE1314/Projekt/assembler/operations/")
 from hardware.allimport import *
 
 def verify(dut, *args):

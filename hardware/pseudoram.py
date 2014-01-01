@@ -1,6 +1,6 @@
 from myhdl import *
 
-def pseudoram(clk, we, oe, cs, addr, din, data_out, depth=128):
+def pseudoram(clk, we, oe, cs, addr, din, dout, depth=128):
     """This is a pseudoram
     """
 
@@ -19,7 +19,7 @@ def pseudoram(clk, we, oe, cs, addr, din, data_out, depth=128):
 
     @always_comb
     def read():
-        data_out.next = None
+        dout.next = None
 
         if cs and oe:
             assert int(addr) < len(mem)
@@ -28,7 +28,7 @@ def pseudoram(clk, we, oe, cs, addr, din, data_out, depth=128):
                 a = bin(mem[int(addr)] << 24 | mem[int(addr)+1] << 16 | mem[int(addr)+2] << 8 | mem[int(addr)+3], width=32)
                 print "RAM (" + '0x%02X' % addr + "): " + ' '.join(map(lambda *xs: ''.join(xs), *[iter(a)]*8))
 
-            #data_out.next = mem[int(addr)]
-            data_out.next = mem[int(addr)] << 24 | mem[int(addr)+1] << 16 | mem[int(addr)+2] << 8 | mem[int(addr)+3]
+            #dout.next = mem[int(addr)]
+            dout.next = mem[int(addr)] << 24 | mem[int(addr)+1] << 16 | mem[int(addr)+2] << 8 | mem[int(addr)+3]
 
     return write, read

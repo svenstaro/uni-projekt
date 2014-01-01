@@ -157,22 +157,31 @@ class TestAluArithmetic(TestCase):
 
             # opcode:    (A, B, Cin, R, Z, N, C, V)
             cases = {
-                0b0000: [(0, 0, f, 0, t, f, f, f)]
+                0b0000: [(0, 0, f, 0, t, f, f, f)], #add
+                0b0100: [(0, 1, f, n, f, t, f, t)], #sub
+                0b1111: [(1, 1, f, n, n, t, f, t)]  #ror
             }
 
             cl.en.next = True
             for opc,tests in cases.iteritems():
                 cl.opc.next = opc
                 for e in tests:
+                    assert 8 == len(e)  # do we have all in-/outputs?
+
                     cl.A.next = e[0]
                     cl.B.next = e[1]
                     cl.cin.next = e[2]
                     yield delay(1)
-                    self.assertEquals(e[3], cl.R)
-                    self.assertEquals(e[4], cl.z)
-                    self.assertEquals(e[5], cl.n)
-                    self.assertEquals(e[6], cl.cout)
-                    self.assertEquals(e[7], cl.v)
+                    if e[3] is not None:
+                        self.assertEquals(e[3], cl.R)
+                    if e[4] is not None:
+                        self.assertEquals(e[4], cl.z)
+                    if e[5] is not None:
+                        self.assertEquals(e[5], cl.n)
+                    if e[6] is not None:
+                        self.assertEquals(e[6], cl.cout)
+                    if e[7] is not None:
+                        self.assertEquals(e[7], cl.v)
 
 
         genSim(verify).run()

@@ -1,14 +1,14 @@
 #!/usr/bin/env python2
 
-from assembler.operations import getOperations
-from assembler.state import EncodingState, DecodingState
-from assembler.errors import EncodingError
+from asm.operations import getOperations
+from asm.state import EncodingState, DecodingState
+from asm.errors import EncodingError
 import struct
-from assembler import tools
+from asm import tools
 import sys
 import os
-from assembler.data import getData
-from assembler.data import WordData
+from asm.data import getData
+from asm.data import WordData
 import string
 
 

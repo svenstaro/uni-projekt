@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys, os
-decodeCommandStream = __import__('as').decodeCommandStream
+from assembler import decodeCommandStream
 
 
 def entry_point(argv):

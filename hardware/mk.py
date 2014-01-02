@@ -11,7 +11,7 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
     irImm24 = Signal(intbv(0)[24:])
     irImm16 = Signal(intbv(0)[16:])
     irJumpOp = Signal(intbv(0)[5:])
-    irPrefix = Signal(intbv(0)[5:])
+    irPrefix = Signal(intbv(0)[6:])
 
     def createIR():
         ir2idecoder = Signal(intbv(0)[32:])
@@ -24,14 +24,14 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
 
     ### cpu
     addrymux1, addrymux0, pmux = [Signal(bool(0)) for _ in range(3)]
-    bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC = [Signal(bool(0)) for _ in range(6)]
+    bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC, bufClk = [Signal(bool(0)) for _ in range(7)]
     enAlu, enIr, enPc, enReg, enJump, enCall, enSup = [Signal(bool(0)) for _ in range(7)]
     enMRR, enMAR, enMDR, MRRbuf, MDRbuf, mWe, mOe = [Signal(bool(0)) for _ in range(7)]
 
     def createCPU():
         Cpu = cpu(clk, reset, irPrefix,
                   addrymux1, addrymux0, pmux,
-                  bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC,
+                  bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC, bufClk,
                   enAlu, enIr, enPc, enReg, enJump, enCall, enSup,
                   enMRR, enMDR, enMAR, MRRbuf, MDRbuf, mWe, mOe)
         return Cpu
@@ -139,6 +139,18 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
 
         return add, addrMux, addrTristate
 
+    ### counterbuf
+
+    def createClkBuf():
+        constTrue = Signal(True)
+        constTrue.driven = True
+        clkOut = Signal(intbv(0)[32:])
+
+        clkTristate = tristate(clkOut, bufClk, bbus.driver())
+        clock = counter(clk, reset, constTrue, clkOut)
+
+        return clkTristate, clock
+
     ### RAM/ROM
     membus = TristateSignal(intbv(0)[32:])
     memaddr = Signal(intbv(0)[32:])
@@ -181,7 +193,8 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
 
         return msbSignSelector, msbSignNegate, addrSelector, ffmOe, ffmWe, ram, rom
 
-    result = createIR(), createCPU(), createStatusFlags(), createRegisterBank(), createALUBuf(), createJumpUnit(), createPcBuf(), createAddr14Buf(), createOp2Buf(), createAddrBuf(),\
+    result = createIR(), createCPU(), createStatusFlags(), createRegisterBank(), createALUBuf(), createJumpUnit(), \
+             createPcBuf(), createAddr14Buf(), createOp2Buf(), createAddrBuf(), createClkBuf(), \
              createMAR(), createMDR(), createMRR(), createMemory()
 
     return result

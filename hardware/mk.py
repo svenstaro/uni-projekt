@@ -1,7 +1,7 @@
 from myhdl import *
 from allimport import *
 
-def mk(clk, reset, romContent=(), interesting=[]):
+def mk(clk, reset, romContent=(), interesting=None):
     """ Oh crap! """
 
     ### the actual bus
@@ -195,6 +195,8 @@ def mk(clk, reset, romContent=(), interesting=[]):
     result = createIR(), createCPU(), createStatusFlags(), createRegisterBank(), createALUBuf(), createJumpUnit(), createPcBuf(), createAddr14Buf(), createOp2Buf(), createAddrBuf(), createClkBuf(),\
              createMemory()
 
-    interesting.append(bbus)
-    interesting.append(readybit)
+    if interesting is not None:
+        interesting.append(bbus)
+        interesting.append(readybit)
+
     return result

@@ -8,7 +8,8 @@ class DutClass():
         self.ir = Signal(intbv(0)[32:])
         self.aluop, self.dest, self.source, self.source2 = [Signal(intbv(0)[4:]) for _ in range(4)]
         self.op1, self.op2, self.statusUp = [Signal(intbv(0)[1:]) for _ in range(3)]
-        self.prefix, self.jumpOp = [Signal(intbv(0)[5:]) for _ in range(2)]
+        self.prefix = Signal(intbv(0)[6:])
+        self.jumpOp = Signal(intbv(0)[5:])
         self.imm24 = Signal(intbv(0)[24:])
         self.imm16 = Signal(intbv(0)[16:])
 
@@ -68,8 +69,8 @@ class TestIrDecoder(TestCase):
                     'x', 'x', 'x', 1, 'x', 'x', 0b110000111010010111110000, 'x', 'x', 'x', 0b00101),
                 ('100 1111 0 0011 1100 1100 1010 0011 1100', #load
                     'x', 0b1111, 'x', 'x',  0, 0b1100, 'x', 'x', 'x', 'x', 'x'),
-                ('11110 00 1 1111 1111 1111 1111 1110 0000', #call
-                    'x', 'x', 'x', 1, 'x', 'x', '1111 1111 1111 1111 1110 0000', 'x', 'x', 0b11110, 'x')
+                ('111100 0 1 1111 1111 1111 1111 1110 0000', #call
+                    'x', 'x', 'x', 1, 'x', 'x', '1111 1111 1111 1111 1110 0000', 'x', 'x', 0b111100, 'x')
                 ]
 
             for t in tests:

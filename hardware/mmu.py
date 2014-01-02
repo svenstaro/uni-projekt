@@ -40,6 +40,7 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit=None):
         if en:
             if state == tState.LISTEN:
                 ready.next = False
+                iodriver.next = None
 
                 addr.next = din[31:]
                 csRam.next = din[31]

@@ -16,55 +16,54 @@ def alu(opc, en, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
     V   (Obool) -- Overflow flag
     """
 
+    def calc(opc, first, second, c):
+        if   opc == 0b0000: #ADD
+            return first + second
+        elif opc == 0b0001: #ADC
+            return first + second + c
+        elif opc == 0b0100: #SUB
+            return first - second
+        elif opc == 0b0101: #SBC
+            return first - second - c
+        elif opc == 0b0110: #RSB
+            return second - first
+        elif opc == 0b0111: #RSC
+            return second + c - first
+        elif opc == 0b0010: #MUL
+            return first.signed() * second.signed()
+        elif opc == 0b0011: #ADN
+            return first & ~second
+        elif opc == 0b1000: #AND
+            return first & second
+        elif opc == 0b1001: #ORR
+            return first | second
+        elif opc == 0b1010: #XOR
+            return first ^ second
+        elif opc == 0b1011: #NOT
+            return first | ~second
+        elif opc == 0b1100: #LSL
+            assert second < bitwidth
+            return first << second
+        elif opc == 0b1101: #ASR
+            assert second < bitwidth
+            return first.signed() >> second
+        elif opc == 0b1110: #LSR
+            assert second < bitwidth
+            return first >> second
+        elif opc == 0b1111: #ROR
+            assert second < bitwidth
+            return first << (bitwidth - second) | first >> second
+
     @always_comb
     def logic():
         if en:
-            result = 0
+            alu_res = calc(opc, A, B, Cin)
 
-            if   opc == 0b0000: #ADD
-                result = A + B
-            elif opc == 0b0001: #ADC
-                result = A + B + Cin
-            elif opc == 0b0100: #SUB
-                result = A - B
-            elif opc == 0b0101: #SBC
-                result = A - B - Cin
-            elif opc == 0b0110: #RSB
-                result = B - A
-            elif opc == 0b0111: #RSC
-                result = B + Cin - A
-            elif opc == 0b0010: #MUL
-                result = A * B  #TODO hardware nutzen
-            elif opc == 0b0011: #ADN
-                result = A & ~B
-            elif opc == 0b1000: #AND
-                result = A & B
-            elif opc == 0b1001: #ORR
-                result = A | B
-            elif opc == 0b1010: #XOR
-                result = A ^ B
-            elif opc == 0b1011: #NOT
-                result = A | ~B
-            elif opc == 0b1100: #LSL
-                assert B < 32
-                result = A << B
-            elif opc == 0b1101: #ASR
-                assert B < 32
-                result = A.signed() >> B
-            elif opc == 0b1110: #LSR
-                assert B < 32
-                result = A >> B
-            elif opc == 0b1111: #ROR
-                assert bitwidth >= B
-                result = A << (bitwidth - B) | A >> B
-            else:
-                assert False
+            Z.next = alu_res == 0
+            N.next = intbv(alu_res)[bitwidth-1]
+            C.next = intbv(alu_res)[bitwidth]
+            V.next = (A[bitwidth-1] == B[bitwidth-1]) and (A[bitwidth-1] == (not intbv(alu_res)[bitwidth-1]))
 
-            Z.next = result == 0
-            N.next = intbv(result)[bitwidth-1]
-            C.next = intbv(result)[bitwidth]
-            V.next = (A[bitwidth-1] == B[bitwidth-1]) and (A[bitwidth-1] == (not intbv(result)[bitwidth-1]))
-
-            Res.next = result
+            Res.next = alu_res
 
     return logic

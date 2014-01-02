@@ -69,7 +69,7 @@ def PseudoOperations():
            ("nots %0, %1", "orns %0, $0, %1", AluSOperation),
 
            ("neg %0, %1", "sub %0, $0, %1", AluOperation),
-           ("neg %0, %1", "subs %0, $0, %1", AluSOperation),
+           ("negs %0, %1", "subs %0, $0, %1", AluSOperation),
 
            ("mov %0, %1", "add %0, $0, %1", AluOperation),
            ("movs %0, %1", "adds %0, $0, %1", AluSOperation)]

@@ -14,13 +14,13 @@ def mk(clk, reset, romContent=(), interesting=[]):
     irImm24 = Signal(intbv(0)[24:])
     irImm16 = Signal(intbv(0)[16:])
     irJumpOp = Signal(intbv(0)[5:])
-    irPrefix = Signal(intbv(0)[5:])
+    irPrefix = Signal(intbv(0)[6:])
 
     def createIR():
-        _ir2idecoder = Signal(intbv(0)[32:])
+        ir2idecoder = Signal(intbv(0)[32:])
 
-        ir = registerr(clk, reset, enIr, bbus, _ir2idecoder)
-        irdec = irdecoder(_ir2idecoder, irAluop, irDest, irSource, irOp1, irOp2, irSource2, irImm24, irImm16, irSup, irPrefix, irJumpOp)
+        ir = registerr(clk, reset, enIr, bbus, ir2idecoder)
+        irdec = irdecoder(ir2idecoder, irAluop, irDest, irSource, irOp1, irOp2, irSource2, irImm24, irImm16, irSup, irPrefix, irJumpOp)
 
         return ir, irdec
 
@@ -28,14 +28,14 @@ def mk(clk, reset, romContent=(), interesting=[]):
     ### cpu
     readybit = Signal(bool(1)) # it must be true!
     addrymux1, addrymux0, pmux = [Signal(bool(0)) for _ in range(3)]
-    bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC = [Signal(bool(0)) for _ in range(6)]
+    bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC, bufClk = [Signal(bool(0)) for _ in range(7)]
     enAlu, enIr, enPc, enReg, enJump, enCall, enSup = [Signal(bool(0)) for _ in range(7)]
     enMmu, mmuBuf = [Signal(bool(0)) for _ in range(2)]
 
     def createCPU():
         Cpu = cpu(clk, reset, irPrefix, readybit,
                   addrymux1, addrymux0, pmux,
-                  bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC,
+                  bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC, bufClk,
                   enAlu, enIr, enPc, enReg, enJump, enCall, enSup,
                   enMmu, mmuBuf)
         return Cpu
@@ -143,6 +143,20 @@ def mk(clk, reset, romContent=(), interesting=[]):
 
         return add, addrMux, addrTristate
 
+
+    ### clkbuf
+
+    def createClkBuf():
+        constTrue = Signal(True)
+        constTrue.driven = True
+        clkOut = Signal(intbv(0)[32:])
+
+        clkTristate = tristate(clkOut, bufClk, bbus.driver())
+        clock = counter(clk, reset, constTrue, clkOut)
+
+        return clkTristate, clock
+
+
     ##############
     ### MEMORY ###
     ##############
@@ -178,7 +192,7 @@ def mk(clk, reset, romContent=(), interesting=[]):
         result = createMmuTristate(), createRam(), createRom()
         return result
 
-    result = createIR(), createCPU(), createStatusFlags(), createRegisterBank(), createALUBuf(), createJumpUnit(), createPcBuf(), createAddr14Buf(), createOp2Buf(), createAddrBuf(),\
+    result = createIR(), createCPU(), createStatusFlags(), createRegisterBank(), createALUBuf(), createJumpUnit(), createPcBuf(), createAddr14Buf(), createOp2Buf(), createAddrBuf(), createClkBuf(),\
              createMemory()
 
     interesting.append(bbus)

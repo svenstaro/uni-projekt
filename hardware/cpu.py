@@ -4,7 +4,7 @@ from myhdl import *
 
 def cpu(clk, reset, addr, readybit,
         addrymux1, addrymux0, pmux,
-        addrBuf, op2Buf, addr14Buf, ryBuf, aluBuf, pcBuf,
+        addrBuf, op2Buf, addr14Buf, ryBuf, aluBuf, pcBuf, clkBuf,
         enAlu, enIr, enPc, enReg, enJump, enCall, enSup,
         enMMU, mmuBuf):
     """
@@ -13,19 +13,19 @@ def cpu(clk, reset, addr, readybit,
 
         clk       (Ibool) -- The clock
         reset     (Ireset)-- The reset signal
-        addr      (I5)    -- Next action
+        addr      (I6)    -- Next action
         readybit  (Ibool) -- readybit from MMU
         addrymux1 (Obool) -- mux1 for reginput
         addrymux0 (Obool) -- mux0 for reginput
         pmux      (Obool) -- if true, dx will be incremented by 4, decremented otherwise (used for push/pop)
-        pcmux1    (Obool) -- pcMuxSelector
-        pcmux0    (Obool) -- pcMuxSelector
         addrBuf   (Obool) -- bufbit for addr (pc+imm or reg)
         op2Buf    (Obool) -- bufbit for second opcode
         addr14Buf (Obool) -- bufbit for addr14buf
         ryBuf     (Obool) -- bufbit for content of y register
         aluBuf    (Obool) -- bufbit for alu
         pcBuf     (Obool) -- bufbit for pc (programcounter)
+        clkBuf    (Obool) -- bufbit for counter
+        enAlu     (Obool) -- enable ALU
         enIr      (Obool) -- enable IR
         enPc      (Obool) -- enable ProgrammCounter
         enReg     (Obool) -- enable registe write
@@ -36,7 +36,7 @@ def cpu(clk, reset, addr, readybit,
     """
 
     tState = enum('UNKNOWN', 'FETCH', 'DECODE', 'ALUOP', 'JUMP', 'LOAD', 'STORE',
-                  'ADR', 'PUSH', 'POP', 'CALL', 'SWI', 'ILLEGAL', 'HALT')  # TODO add more
+                  'ADR', 'CLOCK', 'PUSH', 'POP', 'CALL', 'SWI', 'ILLEGAL', 'HALT')  # TODO add more
     state = Signal(tState.FETCH)
     substate = Signal(intbv(0)[4:])
 
@@ -52,6 +52,7 @@ def cpu(clk, reset, addr, readybit,
         ryBuf.next = False
         aluBuf.next = False
         pcBuf.next = False
+        clkBuf.next = False
         enAlu.next = False
         enIr.next = False
         enPc.next = False
@@ -67,24 +68,26 @@ def cpu(clk, reset, addr, readybit,
 
         ##### UNKNOWN
         if   state == tState.UNKNOWN: # TODO mir gefällt die Lösung mit dem unknown state nicht, mal gucken, ob ich das besser hinbekomme
-            if   addr[5:3] == 0b00:
+            if   addr[6:4] == 0b00:
                 state.next  = tState.ALUOP
-            elif addr[5:3] == 0b01:
+            elif addr[6:4] == 0b01:
                 state.next  = tState.JUMP
-            elif addr[5:2] == 0b100:
+            elif addr[6:3] == 0b100:
                 state.next  = tState.LOAD
-            elif addr[5:2] == 0b101:
+            elif addr[6:3] == 0b101:
                 state.next  = tState.STORE
-            elif addr[5:2] == 0b110:
+            elif addr[6:3] == 0b110:
                 state.next  = tState.ADR
-            elif addr      == 0b11100:
+            elif addr[6:1] == 0b11100:
                 state.next  = tState.PUSH
-            elif addr      == 0b11101:
+            elif addr[6:1] == 0b11101:
                 state.next  = tState.POP
-            elif addr      == 0b11110:
+            elif addr[6:1] == 0b11110:
                 state.next  = tState.CALL
-            elif addr      == 0b11111:
+            elif addr[6:0] == 0b111110:
                 state.next  = tState.SWI
+            elif addr[6:0] == 0b111111:
+                state.next  = tState.CLOCK
             else:
                 state.next  = tState.ILLEGAL # TODO add more
 
@@ -234,6 +237,14 @@ def cpu(clk, reset, addr, readybit,
         elif state == tState.SWI:
             #TODO
             ryBuf.next = True
+            state.next = tState.FETCH
+
+        ##### CLK
+        elif state == tState.CLOCK:
+            clkBuf.next = True
+            addrymux0.next = True
+            addrymux1.next = True
+            enReg.next = True
             state.next = tState.FETCH
 
         ##### HALT

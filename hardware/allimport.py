@@ -1,7 +1,6 @@
 from adder import adder
 from addrdecoder import addrdecoder
 from alu import alu
-from bitrange import bitrange
 from cpu import cpu
 from counter import counter
 from dff import dff
@@ -15,5 +14,4 @@ from pseudoram import pseudoram
 from pseudorom import pseudorom
 from register import registerr
 from registerbank import registerbank
-from selectBit import selectBit
 from tristate import tristate

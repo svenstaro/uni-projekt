@@ -14,10 +14,10 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
     irPrefix = Signal(intbv(0)[5:])
 
     def createIR():
-        _ir2idecoder = Signal(intbv(0)[32:])
+        ir2idecoder = Signal(intbv(0)[32:])
 
-        ir = registerr(clk, reset, enIr, bbus, _ir2idecoder)
-        irdec = irdecoder(_ir2idecoder, irAluop, irDest, irSource, irOp1, irOp2, irSource2, irImm24, irImm16, irSup, irPrefix, irJumpOp)
+        ir = registerr(clk, reset, enIr, bbus, ir2idecoder)
+        irdec = irdecoder(ir2idecoder, irAluop, irDest, irSource, irOp1, irOp2, irSource2, irImm24, irImm16, irSup, irPrefix, irJumpOp)
 
         return ir, irdec
 

@@ -15,7 +15,7 @@ sub $1, $1, $4
 ret
 
 .helloWorld:
-.asciiz "Hello, World"
+.asciiz "Hello World"
 
 .start:
 adr $1, .helloWorld

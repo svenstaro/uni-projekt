@@ -56,7 +56,7 @@ if __name__ == "__main__":
             yield cl.clk.posedge
             if cl.bus == 0b01000011111111111111111111111100: #halt
                 raise StopSimulation("HALT DETECTED")
-            elif (not (cl.bus._val is None)) and cl.bus[32:27] == 0b11111: #swi
+            elif (not (cl.bus._val is None)) and cl.bus[32:26] == 0b111110: #swi
                 yield cl.clk.posedge
                 yield cl.clk.posedge
                 yield cl.clk.posedge

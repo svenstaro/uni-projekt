@@ -8,6 +8,9 @@ def pseudorom(clk, oe, cs, addr, dout, mem, readdelay=1):
 
     r = Signal(intbv(1)[int(log(readdelay, 2)+1):])
 
+    if __debug__:
+        geread = Signal(False)
+
     @always(clk, oe, cs, addr)
     def read():
         dout.next = None
@@ -19,11 +22,16 @@ def pseudorom(clk, oe, cs, addr, dout, mem, readdelay=1):
                 r.next = r + 1
             elif r == readdelay:
                 if __debug__:
-                    a = bin(mem[int(addr)//4], width=32)
-                    print "ROM (" + '0x%02X' % addr + "): " + ' '.join(map(lambda *xs: ''.join(xs), *[iter(a)]*8)) + ' | ' + str(getTextOfCommand(a))
+                    geread.next = True
+                    if not geread:
+                        a = bin(mem[int(addr)//4], width=32)
+                        print "ROM (" + '0x%02X' % addr + "): " + ' '.join(map(lambda *xs: ''.join(xs), *[iter(a)]*8)) + ' | ' + str(getTextOfCommand(a))
 
                 dout.next = mem[int(addr)//4]
         else:
+            if __debug__:
+                geread.next = False
+
             dout.next = None
             r.next = 1
 

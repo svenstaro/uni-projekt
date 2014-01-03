@@ -65,7 +65,7 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
         yMux = mux41(addrymux1, addrymux0, irSource2, const15, const14, irDest, yMuxOut)
         zMux = mux41(addrymux1, addrymux0, irDest, const15, const14, irSource2, zMuxOut)
         rb = registerbank(clk, enReg, irSource, yMuxOut, zMuxOut, rgX, rgY, bbus)
-        ryTristate = tristate(rgY, bufRy, bbus.driver())
+        ryTristate = tristate(rgY, bufRy, bbus)
         return yMux, zMux, rb, ryTristate
 
 
@@ -77,7 +77,7 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
 
         Bmux = mux21(irOp2, rgY, irImm16, BmuxOut)
         Alu = alu(irAluop, enAlu, rgX, BmuxOut, cOut, aluRes, zIn, nIn, cIn, vIn)
-        aluTristate = tristate(aluRes, bufAlu, bbus.driver())
+        aluTristate = tristate(aluRes, bufAlu, bbus)
         return Bmux, Alu, aluTristate
 
 
@@ -94,7 +94,7 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
 
     def createPcBuf():
         pc = programcounter(clk, reset, enPc, irImm24, rgY, enCall, jumpResult, enJump, irOp1, pcOut)
-        pcTristate = tristate(pcOut, bufPC, bbus.driver())
+        pcTristate = tristate(pcOut, bufPC, bbus)
 
         return pc, pcTristate
 
@@ -112,7 +112,7 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
 
         plusminusMux = mux21(pmux, const_5, const4, plusminusMuxOut)
         add = adder(plusminusMuxOut, rgY, addr14)
-        addr14tristate = tristate(addr14, bufAddr14, bbus.driver())
+        addr14tristate = tristate(addr14, bufAddr14, bbus)
 
         return plusminusMux, add, addr14tristate
 
@@ -123,7 +123,7 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
         op2muxOut = Signal(intbv(0)[32:])
 
         op2mux = mux21(irOp1, rgY, irImm24, op2muxOut)
-        op2tristate = tristate(op2muxOut, bufOp2, bbus.driver())
+        op2tristate = tristate(op2muxOut, bufOp2, bbus)
 
         return op2mux, op2tristate
 
@@ -135,7 +135,7 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
 
         add = adder(pcOut, irImm24, addOut)
         addrMux = mux21(irOp1, rgY, addOut, addrMuxOut)
-        addrTristate = tristate(addrMuxOut, bufAddr, bbus.driver())
+        addrTristate = tristate(addrMuxOut, bufAddr, bbus)
 
         return add, addrMux, addrTristate
 
@@ -146,7 +146,7 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
         constTrue.driven = True
         clkOut = Signal(intbv(0)[32:])
 
-        clkTristate = tristate(clkOut, bufClk, bbus.driver())
+        clkTristate = tristate(clkOut, bufClk, bbus)
         clock = counter(clk, reset, constTrue, clkOut)
 
         return clkTristate, clock
@@ -164,7 +164,7 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
         mdr2tristate = Signal(intbv(0)[32:])
 
         mdr = registerr(clk, reset, enMDR, bbus, mdr2tristate)
-        mdrTristate = tristate(mdr2tristate, MDRbuf, membus.driver())
+        mdrTristate = tristate(mdr2tristate, MDRbuf, membus)
 
         return mdr, mdrTristate
 
@@ -172,7 +172,7 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
         mrr2tristate = Signal(intbv(0)[32:])
 
         mrr = registerr(clk, reset, enMRR, membus, mrr2tristate)
-        mrrTristate = tristate(mrr2tristate, MRRbuf, bbus.driver())
+        mrrTristate = tristate(mrr2tristate, MRRbuf, bbus)
 
         return mrr, mrrTristate
 

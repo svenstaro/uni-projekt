@@ -4,12 +4,14 @@ def tristate(input, enable, res):
     """Tristate which puts the input to the output if enable, None elsewise
     """
 
+    o = res.driver()
+
     @always_comb
     def logic():
         if enable:
-            res.next = input
+            o.next = input
         else:
-            res.next = None
+            o.next = None
 
     return logic
 

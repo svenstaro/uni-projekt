@@ -1,21 +1,31 @@
 from myhdl import *
+from math import log
 from assembler import getTextOfCommand
 
-def pseudorom(oe, cs, addr, dout, mem):
-    """This is a pseudorom
+def pseudorom(clk, oe, cs, addr, dout, mem, readdelay=1):
+    """This is a pseudorom with delay
     """
 
-    @always_comb
+    r = Signal(intbv(1)[int(log(readdelay, 2)+1):])
+
+    @always(clk)
     def read():
         dout.next = None
 
         if cs and oe:
             assert int(addr)//4 < len(mem)
 
-            if __debug__:
-                a = bin(mem[int(addr)//4], width=32)
-                print "ROM (" + '0x%02X' % addr + "): " + ' '.join(map(lambda *xs: ''.join(xs), *[iter(a)]*8)) + ' | ' + str(getTextOfCommand(a))
+            if r < readdelay and clk: #clk is high
+                r.next = r + 1
+            elif r == readdelay:
+                if __debug__:
+                    a = bin(mem[int(addr)//4], width=32)
+                    print "ROM (" + '0x%02X' % addr + "): " + ' '.join(map(lambda *xs: ''.join(xs), *[iter(a)]*8)) + ' | ' + str(getTextOfCommand(a))
 
-            dout.next = mem[int(addr)//4]
+                dout.next = mem[int(addr)//4]
+        else:
+            dout.next = None
+            r.next = 1
+
 
     return read

@@ -179,13 +179,13 @@ def mk(clk, reset, romContent=(), interesting=None):
 
         ### RAM
         def createRam():
-            ram = pseudoram(clk, enW, enO, csA, memaddr, membus, membus.driver(), depth=1024)
+            ram = pseudoram(clk, enW, enO, csA, memaddr, membus, membus.driver(), depth=1024, readdelay=10, writedelay=15)
 
             return ram
 
         ### ROM
         def createRom():
-            rom = pseudorom(enO, csO, memaddr, membus.driver(), romContent)
+            rom = pseudorom(clk, enO, csO, memaddr, membus.driver(), romContent, readdelay=10)
 
             return rom
 

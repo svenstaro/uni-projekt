@@ -11,7 +11,7 @@ def pseudorom(clk, oe, cs, addr, dout, mem, readdelay=1):
     if __debug__:
         geread = Signal(False)
 
-    @always(clk.posedge, oe, cs)
+    @always(clk)
     def read():
         dout.next = None
 

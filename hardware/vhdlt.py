@@ -67,7 +67,6 @@ if __name__ == "__main__":
             elif (not (cl.bus._val is None)) and cl.bus[32:26] == 0b111110: #swi
                 yield cl.clk.posedge
                 yield cl.clk.posedge
-                yield cl.clk.posedge
                 yield cl.clk.negedge
                 print "SWI (%s): %s" % (now(), str(cl.bus._val))
 

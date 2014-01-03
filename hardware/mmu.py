@@ -33,14 +33,14 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit=None):
     waitingtimer = Signal(intbv(0)[8:]) # increase the bitwidth of the timer, if loading takes longer
     with_data = Signal(bool(0))
     in_data = Signal(intbv(0)[32:])
-    iodriver = io.driver()
+    iodriverw = io.driver()
+    iodriverr = io.driver()
 
     @always(clk.posedge)
     def write():
         if en:
             if state == tState.LISTEN:
                 ready.next = False
-                iodriver.next = None
 
                 addr.next = din[31:]
                 csRam.next = din[31]
@@ -54,6 +54,7 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit=None):
             else:
                 print "Something went wrong! (Did you read the protocoll?)"
         elif state == tState.CALC:
+            assert not(enO and enW) # they are not allowed to be true at once
             waitingtimer.next = waitingtimer + 1
             if not with_data:
                 #reading from memory
@@ -66,24 +67,26 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit=None):
             else:
                 #writing to memory
                 enW.next = True
-                iodriver.next = in_data
+                iodriverw.next = in_data
 
                 if waitingtimer == 15: # 15 is the number of cycles to wait for the result to be written in memory
                     state.next = tState.FINISH
-
         elif state == tState.FINISH:
             waitingtimer.next = 0
             with_data.next = False
             enO.next = False
             enW.next = False
             ready.next = True
-            iodriver.next = None
+            iodriverw.next = None
             state.next = tState.LISTEN
 
     @always_comb
     def read():
         if ready:
             dout.next = in_data
+            iodriverr.next = in_data
+        else:
+            iodriverr.next = None
 
 
     return write, read

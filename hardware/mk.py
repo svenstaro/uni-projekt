@@ -188,8 +188,8 @@ def mk(clk, reset, romContent=(), bbus = TristateSignal(intbv(0)[32:])):
         ffmOe = dff(clk, mOe, outputE)
         ffmWe = dff(clk, mWe, outputW)
 
-        ram = pseudoram(clk, outputW, outputE, csRam, realaddr, membus, membus.driver(), depth=512)
-        rom = pseudorom(outputE, csRom, realaddr, membus.driver(), romContent)
+        ram = pseudoram(clk, outputW, outputE, csRam, realaddr, membus, membus, depth=512)
+        rom = pseudorom(outputE, csRom, realaddr, membus, romContent)
 
         return msbSignSelector, msbSignNegate, addrSelector, ffmOe, ffmWe, ram, rom
 

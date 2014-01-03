@@ -5,9 +5,11 @@ def pseudorom(oe, cs, addr, dout, mem):
     """This is a pseudorom
     """
 
+    o = dout.driver()
+
     @always_comb
     def read():
-        dout.next = None
+        o.next = None
 
         if cs and oe:
             assert int(addr)//4 < len(mem)
@@ -16,6 +18,6 @@ def pseudorom(oe, cs, addr, dout, mem):
                 a = bin(mem[int(addr)//4], width=32)
                 print "ROM (" + '0x%02X' % addr + "): " + ' '.join(map(lambda *xs: ''.join(xs), *[iter(a)]*8)) + ' | ' + str(getTextOfCommand(a))
 
-            dout.next = mem[int(addr)//4]
+            o.next = mem[int(addr)//4]
 
     return read

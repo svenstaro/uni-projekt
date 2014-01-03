@@ -8,7 +8,7 @@ def pseudorom(clk, oe, cs, addr, dout, mem, readdelay=1):
 
     r = Signal(intbv(1)[int(log(readdelay, 2)+1):])
 
-    @always(clk)
+    @always(clk, oe, cs, addr)
     def read():
         dout.next = None
 

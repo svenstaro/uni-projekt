@@ -29,7 +29,7 @@ def pseudoram(clk, we, oe, cs, addr, din, dout, depth=128, readdelay=1, writedel
             w.next = 1
 
 
-    @always_comb
+    @always(clk.posedge, cs, oe)
     def read():
         dout.next = None
 

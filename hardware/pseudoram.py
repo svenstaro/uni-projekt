@@ -18,7 +18,7 @@ def pseudoram(clk, we, oe, cs, addr, din, dout, depth=128, readdelay=1, writedel
         if cs and we:
             assert int(addr) < len(mem)
 
-            if w <= writedelay:
+            if w < writedelay:
                 w.next = w + 1
             else:
                 if __debug__:
@@ -37,14 +37,14 @@ def pseudoram(clk, we, oe, cs, addr, din, dout, depth=128, readdelay=1, writedel
             w.next = 1
 
 
-    @always(clk.posedge, oe, cs, addr)
+    @always(clk.posedge, oe, cs)
     def read():
         dout.next = None
 
         if cs and oe:
             assert int(addr) < len(mem)
 
-            if r <= readdelay and clk: #clk is high
+            if r < readdelay:
                 r.next = r + 1
             elif r == readdelay:
                 if __debug__:

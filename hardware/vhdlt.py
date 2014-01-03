@@ -36,7 +36,7 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False, data=()):
 
     @always(delay(clkfreq))
     def clkGen():
-        #time.sleep(0.01)
+        #time.sleep(0.05)
         dut_cl.clk.next = not dut_cl.clk
 
     @instance
@@ -70,7 +70,8 @@ if __name__ == "__main__":
                 yield cl.clk.negedge
                 print "SWI (%s): %s" % (now(), str(cl.bus._val))
 
-    #     d = DutClass(data)
-    #     conversion.analyze(mk.mk, d.clk, d.reset, d.data
+    # d = DutClass(data)
+    # conversion.analyze.simulator = 'icarus'
+    # conversion.analyze(mk.mk, d.clk, d.reset, d.data)
     sim = genSim(verify,data=data,trace=True)
     sim.run()

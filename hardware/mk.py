@@ -163,19 +163,23 @@ def mk(clk, reset, romContent=(), interesting=None):
 
     def createMemory():
         membus = TristateSignal(intbv(0)[32:])
-        memaddr = Signal(intbv(0)[32:])
+        memaddr = Signal(intbv(0)[31:])
 
         ### MMU
-        enO, enW, csA, csO = [Signal(bool(0)) for _ in range(4)]
+        enO, enW, csA, csO, cacheHit = [Signal(bool(0)) for _ in range(5)]
 
         def createMmuTristate():
             mmuOut = Signal(intbv(0)[32:])
 
-
-            Mmu = mmu(clk, enMmu, bbus, mmuOut, readybit, memaddr, membus, enO, enW, csA, csO)
+            Mmu = mmu(clk, enMmu, bbus, mmuOut, readybit, memaddr, membus, enO, enW, csA, csO, cacheHit)
             mmuTristate = tristate(mmuOut, mmuBuf, bbus.driver())
 
             return Mmu, mmuTristate
+
+        def createCache():
+            Cache = cache(clk, memaddr, membus, enO, enW, csA, csO, cacheHit, readybit)
+
+            return Cache
 
         ### RAM
         def createRam():
@@ -189,7 +193,7 @@ def mk(clk, reset, romContent=(), interesting=None):
 
             return rom
 
-        result = createMmuTristate(), createRam(), createRom()
+        result = createMmuTristate(), createRam(), createRom(), createCache()
         return result
 
     result = createIR(), createCPU(), createStatusFlags(), createRegisterBank(), createALUBuf(), createJumpUnit(), createPcBuf(), createAddr14Buf(), createOp2Buf(), createAddrBuf(), createClkBuf(),\

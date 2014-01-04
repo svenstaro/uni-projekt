@@ -70,8 +70,14 @@ if __name__ == "__main__":
                 yield cl.clk.negedge
                 print "SWI (%s): %s" % (now(), str(cl.bus._val))
 
-    # d = DutClass(data)
-    # conversion.analyze.simulator = 'icarus'
-    # conversion.analyze(mk.mk, d.clk, d.reset, d.data)
-    sim = genSim(verify,data=data,trace=True)
-    sim.run()
+    def analyze():
+        d = DutClass(data)
+        conversion.analyze.simulator = 'icarus'
+        conversion.analyze(mk.mk, d.clk, d.reset, d.data)
+
+    def run():
+        sim = genSim(verify,data=data,trace=True)
+        sim.run()
+
+    # analyze()
+    run()

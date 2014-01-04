@@ -1,6 +1,6 @@
 from myhdl import *
 
-def registerbank(clk, we, addrx, addry, addrz, xout, yout, zin, amount = 16, bitwidth = 32):
+def registerbank(clk, we, addrx, addry, addrz, xout, yout, zin, amount = 16, bitwidth = 32, protect0=True):
     reg_data = [Signal(intbv(0)[bitwidth:]) for _ in range(amount)]
 
     @always(clk.posedge)
@@ -9,7 +9,7 @@ def registerbank(clk, we, addrx, addry, addrz, xout, yout, zin, amount = 16, bit
         assert addry < amount
         assert addrz < amount
 
-        if we and addrz != 0:
+        if we and not(protect0 and addrz == 0):
             reg_data[addrz].next = zin[bitwidth:]
 
     @always_comb

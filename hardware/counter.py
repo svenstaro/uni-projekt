@@ -2,11 +2,17 @@ from myhdl import *
 from adder import *
 from register import *
 
-def counter(clk, reset, enable, data_out, bitwidth=32):
+def counter(clk, reset, enable, dout, bitwidth=32):
 
-    sig = Signal(modbv(0)[bitwidth:])
+    data = Signal(modbv(0)[bitwidth:])
 
-    add = adder(Signal(intbv(1)[bitwidth:]), data_out, sig)
-    data = registerr(clk, reset, enable, sig, data_out)
+    @always_seq(clk.posedge, reset)
+    def write():
+        if enable:
+            data.next = data + 1
 
-    return data, add
+    @always_comb
+    def read():
+        dout.next = data
+
+    return write, read

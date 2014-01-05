@@ -1,5 +1,5 @@
 from emulator import Emulator
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk
 import os
 
 TITLE = "MikroRechner-Projekt EmulatorUi"
@@ -206,7 +206,6 @@ class EmulatorUi(Gtk.Window):
         self.buttonBox.pack_start(self.stopButton, True, True, 8)
 
     def initRegisterLabel(self):
-
         self.register = [[False, False]]*16
         for i in range(0, 16):
             self.register[i] = [Gtk.Label(LABEL_REGISTER_DEFAULT + str(i) + LABEL_TITLE_CONTENT_KIT), False]
@@ -220,12 +219,16 @@ class EmulatorUi(Gtk.Window):
                 self.registerGrid.attach_next_to(self.register[i][0], self.register[i-8][0], Gtk.PositionType.RIGHT, 1, 1)
 
 
-        
-
+    
+def on_key_press_event(widget, event):
+    keyname = Gdk.keyval_name(event.keyval)
+    if(keyname == "Q" or keyname == "q"):
+        Gtk.main_quit()
 
 
 window = EmulatorUi()
 window.connect("delete-event", Gtk.main_quit)
+window.connect('key_press_event', on_key_press_event)
 window.show_all()
 Gtk.main()
 

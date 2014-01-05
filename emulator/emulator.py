@@ -88,6 +88,8 @@ class Emulator(object):
 
     def stop(self):
         self.cpu.stopExecution()
+        self.cpu.reset()
         self.cpu = False
+        self.waiting_at = False
 
     

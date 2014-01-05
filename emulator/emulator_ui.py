@@ -95,18 +95,23 @@ class EmulatorUi(Gtk.Window):
     def execute_step_into(self, widget):
         return 0
 
-    #behaviour definition for the button "single line execution" or "step over"
+    #behaviour definition for the button "single line execution" or "step over". Semantik: disables start button.
     def execute_step_over(self, widget):
+        self.emulator_is_running = True
+        self.startButton.set_sensitive(False)
         moreToExecute = self.emulator.step(self.processing_file)
         self.populateChanges()
         if not moreToExecute:
             self.disableManipulation()
+            self.emulator.stop()
+            self.emulator_is_running = False
         return 0
 
     def stop_button_clicked(self, widget):
         self.emulator.stop()
         self.disableManipulation()
         self.clearUi()
+        self.emulator_is_running = False
         return 0
 
     def populateChanges(self):
@@ -130,6 +135,8 @@ class EmulatorUi(Gtk.Window):
             oldContent = self.register[i][1]
             if content != oldContent:
                 self.register[i][0].set_markup(LABEL_REGISTER_DEFAULT + str(i) + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='red'>" + str(content) + "</span></b>")
+            elif content == False:
+                self.register[i][0].set_markup(LABEL_REGISTER_DEFAULT + str(i) + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='#000000'>" + str(0) + "</span></b>")
             else:
                 self.register[i][0].set_markup(LABEL_REGISTER_DEFAULT + str(i) + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='#000000'>" + str(content) + "</span></b>")
             self.register[i][1] = content
@@ -141,6 +148,7 @@ class EmulatorUi(Gtk.Window):
         self.flagOverflow.set_markup(LABEL_FLAG_OVERFLOW)
         for i in range(0, 16):
             self.register[i][0].set_markup(LABEL_REGISTER_DEFAULT + str(i))
+            self.register[i][1] = False
 
     # enables all buttons which are responsible for guaranteeing user-interaction with the executional part of the system.
     # disables the "open file" button.

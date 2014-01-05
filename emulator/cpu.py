@@ -22,28 +22,40 @@ def get_location(pc):
 
 
 class Cpu(object):
-    breakpoints = [0x800000, 0x1023000]
-    mem = None
-    rom = None
-    register = [0]*16
-    flags = [False]*4
-    pc = 0
-    counter = 0
-    running = False
-
-    jitdriver = JitDriver(greens=['pc'],
-                          reds='auto',
-                          get_printable_location=get_location)
 
     def __init__(self, memorysize, rom):
+        self.jitdriver = JitDriver(greens=['pc'],
+                          reds='auto',
+                          get_printable_location=get_location)
+        self.breakpoints = [0x800000, 0x1023000]
+        self.mem = None
+        self.rom = None
+        self.register = [0]*16
+        self.flags = [False]*4
+        self.pc = 0
+        self.counter = 0
+        self.running = False
         self.mem = [0] * memorysize
         self.fillRom(rom)
+
 
     def fillRom(self, contents):
         if isinstance(contents, type("")):
             contents = [ord(char) for char in contents]
 
         self.rom = contents + [0] * 4
+
+    def reset(self):
+        self.breakpoints = [0x800000, 0x1023000]
+        self.register = [0]*16
+        self.flags = [False]*4
+        self.pc = 0
+        self.counter = 0
+        self.running = False
+
+        self.jitdriver = JitDriver(greens=['pc'],
+                          reds='auto',
+                          get_printable_location=get_location)
 
     def run(self, entrypoint=0x80000000):
         self.pc = entrypoint

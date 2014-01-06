@@ -8,6 +8,8 @@ BUTTON_START_TEXT = "Start"
 BUTTON_STEP_OVER = "Step over"
 BUTTON_STEP_INTO = "Step into"
 BUTTON_STOP = "Stop"
+BUTTON_REGISTER_AS_DECIMAL = "Decimal"
+BUTTON_REGISTER_AS_HEX = "Hex"
 
 LABEL_FLAG_ZERO = "Z"
 LABEL_FLAG_NEGATIVE = "N"
@@ -44,6 +46,7 @@ class EmulatorUi(Gtk.Window):
         self.processing_file = False
         self.flags = [False]*4
         self.emulator = Emulator()
+        self.registerFormat = 16 # hexa-decimal output per default
 
 
         # actual nesting of the components
@@ -114,6 +117,18 @@ class EmulatorUi(Gtk.Window):
         self.emulator_is_running = False
         return 0
 
+    def switch_register_display(self, button, button_name):
+        if button.get_active():
+            state = "on"
+        else:
+            state = "off"
+        if button_name == BUTTON_REGISTER_AS_HEX:
+            self.registerFormat = 16
+        elif button_name == BUTTON_REGISTER_AS_DECIMAL:
+            self.registerFormat = 10
+        # call populate to make the change visible
+        self.populateChanges()
+
     def populateChanges(self):
         self.populateFlagStatus()
         self.populateRegisterContent()
@@ -132,6 +147,8 @@ class EmulatorUi(Gtk.Window):
         cpuRegs = self.emulator.getRegister()
         for i in range(0, 16):
             content = cpuRegs[i]
+            if self.registerFormat == 16:
+                content = hex(content)
             oldContent = self.register[i][1]
             if content != oldContent:
                 self.register[i][0].set_markup(LABEL_REGISTER_DEFAULT + str(i) + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='red'>" + str(content) + "</span></b>")
@@ -204,6 +221,15 @@ class EmulatorUi(Gtk.Window):
         self.stopButton = Gtk.Button(BUTTON_STOP)
         self.stopButton.connect("clicked", self.stop_button_clicked)
         self.buttonBox.pack_start(self.stopButton, True, True, 8)
+
+        self.registerAsHexButton = Gtk.RadioButton.new_with_label_from_widget(None, BUTTON_REGISTER_AS_HEX)
+        self.registerAsHexButton.connect("toggled", self.switch_register_display, BUTTON_REGISTER_AS_HEX)
+        self.buttonBox.pack_end(self.registerAsHexButton, False, False, 0)
+
+        self.registerAsDecimalButton = Gtk.RadioButton.new_from_widget(self.registerAsHexButton)
+        self.registerAsDecimalButton.set_label(BUTTON_REGISTER_AS_DECIMAL)
+        self.registerAsDecimalButton.connect("toggled", self.switch_register_display, BUTTON_REGISTER_AS_DECIMAL)
+        self.buttonBox.pack_end(self.registerAsDecimalButton, False, False, 1)
 
     def initRegisterLabel(self):
         self.register = [[False, False]]*16

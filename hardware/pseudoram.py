@@ -31,19 +31,23 @@ def pseudoram(clk, we, oe, cs, addr, din, dout, depth=128, readdelay=1, writedel
             w.next = 1
 
 
-    @always(clk.posedge, cs, oe)
+    @always(clk, cs, oe)
     def read():
         o.next = None
 
         if cs and oe:
             assert int(addr) < len(mem)
-            if __debug__:
-                d = mem[int(addr)] << 24 | mem[int(addr)+1] << 16 | mem[int(addr)+2] << 8 | mem[int(addr)+3]
-                a = bin(d, width=32)
-                print "RAMr(" + '0x%02X' % addr + "): " + ' '.join(map(lambda *xs: ''.join(xs), *[iter(a)]*8)) + ' | ' + '0x%X %d' % (d,d)
 
-            o.next = mem[int(addr)] << 24 | mem[int(addr)+1] << 16 | mem[int(addr)+2] << 8 | mem[int(addr)+3]
+            if r < readdelay and clk:
+                r.next = r + 1
+            else:
+                if __debug__:
+                    d = mem[int(addr)] << 24 | mem[int(addr)+1] << 16 | mem[int(addr)+2] << 8 | mem[int(addr)+3]
+                    a = bin(d, width=32)
+                    print "RAMr(" + '0x%02X' % addr + "): " + ' '.join(map(lambda *xs: ''.join(xs), *[iter(a)]*8)) + ' | ' + '0x%X %d' % (d,d)
+
+                o.next = mem[int(addr)] << 24 | mem[int(addr)+1] << 16 | mem[int(addr)+2] << 8 | mem[int(addr)+3]
         else:
-            o.next = None
+            r.next = 1
 
     return write, read

@@ -11,7 +11,7 @@ def pseudorom(clk, oe, cs, addr, dout, mem, readdelay=1):
 
     r = Signal(intbv(1)[int(log(readdelay, 2)+1):])
 
-    @always(clk.posedge, cs, oe)
+    @always(clk, cs, oe)
     def read():
         if cs and oe:
             assert int(addr)//4 < len(mem)

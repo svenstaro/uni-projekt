@@ -14,16 +14,15 @@ class DutClass():
     def __init__(self, data=()):
         self.clk = Signal(bool(0))
         self.reset = ResetSignal(0, 1, True)
+        self.buttons, self.leds = [Signal(intbv(0)[4:]) for _ in range(2)]
         self.data = data
-
+        self.interesting = []
+        self.args = [self.clk, self.reset, self.buttons, self.leds, self.data, self.interesting]
 
     def Gens(self, trace = False):
-        interesting = []
-        args = [self.clk, self.reset, self.data, interesting]
-
-        result = traceSignals(mk.mk, *args) if trace else mk.mk(*args)
-        self.bus = interesting[0]
-        self.ready = interesting[1]
+        result = traceSignals(mk.mk, *self.args) if trace else mk.mk(*self.args)
+        self.bus = self.interesting[0]
+        self.ready = self.interesting[1]
 
         return result
 
@@ -73,7 +72,7 @@ if __name__ == "__main__":
     def analyze():
         d = DutClass(data)
         conversion.analyze.simulator = 'icarus'
-        conversion.analyze(mk.mk, d.clk, d.reset, d.data)
+        conversion.analyze(mk.mk, *d.args)
 
     def run():
         sim = genSim(verify,data=data,trace=True)

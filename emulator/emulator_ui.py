@@ -1,6 +1,8 @@
 from emulator import Emulator
+import sys
 from gi.repository import Gtk, Gdk
 import os
+
 
 TITLE = "MikroRechner-Projekt EmulatorUi"
 BUTTON_OPEN_TEXT = "Open"
@@ -40,6 +42,8 @@ class EmulatorUi(Gtk.Window):
         self.initFlagLabel()
 
         self.initRegisterLabel()
+
+        self.initTextView()
         
         # variables.
         self.emulator_is_running = False
@@ -55,6 +59,7 @@ class EmulatorUi(Gtk.Window):
         # nest buttons box in a VBox, disables vertical resizing.
         self.main.pack_start(self.buttonBox, False, False, 0)
         self.main.pack_start(self.registerGrid, False, False, 2)
+        self.main.pack_end (self.scrolledwindow, True, True, 16)
         self.add(self.main)
 
 
@@ -132,6 +137,15 @@ class EmulatorUi(Gtk.Window):
     def populateChanges(self):
         self.populateFlagStatus()
         self.populateRegisterContent()
+        line_count = self.textbuffer.get_line_count()
+        iterator = self.textbuffer.get_end_iter()
+        iterator.backward_line()
+        self.textbuffer.delete(iterator, self.textbuffer.get_end_iter())
+        last = self.emulator.getLastExecutedCommand()
+        if last == "":
+            last = "Start executing provided program content stepwise..." 
+        self.textbuffer.insert(self.textbuffer.get_end_iter(), "I just executed: " + last + "\n")
+        self.textbuffer.insert(self.textbuffer.get_end_iter(), "I will do next: " + self.emulator.getNextCommandToExecute() + "\n")
 
     # populates flag status changes to the frontend.
     def populateFlagStatus(self):
@@ -244,6 +258,22 @@ class EmulatorUi(Gtk.Window):
             else:
                 self.registerGrid.attach_next_to(self.register[i][0], self.register[i-8][0], Gtk.PositionType.RIGHT, 1, 1)
 
+
+    def initTextView(self):
+        """Inits the textview as content of a scrolledwindow. Exports its textbuffer to the object wide variable textbuffer."""
+        page_size = Gtk.Adjustment(lower=10, page_size=100)
+        self.scrolledwindow = Gtk.ScrolledWindow(page_size)
+        self.scrolledwindow.set_hexpand(True)
+        self.scrolledwindow.set_vexpand(True)
+        self.scrolledwindow.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        
+        textview = Gtk.TextView()
+        textview.set_editable(False)
+        textview.set_cursor_visible(False)
+        #export the textbuffer to variable with object wide scale, name self.textbuffer
+        self.textbuffer = textview.get_buffer()
+        
+        self.scrolledwindow.add(textview)
 
     
 def on_key_press_event(widget, event):

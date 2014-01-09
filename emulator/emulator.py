@@ -2,7 +2,10 @@
 import sys
 import os
 from cpu import Cpu
+import cpu
 import time
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/../')
+from assembler import getTextOfCommand
 
 class Emulator(object): 
 
@@ -37,9 +40,10 @@ class Emulator(object):
         if self.cpu == False:
             self.cpu = Cpu(1024*1024, program_contents)
         if self.waiting_at == False:
-            print "Start executing provided program content stepwise..."
+            self.last_pc = self.waiting_at
             self.waiting_at = self.cpu.step()
         else:
+            self.last_pc = self.waiting_at
             self.waiting_at = self.cpu.step(self.waiting_at)
         if(self.waiting_at == False):
             return False
@@ -91,5 +95,21 @@ class Emulator(object):
         self.cpu.reset()
         self.cpu = False
         self.waiting_at = False
+
+
+    def getLastExecutedCommand(self):
+        """Returns the last command that has been executed by the cpu, or an empty string if nothing has been executed."""
+        if(self.last_pc != False):
+            instruct = cpu.fetchFromRom(self.cpu.rom, self.last_pc)
+            return getTextOfCommand(bin(instruct)[2:].zfill(32))
+        return ""
+
+    def getNextCommandToExecute(self):
+        """Returns the next command that will be executed by the cpu."""
+        instruct = cpu.fetchFromRom(self.cpu.rom, self.waiting_at)
+        return getTextOfCommand(bin(instruct)[2:].zfill(32))
+
+
+    
 
     

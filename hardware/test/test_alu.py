@@ -12,7 +12,7 @@ class DutClass():
 
         self.opc = Signal(intbv(0)[4:])
         self.A, self.B= [Signal(intbv(0)[32:]) for _ in range(2)]
-        self.R = Signal(modbv(0)[32:])
+        self.R = Signal(modbv(0, 0, 2**32))
 
     def Gens(self, trace = False):
         self.args = [self.opc,self.en,self.A,self.B,self.cout,self.R,

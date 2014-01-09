@@ -73,7 +73,7 @@ if __name__ == "__main__":
     def analyze():
         d = DutClass(data)
         conversion.analyze.simulator = 'icarus'
-        conversion.analyze(mk.mk, d.clk, d.reset, d.data)
+        conversion.analyze(mk.mk, *d.args)
 
     def run():
         sim = genSim(verify,data=data,trace=True)

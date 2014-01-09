@@ -23,7 +23,7 @@ def cache(clk, addr, io, enO, enW, csRam, csRom, hit, ready):
     #TODO implement variable cachesize
 
     def myHash(a):
-        return (csRam ^ csRom ^ a[31:28] ^ a[28:21] ^ a[21:14] ^ a[14:7] ^ a[7:0])
+        return csRam ^ csRom ^ a[31:28] ^ a[28:21] ^ a[21:14] ^ a[14:7] ^ a[7:0]
 
     tState = enum('IDLE', 'SEARCH', 'INSERT', 'DELETE', 'FINISH')
     state = Signal(tState.IDLE)
@@ -35,7 +35,7 @@ def cache(clk, addr, io, enO, enW, csRam, csRom, hit, ready):
     #1 clean bit (0 → dirty, 1 → clean) + 1 csbit (0→Rom, 1→Ram) + 31bit addr + 32bit data
     data_out = Signal(intbv(0)[65:])
 
-    data = registerbank(clk, data_we, data_addr, Signal(intbv(0)[1:]), data_addr,
+    data = registerbank(clk, data_we, data_addr, 0, data_addr,
                         data_out, Signal(intbv(0)[65:]), data_in, amount=128, bitwidth=65, protect0=False)
 
     @always(clk.posedge)

@@ -68,13 +68,9 @@ def mk(clk, reset, buttons, leds, romContent=(), interesting=None):
     def createRegisterBank():
         yMuxOut = Signal(intbv(0)[4:])
         zMuxOut = Signal(intbv(0)[4:])
-        const15 = Signal(intbv(15)[4:])
-        const14 = Signal(intbv(14)[4:])
-        const15.driven = True #suppress some warnings
-        const14.driven = True
 
-        yMux = mux41(addrymux1, addrymux0, irSource2, const15, const14, irDest, yMuxOut)
-        zMux = mux41(addrymux1, addrymux0, irDest, const15, const14, irSource2, zMuxOut)
+        yMux = mux41(addrymux1, addrymux0, irSource2, 15, 14, irDest, yMuxOut)
+        zMux = mux41(addrymux1, addrymux0, irDest, 15, 14, irSource2, zMuxOut)
         rb = registerbank(clk, enReg, irSource, yMuxOut, zMuxOut, rgX, rgY, bbus)
         ryTristate = tristate(rgY, bufRy, bbus)
         return yMux, zMux, rb, ryTristate
@@ -113,15 +109,10 @@ def mk(clk, reset, buttons, leds, romContent=(), interesting=None):
     ### push/pop addr calc
 
     def createAddr14Buf():
-        const_5 = Signal(intbv(-4)[32:])
-        const4 = Signal(intbv(4)[32:])
-        const_5.driven = True
-        const4.driven  = True
-
-        plusminusMuxOut = Signal(intbv(0)[32:])
+        plusminusMuxOut = Signal(modbv(0)[32:])
         addr14 = Signal(modbv(0)[32:])
 
-        plusminusMux = mux21(pmux, const_5, const4, plusminusMuxOut)
+        plusminusMux = mux21(pmux, -4, 4, plusminusMuxOut)
         add = adder(plusminusMuxOut, rgY, addr14)
         addr14tristate = tristate(addr14, bufAddr14, bbus)
 
@@ -154,12 +145,10 @@ def mk(clk, reset, buttons, leds, romContent=(), interesting=None):
     ### clkbuf
 
     def createClkBuf():
-        constTrue = Signal(True)
-        constTrue.driven = True
         clkOut = Signal(intbv(0)[32:])
 
         clkTristate = tristate(clkOut, bufClk, bbus)
-        clock = counter(clk, reset, constTrue, clkOut)
+        clock = counter(clk, reset, True, clkOut)
 
         return clkTristate, clock
 
@@ -203,7 +192,7 @@ def mk(clk, reset, buttons, leds, romContent=(), interesting=None):
         result = createMmuTristate(), createRam(), createRom(), createCache()
         return result
 
-    result = createIR(), createCPU(), createStatusFlags(), createRegisterBank(), createALUBuf(), createJumpUnit(), createPcBuf(), createAddr14Buf(), createOp2Buf(), createAddrBuf(), createClkBuf(),\
+    result = createIR(), createCPU(), createStatusFlags(), createRegisterBank(), createALUBuf(), createJumpUnit(), createPcBuf(), createAddr14Buf(), createOp2Buf(), createAddrBuf(), createClkBuf(), \
              createMemory()
 
     if interesting is not None:

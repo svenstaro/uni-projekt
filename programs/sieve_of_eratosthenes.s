@@ -106,13 +106,18 @@ add $3, $3, #4
 jne .pr_loop
 ret
 
+.sp:
+.word 0x80001000
 
 .start:
-mov $14, #20000
-mov $1, #0
+ld $14, .sp
+
+mov $1, #1
+lsl $1, $1, #31
 mov $2, #400
 call eratosthenes
-mov $1, #0
+mov $1, #1
+lsl $1, $1, #31
 mov $2, #400
 call print_array
 halt

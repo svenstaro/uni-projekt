@@ -32,9 +32,11 @@ sub $1, $1, #1
 jmp ackermann
 
 
+.sp:
+.word 0x80001000
+
 .start:
-mov $14, #0x7ffe
-lsl $14, $14, #1
+ld $14, .sp
 
 mov $1, #3
 mov $2, #6

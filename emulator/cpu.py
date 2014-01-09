@@ -22,22 +22,20 @@ def get_location(pc):
 
 
 class Cpu(object):
+    mem = None
+    rom = None
+    register = [0]*16
+    flags = [False]*4
+    pc = 0
+    counter = 0
 
-    def __init__(self, memorysize, rom):
-        self.jitdriver = JitDriver(greens=['pc'],
+    jitdriver = JitDriver(greens=['pc'],
                           reds='auto',
                           get_printable_location=get_location)
-        self.breakpoints = [0x800000, 0x1023000]
-        self.mem = None
-        self.rom = None
-        self.register = [0]*16
-        self.flags = [False]*4
-        self.pc = 0
-        self.counter = 0
-        self.running = False
+
+    def __init__(self, memorysize, rom):
         self.mem = [0] * memorysize
         self.fillRom(rom)
-
 
     def fillRom(self, contents):
         if isinstance(contents, type("")):
@@ -45,43 +43,16 @@ class Cpu(object):
 
         self.rom = contents + [0] * 4
 
-    def reset(self):
-        self.breakpoints = [0x800000, 0x1023000]
-        self.register = [0]*16
-        self.flags = [False]*4
-        self.pc = 0
-        self.counter = 0
-        self.running = False
-
-        self.jitdriver = JitDriver(greens=['pc'],
-                          reds='auto',
-                          get_printable_location=get_location)
-
     def run(self, entrypoint=0x80000000):
         self.pc = entrypoint
-        self.running = True 
         try:
-            while self.running:
+            while True:
                 self.jitdriver.jit_merge_point(pc=self.pc)
-                self.running = self.tick()
+                if not self.tick():
+                    break
         except KeyboardInterrupt:
             print
             print "Aborted."
-        if not self.running:
-            print("Halted.")
-
-    # steps one cpu clock forwards. In this step the next command 
-    # after the given entrypoint will be executed. 
-    # If a breakpoint is found or the eof is reached, False is returned.
-    def step(self, entrypoint=0x80000000):
-        self.pc = entrypoint
-        self.jitdriver.jit_merge_point(pc=self.pc)
-        if self.tick():
-            return self.pc
-        return False
-
-    def stopExecution(self):
-        self.running = False
 
     def tick(self):
         self.counter += 1
@@ -202,11 +173,6 @@ class Cpu(object):
             self.register[rdest] = int8to32(self.mem[address:address+4])
             self.register[14] += 4
 
-    def getFlags(self):
-        return self.flags
-
-    def getRegister(self):
-        return self.register
 
 class Flags:
     Z = 0
@@ -341,5 +307,3 @@ def getParamsMem(command):
 @purefunction
 def getParamsJump(command):
     return command & 0x01FFFFFF
-
-

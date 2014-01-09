@@ -43,7 +43,7 @@ class Cpu(object):
 
         self.rom = contents + [0] * 4
 
-    def run(self, entrypoint=0x80000000):
+    def run(self, entrypoint=0):
         self.pc = entrypoint
         try:
             while True:
@@ -105,14 +105,19 @@ class Cpu(object):
         if r == 1:
             address = self.register[address]
         if store:
-            assert address & high == 0
-            assert address >= 0
+            try:
+                assert address & high != 0 and address >= 0
+            except AssertionError as e:
+                print self.pc, self.counter, address
+                raise e
+            address &= ~high
             self.mem[address:address+4] = int32to8(self.register[rdest])
         elif rdest != 0:
-            if address & high == high:
+            if address & high == 0:
                 self.register[rdest] = fetchFromRom(self.rom, address)
             else:
                 assert address >= 0
+                address &= ~high
                 self.register[rdest] = int8to32(self.mem[address:address+4])
 
     def executeJumpOp(self, command):
@@ -164,14 +169,26 @@ class Cpu(object):
                 src = self.register[src]
             self.register[14] -= 4
             address = self.register[14]
-            assert address >= 0
-            self.mem[address:address+4] = int32to8(src)
+            try:
+                assert address & high and not address < 0
+            except AssertionError as e:
+                print self.pc, self.counter, address
+                raise e
+            finally:
+                address &= ~high
+                self.mem[address:address+4] = int32to8(src)
         else:
             rdest = command & 0xF
             address = self.register[14]
-            assert address >= 0
-            self.register[rdest] = int8to32(self.mem[address:address+4])
-            self.register[14] += 4
+            try:
+                assert address & high and not address < 0
+            except AssertionError as e:
+                print self.pc, address
+                raise e
+            finally:
+                address &= ~high
+                self.register[rdest] = int8to32(self.mem[address:address+4])
+                self.register[14] += 4
 
 
 class Flags:
@@ -287,13 +304,12 @@ def executeAluOperation(opcode, src1, src2, c):
 
 @purefunction
 def fetchFromRom(rom, address):
-    address &= (high - 1)
     return int8to32(rom[address:address+4])
 
 @purefunction
 def fetchInstruction(rom, address):
     assert not address < 0
-    assert address & high == high
+    assert address & high != high
     return fetchFromRom(rom, address)
     # return int8to32(self.mem[pc:pc+4])
 

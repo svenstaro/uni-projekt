@@ -13,7 +13,7 @@ def cpu(clk, reset, addr, readybit,
 
         clk       (Ibool) -- The clock
         reset     (Ireset)-- The reset signal
-        addr      (I7)    -- Next action
+        addr      (I10)    -- Next action
         readybit  (Ibool) -- readybit from MMU
         addrymux1 (Obool) -- mux1 for reginput
         addrymux0 (Obool) -- mux0 for reginput
@@ -36,7 +36,7 @@ def cpu(clk, reset, addr, readybit,
     """
 
     tState = enum('UNKNOWN', 'FETCH', 'DECODE', 'ALUOP', 'JUMP', 'LOAD', 'STORE',
-                  'ADR', 'CLOCK', 'PUSH', 'POP', 'CALL', 'SWI', 'HWI', 'HALT', 'ILLEGAL')  # TODO add more
+                  'ADR', 'CLOCK', 'PUSH', 'POP', 'CALL', 'SWI', 'HWI', 'HALT', 'ILLEGAL')
     state = Signal(tState.FETCH)
     substate = Signal(intbv(0)[4:])
 
@@ -68,27 +68,27 @@ def cpu(clk, reset, addr, readybit,
 
         ##### UNKNOWN
         if   state == tState.UNKNOWN: # TODO mir gefällt die Lösung mit dem unknown state nicht, mal gucken, ob ich das besser hinbekomme
-            if   addr[7:5] == 0b00:
+            if   addr[10:8] == 0b00:
                 state.next  = tState.ALUOP
-            elif addr[7:5] == 0b01:
+            elif addr[10:8] == 0b01:
                 state.next  = tState.JUMP
-            elif addr[7:4] == 0b100:
+            elif addr[10:7] == 0b100:
                 state.next  = tState.LOAD
-            elif addr[7:4] == 0b101:
+            elif addr[10:7] == 0b101:
                 state.next  = tState.STORE
-            elif addr[7:4] == 0b110:
+            elif addr[10:7] == 0b110:
                 state.next  = tState.ADR
-            elif addr[7:2] == 0b11100:
+            elif addr[10:5] == 0b11100:
                 state.next  = tState.PUSH
-            elif addr[7:2] == 0b11101:
+            elif addr[10:5] == 0b11101:
                 state.next  = tState.POP
-            elif addr[7:2] == 0b11110:
+            elif addr[10:5] == 0b11110:
                 state.next  = tState.CALL
-            elif addr[7:0] == 0b1111100:
+            elif addr[10:3] == 0b1111100:
                 state.next  = tState.SWI
-            elif addr[7:0] == 0b1111101:
+            elif addr[10:3] == 0b1111101:
                 state.next  = tState.HWI
-            elif addr[7:0] == 0b1111110:
+            elif addr[10:3] == 0b1111110:
                 state.next  = tState.CLOCK
             else:
                 state.next  = tState.ILLEGAL # TODO add more

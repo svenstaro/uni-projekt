@@ -21,7 +21,7 @@ def mk(clk, reset, buttons, leds, romContent=(), interesting=None):
     irImm24 = Signal(intbv(0)[24:])
     irImm16 = Signal(intbv(0)[16:])
     irJumpOp = Signal(intbv(0)[5:])
-    irPrefix = Signal(intbv(0)[7:])
+    irPrefix = Signal(intbv(0)[10:])
 
     def createIR():
         ir2idecoder = Signal(intbv(0)[32:])

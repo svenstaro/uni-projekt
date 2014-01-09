@@ -13,7 +13,7 @@ def cpu(clk, reset, addr, readybit,
 
         clk       (Ibool) -- The clock
         reset     (Ireset)-- The reset signal
-        addr      (I6)    -- Next action
+        addr      (I7)    -- Next action
         readybit  (Ibool) -- readybit from MMU
         addrymux1 (Obool) -- mux1 for reginput
         addrymux0 (Obool) -- mux0 for reginput
@@ -68,25 +68,25 @@ def cpu(clk, reset, addr, readybit,
 
         ##### UNKNOWN
         if   state == tState.UNKNOWN: # TODO mir gefällt die Lösung mit dem unknown state nicht, mal gucken, ob ich das besser hinbekomme
-            if   addr[6:4] == 0b00:
+            if   addr[7:5] == 0b00:
                 state.next  = tState.ALUOP
-            elif addr[6:4] == 0b01:
+            elif addr[7:5] == 0b01:
                 state.next  = tState.JUMP
-            elif addr[6:3] == 0b100:
+            elif addr[7:4] == 0b100:
                 state.next  = tState.LOAD
-            elif addr[6:3] == 0b101:
+            elif addr[7:4] == 0b101:
                 state.next  = tState.STORE
-            elif addr[6:3] == 0b110:
+            elif addr[7:4] == 0b110:
                 state.next  = tState.ADR
-            elif addr[6:1] == 0b11100:
+            elif addr[7:2] == 0b11100:
                 state.next  = tState.PUSH
-            elif addr[6:1] == 0b11101:
+            elif addr[7:2] == 0b11101:
                 state.next  = tState.POP
-            elif addr[6:1] == 0b11110:
+            elif addr[7:2] == 0b11110:
                 state.next  = tState.CALL
-            elif addr[6:0] == 0b111110:
+            elif addr[7:0] == 0b1111100:
                 state.next  = tState.SWI
-            elif addr[6:0] == 0b111111:
+            elif addr[7:0] == 0b1111110:
                 state.next  = tState.CLOCK
             else:
                 state.next  = tState.ILLEGAL # TODO add more
@@ -235,7 +235,6 @@ def cpu(clk, reset, addr, readybit,
 
         ##### SWI
         elif state == tState.SWI:
-            #TODO
             ryBuf.next = True
             state.next = tState.FETCH
 

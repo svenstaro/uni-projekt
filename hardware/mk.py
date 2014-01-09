@@ -1,9 +1,16 @@
 from myhdl import *
 from allimport import *
 
-def mk(clk, reset, romContent=(), interesting=None):
-    """ Oh crap! """
+def mk(clk, reset, buttons, leds, romContent=(), interesting=None):
 
+    """
+    clk   (Ibool)  -- The clock
+    reset (IReset) -- Reset Signal
+    buttons (4I)   -- 4 input buttons
+    leds  (4O)     -- 4 output LEDS
+    romContent     -- the rom content
+    interesting    -- A list with interesting signals will be returned
+    """
     ### the actual bus
     bbus = TristateSignal(intbv(0)[32:])
 
@@ -14,7 +21,7 @@ def mk(clk, reset, romContent=(), interesting=None):
     irImm24 = Signal(intbv(0)[24:])
     irImm16 = Signal(intbv(0)[16:])
     irJumpOp = Signal(intbv(0)[5:])
-    irPrefix = Signal(intbv(0)[6:])
+    irPrefix = Signal(intbv(0)[7:])
 
     def createIR():
         ir2idecoder = Signal(intbv(0)[32:])

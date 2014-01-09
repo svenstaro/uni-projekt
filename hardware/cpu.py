@@ -36,7 +36,7 @@ def cpu(clk, reset, addr, readybit,
     """
 
     tState = enum('UNKNOWN', 'FETCH', 'DECODE', 'ALUOP', 'JUMP', 'LOAD', 'STORE',
-                  'ADR', 'CLOCK', 'PUSH', 'POP', 'CALL', 'SWI', 'ILLEGAL', 'HALT')  # TODO add more
+                  'ADR', 'CLOCK', 'PUSH', 'POP', 'CALL', 'SWI', 'HWI', 'HALT', 'ILLEGAL')  # TODO add more
     state = Signal(tState.FETCH)
     substate = Signal(intbv(0)[4:])
 
@@ -86,6 +86,8 @@ def cpu(clk, reset, addr, readybit,
                 state.next  = tState.CALL
             elif addr[7:0] == 0b1111100:
                 state.next  = tState.SWI
+            elif addr[7:0] == 0b1111101:
+                state.next  = tState.HWI
             elif addr[7:0] == 0b1111110:
                 state.next  = tState.CLOCK
             else:
@@ -237,6 +239,11 @@ def cpu(clk, reset, addr, readybit,
         elif state == tState.SWI:
             ryBuf.next = True
             state.next = tState.FETCH
+
+        ##### HWI
+        elif state == tState.HWI:
+            #TODO
+            pass
 
         ##### CLK
         elif state == tState.CLOCK:

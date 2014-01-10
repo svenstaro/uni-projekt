@@ -71,7 +71,7 @@ def mk(clk, reset, buttons, leds, romContent=(), interesting=None):
 
         yMux = mux41(addrymux1, addrymux0, irSource2, 15, 14, irDest, yMuxOut)
         zMux = mux41(addrymux1, addrymux0, irDest, 15, 14, irSource2, zMuxOut)
-        rb = registerbank(clk, enReg, irSource, yMuxOut, zMuxOut, rgX, rgY, bbus)
+        rb = registerbank(clk, reset, enReg, irSource, yMuxOut, zMuxOut, rgX, rgY, bbus)
         ryTristate = tristate(rgY, bufRy, bbus)
         return yMux, zMux, rb, ryTristate
 
@@ -173,7 +173,7 @@ def mk(clk, reset, buttons, leds, romContent=(), interesting=None):
             return Mmu, mmuTristate
 
         def createCache():
-            Cache = cache(clk, memaddr, membus, enO, enW, csA, csO, cacheHit, readybit)
+            Cache = cache(clk, reset, memaddr, membus, enO, enW, csA, csO, cacheHit, readybit)
 
             return Cache
 

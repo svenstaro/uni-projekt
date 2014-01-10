@@ -1,9 +1,9 @@
 from myhdl import *
 
-def registerbank(clk, we, addrx, addry, addrz, xout, yout, zin, amount = 16, bitwidth = 32, protect0=True):
+def registerbank(clk, reset, we, addrx, addry, addrz, xout, yout, zin, amount = 16, bitwidth = 32, protect0=True):
     reg_data = [Signal(intbv(0)[bitwidth:]) for _ in range(amount)]
 
-    @always(clk.posedge)
+    @always_seq(clk.posedge, reset=reset)
     def write():
         assert addrx < amount
         assert addry < amount

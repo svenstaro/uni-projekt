@@ -4,18 +4,19 @@ from myhdl import *
 from hardware.registerbank import registerbank
 
 
-def cache(clk, addr, io, enO, enW, csRam, csRom, hit, ready):
+def cache(clk, reset, addr, io, enO, enW, csRam, csRom, hit, ready):
     """Implements some kind of caching
 
-    clk   (Ibool) -- the clock
-    addr  (I31)   -- The destination addr
-    io    (IO32)  -- In-/Output (tristate)
-    enO   (Ibool) -- Enable output
-    enW   (Ibool) -- enable write
-    csRam (Ibool) -- chip select for ram
-    csRom (Ibool) -- chip select for rom
-    hit   (Obool) -- cache hit?!
-    ready (Ibool) -- readybit from mmu
+    clk   (Ibool)  -- The clock
+    reset (IReset) -- Resetsignal
+    addr  (I31)    -- The destination addr
+    io    (IO32)   -- In-/Output (tristate)
+    enO   (Ibool)  -- Enable output
+    enW   (Ibool)  -- enable write
+    csRam (Ibool)  -- chip select for ram
+    csRom (Ibool)  -- chip select for rom
+    hit   (Obool)  -- cache hit?!
+    ready (Ibool)  -- readybit from mmu
 
     Current cachesize is 128
     """
@@ -35,10 +36,10 @@ def cache(clk, addr, io, enO, enW, csRam, csRom, hit, ready):
     #1 clean bit (0 → dirty, 1 → clean) + 1 csbit (0→Rom, 1→Ram) + 31bit addr + 32bit data
     data_out = Signal(intbv(0)[65:])
 
-    data = registerbank(clk, data_we, data_addr, 0, data_addr,
+    data = registerbank(clk, reset, data_we, data_addr, 0, data_addr,
                         data_out, Signal(intbv(0)[65:]), data_in, amount=128, bitwidth=65, protect0=False)
 
-    @always(clk.posedge)
+    @always_seq(clk.posedge, reset=reset)
     def logic():
         if state == tState.IDLE:
             data_addr.next = myHash(addr)

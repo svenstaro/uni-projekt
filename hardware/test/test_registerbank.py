@@ -7,6 +7,7 @@ class DutClass():
 
     def __init__(self, bitwidth=8, numChannel=5):
         self.clk = Signal(bool(0))
+        self.reset = ResetSignal(0, 1, True)
         self.we = Signal(bool(0))
         self.X, self.Y, self.Z = [Signal(intbv(0)[bitwidth:]) for _ in range(3)]
         self.addrX, self.addrY, self.addrZ = [Signal(intbv(0,0,numChannel)) for _ in range(3)]
@@ -14,8 +15,8 @@ class DutClass():
         self.numChannel = numChannel
 
     def Gens(self, trace = False):
-        self.args = [self.clk,self.we,self.addrX,self.addrY,self.addrZ,
-                self.X,self.Y,self.Z,self.numChannel,self.bitwidth]
+        self.args = [self.clk,self.reset,self.we,self.addrX,self.addrY,self.addrZ,
+                     self.X,self.Y,self.Z,self.numChannel,self.bitwidth]
 
         return traceSignals(registerbank, *self.args) if trace else registerbank(*self.args)
 
@@ -31,6 +32,10 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False):
 
     @instance
     def stimulus():
+        dut_cl.reset.next = True
+        yield delay(3*clkfreq)
+        dut_cl.reset.next = False
+
         yield verifyMethod(dut_cl, dut)
         raise StopSimulation
 

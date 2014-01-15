@@ -11,6 +11,7 @@ def mk(clk, reset, buttons, leds, romContent=(), interesting=None):
     romContent     -- the rom content
     interesting    -- A list with interesting signals will be returned
     """
+
     ### the actual bus
     bbus = TristateSignal(intbv(0)[32:])
 
@@ -179,24 +180,40 @@ def mk(clk, reset, buttons, leds, romContent=(), interesting=None):
 
         ### RAM
         def createRam():
-            ram = pseudoram(clk, enW, enO, csA, memaddr, membus, membus, depth=1024, readdelay=10, writedelay=15)
+            ram = pseudoram(clk, enW, enO, csA, memaddr, membus, membus, depth=1024)
 
             return ram
 
         ### ROM
         def createRom():
-            rom = pseudorom(clk, enO, csO, memaddr, membus, romContent, readdelay=10)
+            rom = pseudorom(clk, enO, csO, memaddr, membus, romContent)
 
             return rom
 
-        result = createMmuTristate(), createRam(), createRom(), createCache()
-        return result
+        MMU = createMmuTristate()
+        RAM = createRam()
+        ROM = createRom()
+        #CACHE = createCache()
 
-    result = createIR(), createCPU(), createStatusFlags(), createRegisterBank(), createALUBuf(), createJumpUnit(), createPcBuf(), createAddr14Buf(), createOp2Buf(), createAddrBuf(), createClkBuf(), \
-             createMemory()
+        return instances()
 
-    if interesting is not None:
-        interesting.append(bbus)
-        interesting.append(readybit)
 
-    return result
+    if __debug__:  # prevents this from compiling to verilog
+        if interesting is not None:
+            interesting.append(bbus)
+            interesting.append(readybit)
+
+    IR = createIR()
+    CPU = createCPU()
+    StatusFlags = createStatusFlags()
+    RegisterBank = createRegisterBank()
+    ALU = createALUBuf()
+    JumpUnit = createJumpUnit()
+    PC = createPcBuf()
+    Addr14Buf = createAddr14Buf()
+    Op2Buf = createOp2Buf()
+    AddrBuf = createAddrBuf()
+    ClkBuf = createClkBuf()
+    Memory = createMemory()
+
+    return instances()

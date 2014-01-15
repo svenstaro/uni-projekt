@@ -22,7 +22,7 @@ def c25Board(clk, reset, buttons, leds, romContent=(), enCache=True, interesting
     irImm24 = Signal(intbv(0)[24:])
     irImm16 = Signal(intbv(0)[16:])
     irJumpOp = Signal(intbv(0)[5:])
-    irPrefix = Signal(intbv(0)[10:])
+    irPrefix = Signal(intbv(0)[7:])
 
     def createIR():
         ir2idecoder = Signal(intbv(0)[32:])

@@ -13,7 +13,7 @@ def cpu(clk, reset, addr, readybit,
 
         clk       (Ibool) -- The clock
         reset     (Ireset)-- The reset signal
-        addr      (I10)    -- Next action
+        addr      (I7)    -- Next action
         readybit  (Ibool) -- readybit from MMU
         addrymux1 (Obool) -- mux1 for reginput
         addrymux0 (Obool) -- mux0 for reginput

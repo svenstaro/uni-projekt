@@ -168,7 +168,7 @@ def mk(clk, reset, buttons, leds, romContent=(), interesting=None):
         def createMmuTristate():
             mmuOut = Signal(intbv(0)[32:])
 
-            Mmu = mmu(clk, enMmu, bbus, mmuOut, readybit, memaddr, membus, enO, enW, csA, csO, cacheHit)
+            Mmu = mmu(clk, enMmu, bbus, mmuOut, readybit, memaddr, membus, enO, enW, csA, csO, False)
             mmuTristate = tristate(mmuOut, mmuBuf, bbus)
 
             return Mmu, mmuTristate

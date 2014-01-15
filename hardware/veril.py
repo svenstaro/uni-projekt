@@ -9,8 +9,6 @@ import mk, struct, os
 from myhdl import *
 from allimport import *
 
-converse = False
-
 class DutClass():
     """Wrapper around DUT"""
     def __init__(self, data=(), converse=False):
@@ -85,6 +83,8 @@ if __name__ == "__main__":
 
     def compile():
         d = DutClass(data=data, converse=True)
+        conversion.toVerilog.name = 'c25Board'
+        conversion.toVerilog.no_testbench = True
         conversion.toVerilog(mk.mk, *d.args)
 
     def run():

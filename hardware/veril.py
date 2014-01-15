@@ -72,9 +72,9 @@ if __name__ == "__main__":
 
     parser = ArgumentParser(description='C25Board emulator and generator')
     parser.add_argument('filename', type=str, nargs=1, help='a executable')
-    parser.add_argument('--type', choices=['analyze', 'compile', 'run'], default='run')
-    parser.add_argument('--trace', action='store_true')
-    parser.add_argument('--nocache', action='store_false')
+    parser.add_argument('--type', choices=['analyze', 'compile', 'run'], default='run', help='specify the type')
+    parser.add_argument('--trace', action='store_true', help='enable tracing?')
+    parser.add_argument('--nocache', action='store_false', help='disable cache')
 
     args = parser.parse_args()
 
@@ -82,7 +82,11 @@ if __name__ == "__main__":
         size = os.path.getsize(f.name)//4
         data = struct.unpack('>' + "I"*size, f.read(4*size))
 
+
     dut_cl = DutClass(data)
+
+    #we currently have a bug with the cache, so nocache will be enforced!
+    args.nocache = False
 
     dut_cl.args.append(args.nocache)
 

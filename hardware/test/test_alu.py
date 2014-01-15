@@ -131,7 +131,8 @@ class TestAluArithmetic(TestCase):
                          (6,0,6),
                          (-1,0,-1),
                          (5,1,2)],
-                0b1111: [(4,29,32)]  #ROR
+                0b1111: [(4,29,32),
+                         (6,1,3)]  #ROR
                 }
 
             for opc, val in tests.iteritems():

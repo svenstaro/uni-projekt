@@ -74,9 +74,14 @@ if __name__ == "__main__":
         conversion.analyze.simulator = 'icarus'
         conversion.analyze(mk.mk, *d.args)
 
+    def compile():
+        d = DutClass(data)
+        conversion.toVerilog(mk.mk, *d.args)
+
     def run():
         sim = genSim(verify,data=data,trace=True)
         sim.run()
 
     # analyze()
-    run()
+    compile()
+    # run()

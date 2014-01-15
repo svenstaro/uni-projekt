@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from myhdl import *
-from hardware.registerbank import registerbank
+from registerbank import registerbank
 
 
 def cache(clk, reset, addr, io, enO, enW, csRam, csRom, hit, ready):

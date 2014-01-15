@@ -9,8 +9,10 @@ def pseudorom(clk, oe, cs, addr, dout, mem):
 
     o = dout.driver()
 
-    @always(clk, cs, oe)
+    @always(clk.posedge)
     def read():
+        o.next = None
+
         if cs and oe:
             assert int(addr)//4 < len(mem)
 
@@ -19,7 +21,5 @@ def pseudorom(clk, oe, cs, addr, dout, mem):
                 print "ROM (" + '0x%02X' % addr + "): " + ' '.join(map(lambda *xs: ''.join(xs), *[iter(a)]*8)) + ' | ' + str(getTextOfCommand(a))
 
             o.next = mem[int(addr)//4]
-        else:
-            o.next = None
 
     return read

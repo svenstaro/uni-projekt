@@ -11,7 +11,7 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
         dout  (O32)   -- output
         ready (Obool) -- Indicates, that the calculation is performed.
         --- memory side
-        addr  (O32)   -- The desired address
+        addr  (O31)   -- The desired address
         io    (IO32)  -- In-/Output (tristate)
         enO   (Obool) -- Enable output
         enW   (Obool) -- Enable write
@@ -31,7 +31,7 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
 
     tState = enum('LISTEN', 'CALC', 'FINISH')
     state = Signal(tState.LISTEN)
-    waitingtimer = Signal(intbv(0)[8:]) # increase the bitwidth of the timer, if loading takes longer
+    waitingtimer = Signal(intbv(0)[8:])  # increase the bitwidth of the timer, if loading takes longer
     with_data = Signal(bool(0))
     in_data = Signal(intbv(0)[32:])
 
@@ -43,29 +43,30 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
         if en:
             if state == tState.LISTEN:
                 ready.next = False
-
                 addr.next = din[31:]
                 csRam.next = din[31]
                 csRom.next = not din[31]
                 state.next = tState.CALC
             elif state == tState.CALC:
-                assert bool(csRam)
+                assert bool(csRam)  # make sure the high bit is set
 
+                csRam.next = True
+                csRom.next = False
                 with_data.next = True
                 in_data.next = din
             else:
                 print "Something went wrong! (Did you read the protocoll?)"
         elif state == tState.CALC:
-            assert not(enO and enW) # they are not allowed to be true at once
+            assert not(enO and enW)  # they are not allowed to be true at once
 
             waitingtimer.next = waitingtimer + 1
             if not with_data:
                 #reading from memory
                 enO.next = True
-                if waitingtimer == 4 and hit: #cache hit
-                    in_data.next = io
-                    state.next = tState.FINISH
-                elif waitingtimer == 10: # 10 is the number of cycles to wait for the result from memory
+                if waitingtimer == 4 and hit:  # cache hit?
+                        in_data.next = io
+                        state.next = tState.FINISH
+                elif waitingtimer == 10:  # 10 is the number of cycles to wait for the result from memory
                     in_data.next = io
                     state.next = tState.FINISH
             else:
@@ -73,7 +74,7 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
                 enW.next = True
                 iodriverw.next = in_data
 
-                if waitingtimer == 15: # 15 is the number of cycles to wait for the result to be written in memory
+                if waitingtimer == 15:  # 15 is the number of cycles to wait for the result to be written in memory
                     state.next = tState.FINISH
         elif state == tState.FINISH:
             waitingtimer.next = 0
@@ -84,14 +85,14 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
             iodriverw.next = None
             state.next = tState.LISTEN
 
-    @always(ready)
+    @always_comb
     def read():
+        iodriverr.next = None
+        dout.next = 0  # default value
         if ready:
             dout.next = in_data
             if not hit:  # tell the cache the right data, so it can store it
-                iodriverr.next = in_data
-        else:
-            iodriverr.next = None
-
+                #iodriverr.next = in_data
+                pass
 
     return write, read

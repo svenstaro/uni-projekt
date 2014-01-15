@@ -33,12 +33,13 @@ def cpu(clk, reset, addr, readybit,
         enCall    (Obool) -- force jumping
         enSup     (Obool) -- enable statusUpdate
         enMMU     (Obool) -- enable Memory managment unit
+        mmuBuf    (Obool) -- bufbit for mmu
     """
 
     tState = enum('UNKNOWN', 'FETCH', 'DECODE', 'ALUOP', 'JUMP', 'LOAD', 'STORE',
                   'ADR', 'CLOCK', 'PUSH', 'POP', 'CALL', 'SWI', 'HWI', 'HALT', 'ILLEGAL')
     state = Signal(tState.FETCH)
-    substate = Signal(intbv(0)[4:])
+    substate = Signal(modbv(0)[4:])
 
     @always_seq(clk.posedge, reset=reset)
     def logic():

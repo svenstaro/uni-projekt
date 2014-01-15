@@ -1,7 +1,7 @@
 from myhdl import *
 from allimport import *
 
-def c25Board(clk, reset, buttons, leds, romContent=(), interesting=None):
+def c25Board(clk, reset, buttons, leds, romContent=(), enCache=True, interesting=None):
 
     """
     clk   (Ibool)  -- The clock
@@ -163,12 +163,17 @@ def c25Board(clk, reset, buttons, leds, romContent=(), interesting=None):
         memaddr = Signal(intbv(0)[31:])
 
         ### MMU
-        enO, enW, csA, csO, cacheHit = [Signal(bool(0)) for _ in range(5)]
+        enO, enW, csA, csO= [Signal(bool(0)) for _ in range(4)]
+
+        if enCache:
+            cacheHit = Signal(bool(0))
+        else:
+            cacheHit = False
 
         def createMmuTristate():
             mmuOut = Signal(intbv(0)[32:])
 
-            Mmu = mmu(clk, enMmu, bbus, mmuOut, readybit, memaddr, membus, enO, enW, csA, csO, False)
+            Mmu = mmu(clk, enMmu, bbus, mmuOut, readybit, memaddr, membus, enO, enW, csA, csO, cacheHit)
             mmuTristate = tristate(mmuOut, mmuBuf, bbus)
 
             return Mmu, mmuTristate
@@ -180,7 +185,7 @@ def c25Board(clk, reset, buttons, leds, romContent=(), interesting=None):
 
         ### RAM
         def createRam():
-            ram = pseudoram(clk, enW, enO, csA, memaddr, membus, membus, depth=1024)
+            ram = pseudoram(clk, enW, enO, csA, memaddr, membus, membus, depth=4096)
 
             return ram
 
@@ -193,15 +198,15 @@ def c25Board(clk, reset, buttons, leds, romContent=(), interesting=None):
         MMU = createMmuTristate()
         RAM = createRam()
         ROM = createRom()
-        #CACHE = createCache()
+        if enCache:
+            CACHE = createCache()
+
 
         return instances()
 
 
-    if __debug__:  # prevents this from compiling to verilog
-        if interesting is not None:
-            interesting.append(bbus)
-            interesting.append(readybit)
+    if interesting is not None:
+        interesting.append(bbus)
 
     IR = createIR()
     CPU = createCPU()

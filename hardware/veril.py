@@ -1,44 +1,25 @@
 import sys
-import time
-
 sys.path.append("/home/marcel/studium/WISE1314/Projekt/")
-sys.path.append("/home/marcel/studium/WISE1314/Projekt/assembler/")
-sys.path.append("/home/marcel/studium/WISE1314/Projekt/assembler/operations/")
 
-import c25Board, struct, os
+import struct
+import os
 from myhdl import *
-from allimport import *
+from argparse import ArgumentParser
+import c25Board
 
 class DutClass():
     """Wrapper around DUT"""
-    def __init__(self, data=(), converse=False):
+    def __init__(self, data):
         self.clk = Signal(bool(0))
         self.reset = ResetSignal(0, 1, True)
         self.buttons, self.leds = [Signal(intbv(0)[4:]) for _ in range(2)]
         self.data = data
         self.args = [self.clk, self.reset, self.buttons, self.leds, self.data]
-        self.converse = converse
 
-        if not self.converse:
-            self.interesting = []
-            self.args.append(self.interesting)
-
-
-    def Gens(self, trace = False):
-        result = traceSignals(c25Board.c25Board, *self.args) if trace else c25Board.c25Board(*self.args)
-
-        if not self.converse:
-            self.bus = self.interesting[0]
-            self.ready = self.interesting[1]
-
-        return result
-
-
-def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False, data=()):
+def genSim(verifyMethod, dut_cl, clkfreq=1, trace=False):
     """ Generates a Simulation Object """
 
-    dut_cl = cl(data)
-    dut = dut_cl.Gens(trace=trace)
+    dut = traceSignals(c25Board.c25Board, *dut_cl.args) if trace else c25Board.c25Board(*dut_cl.args)
 
     @always(delay(clkfreq))
     def clkGen():
@@ -56,41 +37,58 @@ def genSim(verifyMethod, cl=DutClass, clkfreq=1, trace=False, data=()):
 
     return Simulation(dut, clkGen, stimulus)
 
+
+
+
+
+
 if __name__ == "__main__":
-    try:
-        with open(sys.argv[1]) as f:
-            size = os.path.getsize(f.name)//4
-            data = struct.unpack('>' + "I"*size, f.read(4*size))
-    except IndexError:
-        print "Supply a filename!"
-        sys.exit(1)
-
-    def verify(cl, dut):
-        while True:
-            yield cl.clk.posedge
-            if cl.bus == 0b01000011111111111111111111111100: #halt
-                raise StopSimulation("HALT DETECTED (%s)" % now())
-            elif cl.bus._val is not None and cl.bus[32:26] == 0b111110: #swi
-                yield cl.clk.posedge
-                yield cl.clk.posedge
-                yield cl.clk.negedge
-                print "SWI (%s): %s" % (now(), str(cl.bus._val))
-
-    def analyze():
-        d = DutClass(data=data, converse=True)
+    def analyzeBoard(dut_cl):
         conversion.analyze.simulator = 'icarus'
-        conversion.analyze(c25Board.c25Board, *d.args)
+        conversion.analyze(c25Board.c25Board, *dut_cl.args)
 
-    def compile():
-        d = DutClass(data=data, converse=True)
+    def compileBoard(dut_cl):
         conversion.toVerilog.name = 'c25Board'
         conversion.toVerilog.no_testbench = True
-        conversion.toVerilog(c25Board.c25Board, *d.args)
+        conversion.toVerilog(c25Board.c25Board, *dut_cl.args)
 
-    def run():
-        sim = genSim(verify,data=data,trace=True)
+    def run(dut_cl, trace):
+        def verify(cl, _):
+            while True:
+                yield cl.clk.posedge
+                if bus == 0b01000011111111111111111111111100: #halt
+                    raise StopSimulation("HALT DETECTED (%s)" % now())
+                elif bus._val is not None and bus[32:26] == 0b111110: #swi
+                    yield cl.clk.posedge
+                    yield cl.clk.posedge
+                    yield cl.clk.negedge
+                    print "SWI (%s): %s" % (now(), str(bus._val))
+
+        interesting=[]
+        dut_cl.args.append(interesting)
+        sim = genSim(verify, dut_cl, trace=trace)
+        bus = interesting[0]
         sim.run()
 
-    # analyze()
-    compile()
-    # run()
+    parser = ArgumentParser(description='C25Board emulator and generator')
+    parser.add_argument('filename', type=str, nargs=1, help='a executable')
+    parser.add_argument('--type', choices=['analyze', 'compile', 'run'], default='run')
+    parser.add_argument('--trace', action='store_true')
+    parser.add_argument('--nocache', action='store_false')
+
+    args = parser.parse_args()
+
+    with open(args.filename[0]) as f:
+        size = os.path.getsize(f.name)//4
+        data = struct.unpack('>' + "I"*size, f.read(4*size))
+
+    dut_cl = DutClass(data)
+
+    dut_cl.args.append(args.nocache)
+
+    if args.type == 'analyze':
+        analyzeBoard(dut_cl)
+    elif args.type == 'compile':
+        compileBoard(dut_cl)
+    elif args.type == 'run':
+        run(dut_cl, args.trace)

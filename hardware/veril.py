@@ -5,7 +5,7 @@ sys.path.append("/home/marcel/studium/WISE1314/Projekt/")
 sys.path.append("/home/marcel/studium/WISE1314/Projekt/assembler/")
 sys.path.append("/home/marcel/studium/WISE1314/Projekt/assembler/operations/")
 
-import mk, struct, os
+import c25Board, struct, os
 from myhdl import *
 from allimport import *
 
@@ -25,7 +25,7 @@ class DutClass():
 
 
     def Gens(self, trace = False):
-        result = traceSignals(mk.mk, *self.args) if trace else mk.mk(*self.args)
+        result = traceSignals(c25Board.c25Board, *self.args) if trace else c25Board.c25Board(*self.args)
 
         if not self.converse:
             self.bus = self.interesting[0]
@@ -79,13 +79,13 @@ if __name__ == "__main__":
     def analyze():
         d = DutClass(data=data, converse=True)
         conversion.analyze.simulator = 'icarus'
-        conversion.analyze(mk.mk, *d.args)
+        conversion.analyze(c25Board.c25Board, *d.args)
 
     def compile():
         d = DutClass(data=data, converse=True)
         conversion.toVerilog.name = 'c25Board'
         conversion.toVerilog.no_testbench = True
-        conversion.toVerilog(mk.mk, *d.args)
+        conversion.toVerilog(c25Board.c25Board, *d.args)
 
     def run():
         sim = genSim(verify,data=data,trace=True)

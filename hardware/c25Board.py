@@ -1,7 +1,7 @@
 from myhdl import *
 from allimport import *
 
-def mk(clk, reset, buttons, leds, romContent=(), interesting=None):
+def c25Board(clk, reset, buttons, leds, romContent=(), interesting=None):
 
     """
     clk   (Ibool)  -- The clock

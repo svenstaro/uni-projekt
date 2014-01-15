@@ -1,6 +1,6 @@
 from myhdl import *
 
-def rs232tx(clk, reset, start, din, tx, clkFreq=50000000, baudRate=57600):
+def rs232tx(clk, reset, readybit, start, din, tx, clkFreq=50000000, baudRate=57600):
 
     timeoutOne  = int(1.0*clkFreq/baudRate)-1
     timeoutHalf = int(1.5*clkFreq/baudRate)-1
@@ -31,6 +31,7 @@ def rs232tx(clk, reset, start, din, tx, clkFreq=50000000, baudRate=57600):
                     clkCnt.next = timeoutOne
                 else:
                     tx.next = True
+                    readybit.next = True
                     clkCnt.next = timeoutHalf
                     state.next = tState.IDLE
 

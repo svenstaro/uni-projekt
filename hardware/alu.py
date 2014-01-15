@@ -56,6 +56,12 @@ def alu(opc, en, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
 
     @always_comb
     def logic():
+        Z.next = 0
+        N.next = 0
+        C.next = 0
+        V.next = 0
+        Res.next = 0
+
         if en:
             alu_res = calc(opc, A, B, Cin)
 

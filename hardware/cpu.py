@@ -2,10 +2,10 @@
 from myhdl import *
 
 
-def cpu(clk, reset, addr, readybit,
+def cpu(clk, reset, addr, readybit, rsbit,
         addrymux1, addrymux0, pmux,
-        addrBuf, op2Buf, addr14Buf, ryBuf, aluBuf, pcBuf, clkBuf,
-        enAlu, enIr, enPc, enReg, enJump, enCall, enSup,
+        addrBuf, op2Buf, addr14Buf, ryBuf, aluBuf, pcBuf, clkBuf, butBuf, rsrBuf,
+        enAlu, enIr, enPc, enReg, enJump, enCall, enSup, enLed, enRst,
         enMMU, mmuBuf):
     """
         This is a cpu state maschine. Let's see how far we come.
@@ -15,6 +15,7 @@ def cpu(clk, reset, addr, readybit,
         reset     (Ireset)-- The reset signal
         addr      (I7)    -- Next action
         readybit  (Ibool) -- readybit from MMU
+        rsrbit    (Ibool) -- readybit from rsr
         addrymux1 (Obool) -- mux1 for reginput
         addrymux0 (Obool) -- mux0 for reginput
         pmux      (Obool) -- if true, dx will be incremented by 4, decremented otherwise (used for push/pop)
@@ -25,6 +26,8 @@ def cpu(clk, reset, addr, readybit,
         aluBuf    (Obool) -- bufbit for alu
         pcBuf     (Obool) -- bufbit for pc (programcounter)
         clkBuf    (Obool) -- bufbit for counter
+        butBuf    (Obool) -- bufbit for the buttons
+        rsrBuf    (Obool) -- bufbit for rs232 receiver
         enAlu     (Obool) -- enable ALU
         enIr      (Obool) -- enable IR
         enPc      (Obool) -- enable ProgrammCounter
@@ -32,12 +35,14 @@ def cpu(clk, reset, addr, readybit,
         enJump    (Obool) -- enable jumping
         enCall    (Obool) -- force jumping
         enSup     (Obool) -- enable statusUpdate
+        enLed     (Obool) -- enable Led
+        enRst     (Obool) -- enable rs232 transmitter
         enMMU     (Obool) -- enable Memory managment unit
         mmuBuf    (Obool) -- bufbit for mmu
     """
 
     tState = enum('UNKNOWN', 'FETCH', 'DECODE', 'ALUOP', 'JUMP', 'LOAD', 'STORE',
-                  'ADR', 'CLOCK', 'PUSH', 'POP', 'CALL', 'SWI', 'HWI', 'HALT', 'ILLEGAL')
+                  'ADR', 'PUSH', 'POP', 'CALL', 'CLOCK', 'SWI', 'HWI', 'RSR', 'RST', 'HALT', 'ILLEGAL')
     state = Signal(tState.FETCH)
     substate = Signal(modbv(0)[4:])
 
@@ -54,6 +59,8 @@ def cpu(clk, reset, addr, readybit,
         aluBuf.next = False
         pcBuf.next = False
         clkBuf.next = False
+        butBuf.next = False
+        rsrBuf.next = False
         enAlu.next = False
         enIr.next = False
         enPc.next = False
@@ -61,6 +68,8 @@ def cpu(clk, reset, addr, readybit,
         enSup.next = False
         enJump.next = False
         enCall.next = False
+        enLed.next = False
+        enRst.next = False
         enMMU.next = False
         mmuBuf.next = False
 
@@ -69,28 +78,32 @@ def cpu(clk, reset, addr, readybit,
 
         ##### UNKNOWN
         if   state == tState.UNKNOWN: # TODO mir gefällt die Lösung mit dem unknown state nicht, mal gucken, ob ich das besser hinbekomme
-            if   addr[10:8] == 0b00:
+            if   addr[7:5] == 0b00:
                 state.next  = tState.ALUOP
-            elif addr[10:8] == 0b01:
+            elif addr[7:5] == 0b01:
                 state.next  = tState.JUMP
-            elif addr[10:7] == 0b100:
+            elif addr[7:4] == 0b100:
                 state.next  = tState.LOAD
-            elif addr[10:7] == 0b101:
+            elif addr[7:4] == 0b101:
                 state.next  = tState.STORE
-            elif addr[10:7] == 0b110:
+            elif addr[7:4] == 0b110:
                 state.next  = tState.ADR
-            elif addr[10:5] == 0b11100:
+            elif addr[7:2] == 0b11100:
                 state.next  = tState.PUSH
-            elif addr[10:5] == 0b11101:
+            elif addr[7:2] == 0b11101:
                 state.next  = tState.POP
-            elif addr[10:5] == 0b11110:
+            elif addr[7:1] == 0b111100:
                 state.next  = tState.CALL
-            elif addr[10:3] == 0b1111100:
-                state.next  = tState.SWI
-            elif addr[10:3] == 0b1111101:
-                state.next  = tState.HWI
-            elif addr[10:3] == 0b1111110:
+            elif addr[7:1] == 0b111101:
                 state.next  = tState.CLOCK
+            elif addr[7:0] == 0b1111100:
+                state.next  = tState.SWI
+            elif addr[7:0] == 0b1111101:
+                state.next  = tState.HWI
+            elif addr[7:0] == 0b1111110:
+                state.next  = tState.RSR
+            elif addr[7:0] == 0b1111111:
+                state.next  = tState.RST
             else:
                 state.next  = tState.ILLEGAL # TODO add more
 
@@ -236,6 +249,14 @@ def cpu(clk, reset, addr, readybit,
                 substate.next = 0
                 state.next = tState.FETCH
 
+        ##### CLK
+        elif state == tState.CLOCK:
+            clkBuf.next = True
+            addrymux0.next = True
+            addrymux1.next = True
+            enReg.next = True
+            state.next = tState.FETCH
+
         ##### SWI
         elif state == tState.SWI:
             ryBuf.next = True
@@ -246,13 +267,22 @@ def cpu(clk, reset, addr, readybit,
             #TODO
             pass
 
-        ##### CLK
-        elif state == tState.CLOCK:
-            clkBuf.next = True
-            addrymux0.next = True
-            addrymux1.next = True
-            enReg.next = True
-            state.next = tState.FETCH
+        ##### RSR
+        elif state == tState.RSR:
+            if rsbit:
+                rsrBuf.next = True
+                addrymux0.next = True
+                addrymux1.next = True
+                enReg.next = True
+                state.next = tState.FETCH
+
+        ##### RST
+        elif state == tState.RST:
+            enRst.next = True
+            op2Buf.next = True
+
+            if rsbit:
+                state.next = tState.FETCH
 
         ##### HALT
         elif state == tState.HALT:

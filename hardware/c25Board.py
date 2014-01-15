@@ -1,15 +1,17 @@
 from myhdl import *
 from allimport import *
 
-def c25Board(clk, reset, buttons, leds, romContent=(), enCache=True, interesting=None):
+def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), enCache=True, interesting=None):
 
     """
-    clk   (Ibool)  -- The clock
-    reset (IReset) -- Reset Signal
-    buttons (4I)   -- 4 input buttons
-    leds  (4O)     -- 4 output LEDS
-    romContent     -- the rom content
-    interesting    -- A list with interesting signals will be returned
+    clk     (Ibool)  -- The clock
+    reset   (IReset) -- Reset Signal
+    buttons (I4)     -- 4 input buttons
+    leds    (O4)     -- 4 output LEDS
+    rx      (I8)     -- 8 bit input from rs232
+    tx      (O8)     -- 8 bit output from rs232
+    romContent       -- the rom content
+    interesting      -- A list with interesting signals will be returned
     """
 
     ### the actual bus
@@ -34,17 +36,17 @@ def c25Board(clk, reset, buttons, leds, romContent=(), enCache=True, interesting
 
 
     ### cpu
-    readybit = Signal(bool(1)) # it must be true!
+    readybit, rsreadybit = [Signal(bool(1)) for _ in range(2)]  # it must be true!
     addrymux1, addrymux0, pmux = [Signal(bool(0)) for _ in range(3)]
-    bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC, bufClk = [Signal(bool(0)) for _ in range(7)]
-    enAlu, enIr, enPc, enReg, enJump, enCall, enSup = [Signal(bool(0)) for _ in range(7)]
+    bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC, bufClk, bufBut, bufRsr = [Signal(bool(0)) for _ in range(9)]
+    enAlu, enIr, enPc, enReg, enJump, enCall, enSup, enLed, enRst = [Signal(bool(0)) for _ in range(9)]
     enMmu, mmuBuf = [Signal(bool(0)) for _ in range(2)]
 
     def createCPU():
-        Cpu = cpu(clk, reset, irPrefix, readybit,
+        Cpu = cpu(clk, reset, irPrefix, readybit, rsreadybit,
                   addrymux1, addrymux0, pmux,
-                  bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC, bufClk,
-                  enAlu, enIr, enPc, enReg, enJump, enCall, enSup,
+                  bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC, bufClk, bufBut, bufRsr,
+                  enAlu, enIr, enPc, enReg, enJump, enCall, enSup,enLed, enRst,
                   enMmu, mmuBuf)
         return Cpu
 
@@ -153,6 +155,17 @@ def c25Board(clk, reset, buttons, leds, romContent=(), enCache=True, interesting
 
         return clkTristate, clock
 
+    ### rs232
+
+    def createRs232():
+        rs232out = Signal(intbv(0)[8:])
+
+        readerTristate = tristate(rs232out, bufRsr, bbus)
+        reader = rs232rx(clk, reset, rx, rs232out, rsreadybit)
+        writer = rs232tx(clk, reset, rsreadybit, enRst, bbus, tx)
+
+        return instances()
+
 
     ##############
     ### MEMORY ###
@@ -180,19 +193,16 @@ def c25Board(clk, reset, buttons, leds, romContent=(), enCache=True, interesting
 
         def createCache():
             Cache = cache(clk, reset, memaddr, membus, enO, enW, csA, csO, cacheHit, readybit)
-
             return Cache
 
         ### RAM
         def createRam():
             ram = pseudoram(clk, enW, enO, csA, memaddr, membus, membus, depth=4096)
-
             return ram
 
         ### ROM
         def createRom():
             rom = pseudorom(clk, enO, csO, memaddr, membus, romContent)
-
             return rom
 
         MMU = createMmuTristate()
@@ -201,9 +211,7 @@ def c25Board(clk, reset, buttons, leds, romContent=(), enCache=True, interesting
         if enCache:
             CACHE = createCache()
 
-
         return instances()
-
 
     if interesting is not None:
         interesting.append(bbus)
@@ -219,6 +227,7 @@ def c25Board(clk, reset, buttons, leds, romContent=(), enCache=True, interesting
     Op2Buf = createOp2Buf()
     AddrBuf = createAddrBuf()
     ClkBuf = createClkBuf()
+    RS232 = createRs232()
     Memory = createMemory()
 
     return instances()

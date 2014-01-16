@@ -11,7 +11,7 @@ class DutClass():
     """Wrapper around DUT"""
     def __init__(self, data):
         self.clk = Signal(bool(0))
-        self.reset = ResetSignal(0, 1, True)
+        self.reset = ResetSignal(1, 0, True)
         self.buttons, self.leds = [Signal(intbv(0)[4:]) for _ in range(2)]
         self.rx, self.tx = [Signal(bool(1)) for _ in range(2)]
         self.data = data
@@ -29,9 +29,9 @@ def genSim(verifyMethod, dut_cl, clkfreq=1, trace=False):
 
     @instance
     def stimulus():
-        dut_cl.reset.next = True
-        yield delay(3*clkfreq)
         dut_cl.reset.next = False
+        yield delay(3*clkfreq)
+        dut_cl.reset.next = True
 
         yield verifyMethod(dut_cl, dut)
         raise StopSimulation
@@ -55,15 +55,16 @@ if __name__ == "__main__":
 
     def run(dut_cl, trace):
         def verify(cl, _):
+            assert isinstance(cl, DutClass)
             while True:
                 yield cl.clk.posedge
                 if bus == 0b01000011111111111111111111111100: #halt
                     raise StopSimulation("HALT DETECTED (%s)" % now())
-                elif bus._val is not None and bus[32:26] == 0b111110: #swi
+                elif bus._val is not None and bus[32:26] == 0b111110: #led
                     yield cl.clk.posedge
                     yield cl.clk.posedge
                     yield cl.clk.negedge
-                    print "SWI (%s): %s" % (now(), str(bus._val))
+                    print "LEDS (%s): %s" % (now(), str(cl.leds._val))
 
         interesting=[]
         dut_cl.args.append(interesting)

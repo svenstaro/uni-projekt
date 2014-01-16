@@ -1,10 +1,11 @@
 from myhdl import *
 
 
-def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
+def mmu(clk, reset, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
     """This unit can be used to abstract the actual memory access. Also we can implement some caching here
 
         clk   (Ibool) -- The clock
+        reset (Ireset)-- The reset
         --- cpu side
         en    (Ibool) -- Enablebit
         din   (I32)   -- input
@@ -38,7 +39,7 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
     iodriverw = io.driver()
     iodriverr = io.driver()
 
-    @always(clk.posedge)
+    @always_seq(clk.posedge, reset=reset)
     def write():
         if en:
             if state == tState.LISTEN:
@@ -66,7 +67,7 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
                 if waitingtimer == 4 and hit:  # cache hit?
                         in_data.next = io
                         state.next = tState.FINISH
-                elif waitingtimer == 10:  # 10 is the number of cycles to wait for the result from memory
+                elif waitingtimer == 1:  # 10 is the number of cycles to wait for the result from memory
                     in_data.next = io
                     state.next = tState.FINISH
             else:
@@ -74,7 +75,7 @@ def mmu(clk, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
                 enW.next = True
                 iodriverw.next = in_data
 
-                if waitingtimer == 15:  # 15 is the number of cycles to wait for the result to be written in memory
+                if waitingtimer == 1:  # 15 is the number of cycles to wait for the result to be written in memory
                     state.next = tState.FINISH
         elif state == tState.FINISH:
             waitingtimer.next = 0

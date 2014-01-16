@@ -46,7 +46,7 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), enCache=True, int
         Cpu = cpu(clk, reset, irPrefix, readybit, rsrreadybit, rstreadybit,
                   addrymux1, addrymux0, pmux,
                   bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC, bufClk, bufBut, bufRsr,
-                  enAlu, enIr, enPc, enReg, enJump, enCall, enSup,enLed, enRst,
+                  enAlu, enIr, enPc, enReg, enJump, enCall, enSup, enLed, enRst,
                   enMmu, mmuBuf)
         return Cpu
 
@@ -169,7 +169,7 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), enCache=True, int
     ### hardware
 
     def createLedBut():
-        ioOut = Signal(intbv(0)[8:])
+        ioOut = Signal(intbv(0)[32:])
 
         io = iodevice(clk, enLed, ioOut, bbus, leds, buttons)
         ioTristate = tristate(ioOut, bufBut, bbus)
@@ -196,7 +196,7 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), enCache=True, int
         def createMmuTristate():
             mmuOut = Signal(intbv(0)[32:])
 
-            Mmu = mmu(clk, enMmu, bbus, mmuOut, readybit, memaddr, membus, enO, enW, csA, csO, cacheHit)
+            Mmu = mmu(clk, reset, enMmu, bbus, mmuOut, readybit, memaddr, membus, enO, enW, csA, csO, cacheHit)
             mmuTristate = tristate(mmuOut, mmuBuf, bbus)
 
             return Mmu, mmuTristate
@@ -207,7 +207,7 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), enCache=True, int
 
         ### RAM
         def createRam():
-            ram = pseudoram(clk, enW, enO, csA, memaddr, membus, membus, depth=4096)
+            ram = pseudoram(clk, enW, enO, csA, memaddr, membus, membus, depth=1024)
             return ram
 
         ### ROM
@@ -216,7 +216,7 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), enCache=True, int
             return rom
 
         MMU = createMmuTristate()
-        RAM = createRam()
+        #RAM = createRam()
         ROM = createRom()
         if enCache:
             CACHE = createCache()

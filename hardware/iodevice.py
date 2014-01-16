@@ -8,7 +8,7 @@ def iodevice(clk, enable, dout, din, leds, buttons):
         if enable:
             ledBuffer.next = din[4:]
 
-        dout.next = concat(intbv(0)[28], buttons)
+        dout.next = concat(intbv(0)[28:], buttons)
         leds.next = ledBuffer
 
     return logic

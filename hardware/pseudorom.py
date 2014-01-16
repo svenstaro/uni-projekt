@@ -9,7 +9,7 @@ def pseudorom(clk, oe, cs, addr, dout, mem):
 
     o = dout.driver()
 
-    @always(clk.posedge)
+    @always_comb
     def read():
         o.next = None
 

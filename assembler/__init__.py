@@ -33,6 +33,26 @@ def isLabel(s):
     return tools.labelPattern.match(s[:-1])
 
 
+def stripLine(line):
+    in_string = False
+    result = ""
+    i = 0
+    while i < len(line):
+        char = line[i]
+        if char == ';' and not in_string:
+            return result
+        if char == "\\":
+            result += line[i:i+1]
+            i += 2
+            continue
+        if char == "\"":
+            in_string = not in_string
+        result += char
+        i += 1
+    if in_string:
+        raise ValueError(line)  # TODO: invalid count of "
+    return result.strip(" \r\n")
+
 def encodeCommandStream(lines):
     labels = {}
     ops = getOperations()
@@ -40,7 +60,7 @@ def encodeCommandStream(lines):
 
     pos = 0
     for line in lines:
-        line = line.strip(" \r\n").split(";", 1)[0]
+        line = stripLine(line)
         if line == "":
             continue
         elif isLabel(line):
@@ -58,7 +78,7 @@ def encodeCommandStream(lines):
     pos = 0
 
     for (number, line) in enumerate(lines):
-        line = line.strip(" \r\n").split(";", 1)[0]
+        line = stripLine(line)
         if not line:
             continue
         elif isLabel(line):  # Label

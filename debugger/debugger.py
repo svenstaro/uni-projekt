@@ -15,6 +15,10 @@ class Debugger(object):
 
     @staticmethod
     def loadFromFile(filename, memorysize=1024*1024):
+    """
+    Creates a new debugger object
+    with the program contents from the given file.
+    """
         with open(filename) as fin:
             return Debugger(fin.read(), memorysize)
 
@@ -63,7 +67,7 @@ class Debugger(object):
         return self.__getCommand(self.cpu.load(self.pc))
 
     def stepOver(self):
-        if not self.getNextCommand().startsWith('call'):
+        if not self.getNextCommand().startswith('call'):
             return self.step()
 
         self.breakpoints.append(self.pc+4)

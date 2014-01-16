@@ -195,7 +195,7 @@ class DebuggerUi(Gtk.Window):
     # disables the "open file" button.
     def enableManipulation(self):
         self.startButton.set_sensitive(True)
-        self.stepOverButton.set_sensitive(False)
+        self.stepOverButton.set_sensitive(True)
         self.stepIntoButton.set_sensitive(True)
         self.stopButton.set_sensitive(True)
         self.openButton.set_sensitive(False)

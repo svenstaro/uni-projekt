@@ -1,3 +1,4 @@
+from math import log
 from myhdl import *
 
 def rs232tx(clk, reset, readybit, start, din, tx, clkFreq=50000000, baudRate=57600):
@@ -8,8 +9,8 @@ def rs232tx(clk, reset, readybit, start, din, tx, clkFreq=50000000, baudRate=576
 
     state = Signal(tState.IDLE)
     data = Signal(intbv(0)[32:])
-    clkCnt = Signal(0)
-    bitCnt = Signal(0)
+    clkCnt = Signal(modbv(0)[log(timeoutHalf, 2):])
+    bitCnt = Signal(modbv(0)[4:])
 
     @always_seq(clk.posedge, reset=reset)
     def logic():

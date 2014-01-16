@@ -50,7 +50,8 @@ def alu(opc, en, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
         elif opc == 0b1110: #LSR
             assert second < bitwidth
             return first >> second
-        elif opc == 0b1111: #ROR
+        #elif opc == 0b1111: #ROR
+        else:
             assert second < bitwidth
             return first << (bitwidth - second) | first >> second
 

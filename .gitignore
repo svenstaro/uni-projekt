@@ -54,6 +54,8 @@ nosetests.xml
 
 # assembler binaries
 *.s.out
+*.s.out.dec
+*.s.out.dbg
 
 # lock files
 .~lock.*.*#

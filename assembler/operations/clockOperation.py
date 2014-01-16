@@ -4,6 +4,6 @@ from ..operands import Zero, Opcodes, Register
 
 class ClockOperation(Operation):
 
-    opcodes = {"clk": "1111110"}
+    opcodes = {"clk": "111101"}
 
-    structure = [Opcodes(opcodes), Zero(21), Register]
+    structure = [Opcodes(opcodes), Zero(22), Register]

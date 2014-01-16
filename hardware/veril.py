@@ -13,7 +13,7 @@ class DutClass():
         self.clk = Signal(bool(0))
         self.reset = ResetSignal(0, 1, True)
         self.buttons, self.leds = [Signal(intbv(0)[4:]) for _ in range(2)]
-        self.rx, self.tx = [Signal(intbv(0)[8:]) for _ in range(2)]
+        self.rx, self.tx = [Signal(bool(1)) for _ in range(2)]
         self.data = data
         self.args = [self.clk, self.reset, self.buttons, self.leds, self.rx, self.tx, self.data]
 

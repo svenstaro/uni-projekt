@@ -8,8 +8,8 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), enCache=True, int
     reset   (IReset) -- Reset Signal
     buttons (I4)     -- 4 input buttons
     leds    (O4)     -- 4 output LEDS
-    rx      (I8)     -- 8 bit input from rs232
-    tx      (O8)     -- 8 bit output from rs232
+    rx      (Ibool)  -- input from rs232
+    tx      (Obool)  -- output from rs232
     romContent       -- the rom content
     interesting      -- A list with interesting signals will be returned
     """
@@ -36,14 +36,14 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), enCache=True, int
 
 
     ### cpu
-    readybit, rsreadybit = [Signal(bool(1)) for _ in range(2)]  # it must be true!
+    readybit, rsrreadybit, rstreadybit = [Signal(bool(1)) for _ in range(3)]  # they must be true!
     addrymux1, addrymux0, pmux = [Signal(bool(0)) for _ in range(3)]
     bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC, bufClk, bufBut, bufRsr = [Signal(bool(0)) for _ in range(9)]
     enAlu, enIr, enPc, enReg, enJump, enCall, enSup, enLed, enRst = [Signal(bool(0)) for _ in range(9)]
     enMmu, mmuBuf = [Signal(bool(0)) for _ in range(2)]
 
     def createCPU():
-        Cpu = cpu(clk, reset, irPrefix, readybit, rsreadybit,
+        Cpu = cpu(clk, reset, irPrefix, readybit, rsrreadybit, rstreadybit,
                   addrymux1, addrymux0, pmux,
                   bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC, bufClk, bufBut, bufRsr,
                   enAlu, enIr, enPc, enReg, enJump, enCall, enSup,enLed, enRst,
@@ -161,8 +161,8 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), enCache=True, int
         rs232out = Signal(intbv(0)[8:])
 
         readerTristate = tristate(rs232out, bufRsr, bbus)
-        reader = rs232rx(clk, reset, rx, rs232out, rsreadybit)
-        writer = rs232tx(clk, reset, rsreadybit, enRst, bbus, tx)
+        reader = rs232rx(clk, reset, rx, rs232out, rsrreadybit)
+        writer = rs232tx(clk, reset, rstreadybit, enRst, bbus, tx)
 
         return instances()
 

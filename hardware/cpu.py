@@ -2,7 +2,7 @@
 from myhdl import *
 
 
-def cpu(clk, reset, addr, readybit, rsbit,
+def cpu(clk, reset, addr, readybit, rsrready, rstready,
         addrymux1, addrymux0, pmux,
         addrBuf, op2Buf, addr14Buf, ryBuf, aluBuf, pcBuf, clkBuf, butBuf, rsrBuf,
         enAlu, enIr, enPc, enReg, enJump, enCall, enSup, enLed, enRst,
@@ -15,7 +15,8 @@ def cpu(clk, reset, addr, readybit, rsbit,
         reset     (Ireset)-- The reset signal
         addr      (I7)    -- Next action
         readybit  (Ibool) -- readybit from MMU
-        rsrbit    (Ibool) -- readybit from rsr
+        rsrready  (Ibool) -- readybit from rsr
+        rstready  (Ibool) -- readybit from rst
         addrymux1 (Obool) -- mux1 for reginput
         addrymux0 (Obool) -- mux0 for reginput
         pmux      (Obool) -- if true, dx will be incremented by 4, decremented otherwise (used for push/pop)
@@ -269,7 +270,7 @@ def cpu(clk, reset, addr, readybit, rsbit,
 
         ##### RSR
         elif state == tState.RSR:
-            if rsbit:
+            if rsrready:
                 rsrBuf.next = True
                 addrymux0.next = True
                 addrymux1.next = True
@@ -281,7 +282,7 @@ def cpu(clk, reset, addr, readybit, rsbit,
             enRst.next = True
             op2Buf.next = True
 
-            if rsbit:
+            if rstready:
                 state.next = tState.FETCH
 
         ##### HALT

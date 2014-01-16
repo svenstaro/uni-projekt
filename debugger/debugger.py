@@ -2,11 +2,13 @@
 import sys, os
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)) + "/../")
 import assembler
+import struct
 from emulator import Cpu
 
 
 class Debugger(object): 
     breakpoints = []
+    last_pc = 0
 
     def __init__(self, program, memorysize=1024*1024):
         self.cpu = Cpu(memorysize, program)
@@ -40,16 +42,25 @@ class Debugger(object):
         return self.cpu.register
 
     def step(self):
+        self.last_pc = self.pc
         return self.cpu.tick()
 
     def run(self):
         while self.step():
-            if self.cpu.pc in breakpoints:
+            if self.cpu.pc in self.breakpoints:
                 return True
         return False
 
+    def __getCommand(self, command):
+        bytes = struct.pack(">I", command)
+        string = assembler.getTextOfEncodedCommand(bytes)
+        return string if string else ""
+
+    def getLastExecutedCommand(self):
+        return self.__getCommand(self.cpu.load(self.last_pc))
+
     def getNextCommand(self):
-        return assembler.getTextOfEncodedCommand(self.rom[self.pc])
+        return self.__getCommand(self.cpu.load(self.pc))
 
     def stepOver(self):
         if not self.getNextCommand().startsWith('call'):

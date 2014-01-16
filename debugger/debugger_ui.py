@@ -1,8 +1,8 @@
 from debugger import Debugger
 from gi.repository import Gtk, Gdk
-import os
 
-TITLE = "MikroRechner-Projekt DebuggerUi"
+
+TITLE = "MikroRechner-Projekt EmulatorUi"
 BUTTON_OPEN_TEXT = "Open"
 BUTTON_START_TEXT = "Start"
 BUTTON_STEP_OVER = "Step over"
@@ -40,6 +40,8 @@ class DebuggerUi(Gtk.Window):
         self.initFlagLabel()
 
         self.initRegisterLabel()
+
+        self.initTextView()
         
         # variables.
         self.debugger_is_running = False
@@ -55,6 +57,7 @@ class DebuggerUi(Gtk.Window):
         # nest buttons box in a VBox, disables vertical resizing.
         self.main.pack_start(self.buttonBox, False, False, 0)
         self.main.pack_start(self.registerGrid, False, False, 2)
+        self.main.pack_end (self.scrolledwindow, True, True, 16)
         self.add(self.main)
 
 
@@ -83,7 +86,7 @@ class DebuggerUi(Gtk.Window):
     #behaviour definition for the normal start button. Makes the debugger impl start executing a loaded file,
     # if existent, until the first occurrence of a breakpoint (TODO: to be developed.)
     def start_button_clicked(self, widget):
-        if debugger and not self.debugger_is_running:
+        if self.debugger and not self.debugger_is_running:
             #set running status to true
             self.debugger_is_running = True
 
@@ -94,14 +97,6 @@ class DebuggerUi(Gtk.Window):
 
     #behaviour definition for the button "deep line execution" or "step into"
     def execute_step_into(self, widget):
-        # TODO: Implement
-        return 0
-
-    #behaviour definition for the button "single line execution" or "step over". Semantik: disables start button.
-    def execute_step_over(self, widget):
-        if not self.debugger:
-            return 0
-        self.debugger_is_running = True
         self.startButton.set_sensitive(False)
         moreToExecute = self.debugger.step()
         self.populateChanges()
@@ -109,12 +104,25 @@ class DebuggerUi(Gtk.Window):
             self.disableManipulation()
         return 0
 
+    #behaviour definition for the button "single line execution" or "step over". Semantik: disables start button.
+    def execute_step_over(self, widget):
+        if not self.debugger:
+            return 0
+        self.debugger_is_running = True
+        moreToExecute = self.debugger.stepOver()
+        self.populateChanges()
+        self.debugger_is_running = False
+        if not moreToExecute:
+            self.disableManipulation()
+            self.debugger.reset()
+            self.clearUi()
+        return 0
+
     def stop_button_clicked(self, widget):
-        # TODO: Implement!
-        # self.debugger.stop()
-        # self.disableManipulation()
-        # self.clearUi()
-        # self.debugger_is_running = False
+        self.disableManipulation()
+        self.debugger.reset()
+        self.clearUi()
+        self.debugger_is_running = False
         return 0
 
     def switch_register_display(self, button, button_name):
@@ -132,15 +140,30 @@ class DebuggerUi(Gtk.Window):
     def populateChanges(self):
         self.populateFlagStatus()
         self.populateRegisterContent()
+        line_count = self.textbuffer.get_line_count()
+        iterator = self.textbuffer.get_end_iter()
+        iterator.backward_line()
+        self.textbuffer.delete(iterator, self.textbuffer.get_end_iter())
+        last = self.debugger.getLastExecutedCommand()
+        if not last:
+            last = "Start executing provided program content stepwise..." 
+        self.textbuffer.insert(self.textbuffer.get_end_iter(), "I just executed: " + last + "\n")
+        self.textbuffer.insert(self.textbuffer.get_end_iter(), "I will do next: " + self.debugger.getNextCommand() + "\n")
 
     # populates flag status changes to the frontend.
     def populateFlagStatus(self):
         flags = self.debugger.flags
         if self.flags != flags:
-            self.flagZero.set_markup(LABEL_FLAG_ZERO + LABEL_TITLE_CONTENT_KIT + "<b>"+str(flags[0])+"</b>")
-            self.flagNegative.set_markup(LABEL_FLAG_NEGATIVE + LABEL_TITLE_CONTENT_KIT + "<b>"+str(flags[1])+"</b>")
-            self.flagCarry.set_markup(LABEL_FLAG_CARRY + LABEL_TITLE_CONTENT_KIT + "<b>"+str(flags[2])+"</b>")
-            self.flagOverflow.set_markup(LABEL_FLAG_OVERFLOW + LABEL_TITLE_CONTENT_KIT + "<b>"+str(flags[3])+"</b>")
+            self.flagZero.set_markup(LABEL_FLAG_ZERO + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='red'>"+str(flags[0])+"</span></b>")
+            self.flagNegative.set_markup(LABEL_FLAG_NEGATIVE + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='red'>"+str(flags[1])+"</span></b>")
+            self.flagCarry.set_markup(LABEL_FLAG_CARRY + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='red'>"+str(flags[2])+"</span></b>")
+            self.flagOverflow.set_markup(LABEL_FLAG_OVERFLOW + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='red'>"+str(flags[3])+"</span></b>")
+            self.flags = flags
+        else:
+            self.flagZero.set_markup(LABEL_FLAG_ZERO + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='#000000'>"+str(flags[0])+"</span></b>")
+            self.flagNegative.set_markup(LABEL_FLAG_NEGATIVE + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='#000000'>"+str(flags[1])+"</span></b>")
+            self.flagCarry.set_markup(LABEL_FLAG_CARRY + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='#000000'>"+str(flags[2])+"</span></b>")
+            self.flagOverflow.set_markup(LABEL_FLAG_OVERFLOW + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='#000000'>"+str(flags[3])+"</span></b>")
 
     # populates register status changes to the frontend.
     def populateRegisterContent(self):
@@ -166,12 +189,14 @@ class DebuggerUi(Gtk.Window):
         for i in range(0, 16):
             self.register[i][0].set_markup(LABEL_REGISTER_DEFAULT + str(i))
             self.register[i][1] = False
+        self.textbuffer.set_text("")
 
     # enables all buttons which are responsible for guaranteeing user-interaction with the executional part of the system.
     # disables the "open file" button.
     def enableManipulation(self):
         self.startButton.set_sensitive(True)
-        self.stepOverButton.set_sensitive(True)
+        self.stepOverButton.set_sensitive(False)
+        self.stepIntoButton.set_sensitive(True)
         self.stopButton.set_sensitive(True)
         self.openButton.set_sensitive(False)
         # TODO: enable when button has function
@@ -244,6 +269,22 @@ class DebuggerUi(Gtk.Window):
             else:
                 self.registerGrid.attach_next_to(self.register[i][0], self.register[i-8][0], Gtk.PositionType.RIGHT, 1, 1)
 
+
+    def initTextView(self):
+        """Inits the textview as content of a scrolledwindow. Exports its textbuffer to the object wide variable textbuffer."""
+        page_size = Gtk.Adjustment(lower=10, page_size=100)
+        self.scrolledwindow = Gtk.ScrolledWindow(page_size)
+        self.scrolledwindow.set_hexpand(True)
+        self.scrolledwindow.set_vexpand(True)
+        self.scrolledwindow.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        
+        textview = Gtk.TextView()
+        textview.set_editable(False)
+        textview.set_cursor_visible(False)
+        #export the textbuffer to variable with object wide scale, name self.textbuffer
+        self.textbuffer = textview.get_buffer()
+        
+        self.scrolledwindow.add(textview)
 
     
 def on_key_press_event(widget, event):

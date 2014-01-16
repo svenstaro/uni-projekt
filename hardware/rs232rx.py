@@ -9,7 +9,7 @@ def rs232rx(clk, reset, rx, dout, avail, clkFreq=50000000, baudRate=57600):
 
     state = Signal(tState.IDLE)
     data = Signal(intbv(0)[8:])
-    clkCnt = Signal(modbv(0)[log(timeoutHalf, 2):])
+    clkCnt = Signal(modbv(0)[log(timeoutHalf, 2)+1:])
     bitCnt = Signal(modbv(0)[4:])
 
     @always_seq(clk.posedge, reset=reset)

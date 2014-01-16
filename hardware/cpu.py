@@ -175,8 +175,8 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
                     addrymux1.next = True
                     ryBuf.next = True
                     enMMU.next = True
-                    substate.next = substate + 1
                 elif substate == 1:
+                    substate.next = 1
                     op2Buf.next = True # the actual value to bus
                     enMMU.next = True
                     substate.next = 0
@@ -199,12 +199,12 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
                     pmux.next = False # yep, false!
                     enReg.next = True
                     addr14Buf.next = True
-                    substate.next = substate + 1
+                    substate.next = 1
                 elif substate == 1:
                     addrymux1.next = True # put $14 to memaddr
                     ryBuf.next = True
                     enMMU.next = True
-                    substate.next = substate + 1
+                    substate.next = 2
                 elif substate == 2:
                     op2Buf.next = True
                     enMMU.next = True
@@ -220,13 +220,13 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
                     addrymux1.next = True # put $14 to memaddr
                     ryBuf.next = True
                     enMMU.next = True
-                    substate.next = substate + 1
+                    substate.next = 1
                 elif substate == 1: # while we wait, we increment $14 by 4
                     addrymux1.next = True
                     pmux.next = True
                     enReg.next = True
                     addr14Buf.next = True
-                    substate.next = substate + 1
+                    substate.next = 2
                 elif not readybit:
                     pass
                 elif readybit:
@@ -239,11 +239,11 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
 
         ##### CALL
         elif state == tState.CALL:
-            substate.next = substate + 1
             if substate == 0:
                 pcBuf.next = True
                 addrymux0.next = True
                 enReg.next = True
+                substate.next = 1
             elif substate == 1:
                 enCall.next = True
                 enPc.next = True
@@ -283,10 +283,12 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
 
         ##### RST
         elif state == tState.RST:
-            enRst.next = True
-            op2Buf.next = True
-
-            if rstready:
+            if substate <= 2:
+                enRst.next = True
+                op2Buf.next = True
+                substate.next = substate + 1
+            elif rstready:
+                substate.next = 0
                 state.next = tState.FETCH
 
         ##### HALT

@@ -164,7 +164,17 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), enCache=True, int
         reader = rs232rx(clk, reset, rx, rs232out, rsrreadybit)
         writer = rs232tx(clk, reset, rstreadybit, enRst, bbus, tx)
 
-        return instances()
+        return readerTristate, reader, writer
+
+    ### hardware
+
+    def createLedBut():
+        ioOut = Signal(intbv(0)[8:])
+
+        io = iodevice(clk, enLed, ioOut, bbus, leds, buttons)
+        ioTristate = tristate(ioOut, bufBut, bbus)
+
+        return io, ioTristate
 
 
     ##############
@@ -228,6 +238,7 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), enCache=True, int
     AddrBuf = createAddrBuf()
     ClkBuf = createClkBuf()
     RS232 = createRs232()
+    IO = createLedBut()
     Memory = createMemory()
 
     return instances()

@@ -3,6 +3,7 @@ from alu import alu
 from cache import cache
 from cpu import cpu
 from counter import counter
+from iodevice import iodevice
 from irdecoder import irdecoder
 from jumpunit import jumpunit
 from logic import *

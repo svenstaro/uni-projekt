@@ -43,7 +43,7 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
     """
 
     tState = enum('UNKNOWN', 'FETCH', 'DECODE', 'ALUOP', 'JUMP', 'LOAD', 'STORE',
-                  'ADR', 'PUSH', 'POP', 'CALL', 'CLOCK', 'SWI', 'HWI', 'RSR', 'RST', 'HALT', 'ILLEGAL')
+                  'ADR', 'PUSH', 'POP', 'CALL', 'CLOCK', 'LED', 'BUT', 'RSR', 'RST', 'HALT', 'ILLEGAL')
     state = Signal(tState.FETCH)
     substate = Signal(modbv(0)[4:])
 
@@ -98,9 +98,9 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
             elif addr[7:1] == 0b111101:
                 state.next  = tState.CLOCK
             elif addr[7:0] == 0b1111100:
-                state.next  = tState.SWI
+                state.next  = tState.LED
             elif addr[7:0] == 0b1111101:
-                state.next  = tState.HWI
+                state.next  = tState.BUT
             elif addr[7:0] == 0b1111110:
                 state.next  = tState.RSR
             elif addr[7:0] == 0b1111111:
@@ -258,14 +258,18 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
             enReg.next = True
             state.next = tState.FETCH
 
-        ##### SWI
-        elif state == tState.SWI:
+        ##### LED
+        elif state == tState.LED:
+            enLed.next = True
             ryBuf.next = True
             state.next = tState.FETCH
 
-        ##### HWI
-        elif state == tState.HWI:
-            #TODO
+        ##### BUT
+        elif state == tState.BUT:
+            addrymux0.next = True
+            addrymux1.next = True
+            enReg.next = True
+            butBuf.next = True
             pass
 
         ##### RSR

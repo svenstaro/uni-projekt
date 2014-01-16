@@ -31,5 +31,4 @@ class JumpOperation(Operation):
     for (name, code) in conditions.items():
         opcodes["j" + name] = "01" + code
 
-
     structure = [Opcodes(opcodes), LabelOperand]

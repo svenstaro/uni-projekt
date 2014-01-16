@@ -7,7 +7,8 @@ class PopOperation(Operation):
 
     structure = [Opcodes(opcodes), Zero(21), Register]
 
+
 class PushOperation(Operation):
-    opcodes = {"push" : "1110000"}
+    opcodes = {"push": "1110000"}
 
     structure = [Opcodes(opcodes), Operand2(25)]

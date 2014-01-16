@@ -119,10 +119,14 @@ class Cpu(object):
             self.__executeStackOp(command)
         elif command & 0xFC000000 == 0xF0000000:
             self.__executeCallOp(command)
-        elif command & 0xFC000000 == 0xF8000000:
-            self.__executeSwiOp(command)
-        elif command & 0xFC000000 == 0xFC000000:
+        elif command & 0xFC000000 == 0xF4000000:
             self.__executeClkOp(command)
+        elif command & 0xFEC00000 == 0xF8000000:
+            self.__executeLedOp(command)
+        elif command & 0xFEC00000 == 0xFA000000:
+            self.__executeButOp(command)
+        elif command & 0xFC000000 == 0xFC000000:
+            self.__executeRs232Op(command)
         else:
             raise InvalidCommandError()
 
@@ -163,27 +167,42 @@ class Cpu(object):
             dest = self.register[dest]
         self.pc = dest
 
-    def __executeSwiOp(self, command):
-        op2 = command & 0x01FFFFFF
-        r, src = self.__op2decode(op2, 25)
-        if r == 1:
-            src = self.register[src]
-        if src == 0:
-            os.write(1, chr(self.register[1]))
-        elif src == 1:
-            value = self.register[1]
-            if value & self.__high == self.__high:
-                value -= 2 ** 32
-            os.write(1, str(value)+'\n')
-
     def __executeClkOp(self, command):
         op2 = command & 0x01FFFFFF
-        _, src = self.__op2decode(op2, 25)
+        r, src = self.__op2decode(op2, 25)
+
+        if not r:
+            raise InvalidCommandError()
+
         self.register[src] = self.counter
 
     def __executeCallOp(self, command):
         self.register[15] = self.pc & self.__mask
         self.__doJump(command)
+
+    def __executeLedOp(self, command):
+        op2 = command & 0x01FFFFFF
+        r, src= self.__op2decode(op2, 25)
+        if r == 1:
+            src = self.register[src]
+        # TODO: Do something useful 
+        
+    def __executeButOp(self, command):
+        dest = command & 0xF
+        self.register[dest] = 0
+        # TODO: Do something useful
+
+    def __executeRs232Op(self, command):
+        transmit = command & 0x02000000
+        if transmit:
+            op2 = command & 0x01FFFFFF
+            r, dest = self.__op2decode(op2, 25)
+            if r == 1:
+                dest = self.register[dest]
+            dest = dest & 0xFF
+            os.write(1, chr(dest))
+        else:
+            raise NotImplementedError()
 
     def __executeAdrOp(self, command):
         rdest = (command >> 25) & 0xF

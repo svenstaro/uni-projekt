@@ -63,7 +63,7 @@ def encodeCommandStream(lines):
         line = stripLine(line)
         if line == "":
             continue
-        elif line[0] == "." and line[-1] == ":":
+        elif line[-1] == ":":
             if not isLabel(line):
                 raise EncodingError(line, "Invalid label at line %s" % number)
             parseLabel(line, labels, pos)

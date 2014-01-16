@@ -101,10 +101,6 @@ class EmulatorUi(Gtk.Window):
 
     #behaviour definition for the button "deep line execution" or "step into"
     def execute_step_into(self, widget):
-        return 0
-
-    #behaviour definition for the button "single line execution" or "step over". Semantik: disables start button.
-    def execute_step_over(self, widget):
         self.emulator_is_running = True
         self.startButton.set_sensitive(False)
         moreToExecute = self.emulator.step(self.processing_file)
@@ -113,6 +109,11 @@ class EmulatorUi(Gtk.Window):
             self.disableManipulation()
             self.emulator.stop()
             self.emulator_is_running = False
+            self.clearUi()
+        return 0
+
+    #behaviour definition for the button "single line execution" or "step over". Semantik: disables start button.
+    def execute_step_over(self, widget):
         return 0
 
     def stop_button_clicked(self, widget):
@@ -151,10 +152,16 @@ class EmulatorUi(Gtk.Window):
     def populateFlagStatus(self):
         flags = self.emulator.getFlags()
         if self.flags != flags:
-            self.flagZero.set_markup(LABEL_FLAG_ZERO + LABEL_TITLE_CONTENT_KIT + "<b>"+str(flags[0])+"</b>")
-            self.flagNegative.set_markup(LABEL_FLAG_NEGATIVE + LABEL_TITLE_CONTENT_KIT + "<b>"+str(flags[1])+"</b>")
-            self.flagCarry.set_markup(LABEL_FLAG_CARRY + LABEL_TITLE_CONTENT_KIT + "<b>"+str(flags[2])+"</b>")
-            self.flagOverflow.set_markup(LABEL_FLAG_OVERFLOW + LABEL_TITLE_CONTENT_KIT + "<b>"+str(flags[3])+"</b>")
+            self.flagZero.set_markup(LABEL_FLAG_ZERO + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='red'>"+str(flags[0])+"</span></b>")
+            self.flagNegative.set_markup(LABEL_FLAG_NEGATIVE + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='red'>"+str(flags[1])+"</span></b>")
+            self.flagCarry.set_markup(LABEL_FLAG_CARRY + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='red'>"+str(flags[2])+"</span></b>")
+            self.flagOverflow.set_markup(LABEL_FLAG_OVERFLOW + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='red'>"+str(flags[3])+"</span></b>")
+            self.flags = flags
+        else:
+            self.flagZero.set_markup(LABEL_FLAG_ZERO + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='#000000'>"+str(flags[0])+"</span></b>")
+            self.flagNegative.set_markup(LABEL_FLAG_NEGATIVE + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='#000000'>"+str(flags[1])+"</span></b>")
+            self.flagCarry.set_markup(LABEL_FLAG_CARRY + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='#000000'>"+str(flags[2])+"</span></b>")
+            self.flagOverflow.set_markup(LABEL_FLAG_OVERFLOW + LABEL_TITLE_CONTENT_KIT + "<b><span foreground='#000000'>"+str(flags[3])+"</span></b>")
 
     # populates register status changes to the frontend.
     def populateRegisterContent(self):
@@ -180,12 +187,14 @@ class EmulatorUi(Gtk.Window):
         for i in range(0, 16):
             self.register[i][0].set_markup(LABEL_REGISTER_DEFAULT + str(i))
             self.register[i][1] = False
+        self.textbuffer.set_text("")
 
     # enables all buttons which are responsible for guaranteeing user-interaction with the executional part of the system.
     # disables the "open file" button.
     def enableManipulation(self):
         self.startButton.set_sensitive(True)
-        self.stepOverButton.set_sensitive(True)
+        self.stepOverButton.set_sensitive(False)
+        self.stepIntoButton.set_sensitive(True)
         self.stopButton.set_sensitive(True)
         self.openButton.set_sensitive(False)
         # TODO: enable when button has function

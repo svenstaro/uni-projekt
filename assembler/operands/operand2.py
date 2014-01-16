@@ -18,6 +18,7 @@ def Operand2(size):
                 return cls(arg, "0" + "0" * (cls.size - 5) + register.binary, register)
             elif cls.immType.isValidText(arg):
                 immediate = cls.immType.fromText(arg, state)
+                return cls(arg, "1" + immediate.binary, immediate)
             raise EncodingError(arg, "Not a valid operand2")
 
         @classmethod

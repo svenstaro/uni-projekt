@@ -261,7 +261,7 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
         ##### LED
         elif state == tState.LED:
             enLed.next = True
-            ryBuf.next = True
+            op2Buf.next = True
             state.next = tState.FETCH
 
         ##### BUT

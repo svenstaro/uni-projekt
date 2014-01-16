@@ -8,12 +8,12 @@ class DutClass():
     def __init__(self):
         self.clk = Signal(bool(0))
         self.reset = ResetSignal(0, 1, True)
-        self.write, self.available = [Signal(bool(0)) for _ in range(2)]
+        self.write, self.available, self.ready = [Signal(bool(0)) for _ in range(3)]
         self.dataIn, self.dataOut = [Signal(intbv(0)[32:]) for _ in range(2)]
         self.wire = Signal(bool(1))
 
     def Gens(self, trace = False):
-        argst = [self.clk,self.reset,self.write,self.dataIn,self.wire, 50, 10]
+        argst = [self.clk,self.reset,self.ready,self.write,self.dataIn,self.wire, 50, 10]
         argsr = [self.clk,self.reset,self.wire,self.dataOut,self.available, 50, 10]
 
         result = rs232tx(*argst), rs232rx(*argsr)

@@ -8,8 +8,9 @@ def rs232tx(clk, reset, readybit, start, din, tx, clkFreq=50000000, baudRate=576
     tState = enum('IDLE', 'SEND')
 
     state = Signal(tState.IDLE)
-    data = Signal(intbv(0)[32:])
-    clkCnt = Signal(modbv(0)[log(timeoutHalf, 2):])
+    data = Signal(intbv(0)[8:])
+    #clkCnt = Signal(modbv(0)[log(timeoutHalf, 2)+1:])
+    clkCnt = Signal(modbv(0)[32:])
     bitCnt = Signal(modbv(0)[4:])
 
     @always_seq(clk.posedge, reset=reset)
@@ -20,8 +21,9 @@ def rs232tx(clk, reset, readybit, start, din, tx, clkFreq=50000000, baudRate=576
             tx.next = True
             if state == tState.IDLE:
                 if start:
-                    data.next = din
+                    data.next = din[8:]
                     clkCnt.next = timeoutOne
+                    readybit.next = False
                     bitCnt.next = 8
                     tx.next = False
                     state.next = tState.SEND

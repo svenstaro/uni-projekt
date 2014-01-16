@@ -59,18 +59,20 @@ def encodeCommandStream(lines):
     data = getData()
 
     pos = 0
-    for line in lines:
+    for (number, line) in enumerate(lines, 1):
         line = stripLine(line)
         if line == "":
             continue
-        elif isLabel(line):
+        elif line[0] == "." and line[-1] == ":":
+            if not isLabel(line):
+                raise EncodingError(line, "Invalid label at line %s" % number)
             parseLabel(line, labels, pos)
         elif line[0] == ".":
             size = parseData(line, data, None, sizeOnly=True)
             if size:
                 pos += size / 8
             else:
-                raise EncodingError(line, "Invalid instruction")
+                raise EncodingError(line, "Invalid instruction at line %s" % number)
         else:
             pos += 4
 
@@ -90,8 +92,10 @@ def encodeCommandStream(lines):
             try:
                 op = parseCommand(line, ops, encode=True)
                 cur = op.fromText(line, EncodingState(labels, pos))
+            except EncodingError as e:
+                raise EncodingError(str(e), "Invalid instruction at line %s" % number)
             except:
-                raise EncodingError(line, "Invalid instruction")
+                raise EncodingError(line, "Unknown instruction at line %s" % number)
         stream += cur.binary
         debug_info += [str(pos)]
         pos += cur.size / 8

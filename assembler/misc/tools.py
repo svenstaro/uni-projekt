@@ -1,5 +1,6 @@
 import re
 import ast
+from ..errors import EncodingError
 
 
 def tobin(value, width):
@@ -14,8 +15,14 @@ labelPattern = re.compile("^(?P<label>[a-zA-Z._][a-zA-Z0-9._-]*)$")
 
 
 def label2immediate(arg, state):
-    labelname = labelPattern.match(arg).group('label')
-    labelpos = state.labels[labelname]
+    try:
+        labelname = labelPattern.match(arg).group('label')
+    except:
+        raise EncodingError(arg, "Not a valid label string")
+    try:
+        labelpos = state.labels[labelname]
+    except:
+        raise EncodingError(arg, "Unknown label")
     diff = labelpos - state.position
     return diff
 
@@ -24,9 +31,11 @@ def immediate2binary(number, size):
     try:
         result = ast.literal_eval(number)
     except SyntaxError:
-        return False
+        raise EncodingError(number, "Not a number")
     if not isinstance(result, (int,long)):
-        return False
-    if not -2 ** (size - 1) <= result <= 2 ** (size - 1) - 1:
-        return False
+        raise EncodingError(number, "Not a number") 
+    if result < -2 ** (size - 1):
+        raise EncodingError(number, "Number too small")
+    if 2 ** (size - 1) - 1 < result:
+        raise EncodingError(number, "Number too big")
     return tobin(result, width=size)

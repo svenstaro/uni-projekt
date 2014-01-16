@@ -43,8 +43,12 @@ def entry_point(argv):
     os.close(fin)
 
     lines = content.split('\n')
-
-    stream, debug_info = encodeCommandStream(lines)
+    
+    try:
+        stream, debug_info = encodeCommandStream(lines)
+    except Exception as e:
+        os.write(1, "Failed to encode file\n%s\n" % str(e))
+        return 1
 
     fout = os.open(args.filename + ".out", os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0644)
     writeStream(fout, stream)

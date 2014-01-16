@@ -24,29 +24,41 @@ class Operation(Structure):
         except ValueError:
             return False
 
+    @staticmethod
+    def findArgPosition(line, n):
+        pos = line.find(' ')
+        for _ in range(n):
+            pos = line.find(',', pos) + 1
+        while line[pos] == ' ':
+            pos += 1
+        return pos
+ 
+
     @classmethod
     def fromText(cls, line, state):
-        try:
-            (command, args) = cls.splitOperation(line)
-            binary = ""
-            encodedArgs = []
-            count = 0
-            for part in cls.structure:
-                if issubclass(part, OpcodesBaseClass):
-                    binary += part.fromText(command, None).binary
-                elif issubclass(part, Ignore):
-                    binary += part.fromText(None, None).binary
-                elif issubclass(part, Operand):
+        (command, args) = cls.splitOperation(line)
+        binary = ""
+        encodedArgs = []
+        count = 0
+        for part in cls.structure:
+            if issubclass(part, OpcodesBaseClass):
+                binary += part.fromText(command, None).binary
+            elif issubclass(part, Ignore):
+                binary += part.fromText(None, None).binary
+            elif issubclass(part, Operand):
+                try:
                     arg = part.fromText(args[count], state)
-                    encodedArgs.append(arg)
-                    binary += arg.binary
-                    count += 1
-                else:
-                    raise EncodingError()
+                except EncodingError as e:
+                    position = cls.findArgPosition(line, count)
+                    s = '-'*position + '^'
+                    raise EncodingError(line + '\n' + s, "Not a valid %s (%s)" % (cls.__name__, e.errString))
+                encodedArgs.append(arg)
+                binary += arg.binary
+                count += 1
+            else:
+                raise EncodingError(line, "Not a valid %s" % cls.__name__)
 
-            return cls(line, binary, encodedArgs)
-        except Exception, e:
-            raise EncodingError("Not a valid %s: " % cls.__name__, line, e)
+        return cls(line, binary, encodedArgs)
 
     @classmethod
     def splitOperation(cls, arg):

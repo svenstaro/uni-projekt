@@ -8,7 +8,7 @@ class Register(Operand):
 
     @classmethod
     def fromText(cls, arg, state):
-        ex = EncodingError(arg, "is not a valid register")
+        ex = EncodingError(arg, "Not a valid register")
 
         if not cls.isValidText(arg):
             raise ex

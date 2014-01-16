@@ -11,7 +11,7 @@ def Immediate(size):
 
         @classmethod
         def fromText(cls, arg, state):
-            ex = EncodingError(arg, "is not a valid %s-bit Immediate" % cls.size)
+            ex = EncodingError(arg, "Not a valid %s-bit Immediate" % cls.size)
             if not cls.isValidText(arg):
                 raise ex
             binary = tools.immediate2binary(arg[1:], cls.size)

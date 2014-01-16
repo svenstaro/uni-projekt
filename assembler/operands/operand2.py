@@ -13,15 +13,12 @@ def Operand2(size):
 
         @classmethod
         def fromText(cls, arg, state):
-            try:
-                if Register.isValidText(arg):
-                    register = Register.fromText(arg, state)
-                    return cls(arg, "0" + "0" * (cls.size - 5) + register.binary, register)
-                else:
-                    immediate = cls.immType.fromText(arg, state)
-                    return cls(arg, "1" + immediate.binary, immediate)
-            except Exception, e:
-                raise EncodingError(arg, "is not valid operand2", e)
+            if Register.isValidText(arg):
+                register = Register.fromText(arg, state)
+                return cls(arg, "0" + "0" * (cls.size - 5) + register.binary, register)
+            elif cls.immType.isValidText(arg):
+                immediate = cls.immType.fromText(arg, state)
+            raise EncodingError(arg, "Not a valid operand2")
 
         @classmethod
         def fromBinary(cls, arg, state):

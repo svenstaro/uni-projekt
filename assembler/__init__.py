@@ -97,7 +97,7 @@ def encodeCommandStream(lines):
             except:
                 raise EncodingError(line, "Unknown instruction at line %s" % number)
         stream += cur.binary
-        debug_info += [str(pos)]
+        debug_info += ["%s: %s"%(str(number),str(pos))]
         pos += cur.size / 8
     return stream, '\n'.join(debug_info)
 

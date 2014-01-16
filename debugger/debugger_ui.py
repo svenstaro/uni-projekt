@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 from debugger import Debugger
 from gi.repository import Gtk, Gdk
 

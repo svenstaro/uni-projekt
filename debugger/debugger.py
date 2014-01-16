@@ -15,10 +15,10 @@ class Debugger(object):
 
     @staticmethod
     def loadFromFile(filename, memorysize=1024*1024):
-    """
-    Creates a new debugger object
-    with the program contents from the given file.
-    """
+        """
+        Creates a new debugger object
+        with the program contents from the given file.
+        """
         with open(filename) as fin:
             return Debugger(fin.read(), memorysize)
 

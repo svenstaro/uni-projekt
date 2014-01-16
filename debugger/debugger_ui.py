@@ -1,8 +1,8 @@
-from emulator import Emulator
+from debugger import Debugger
 from gi.repository import Gtk, Gdk
 import os
 
-TITLE = "MikroRechner-Projekt EmulatorUi"
+TITLE = "MikroRechner-Projekt DebuggerUi"
 BUTTON_OPEN_TEXT = "Open"
 BUTTON_START_TEXT = "Start"
 BUTTON_STEP_OVER = "Step over"
@@ -20,7 +20,7 @@ LABEL_REGISTER_DEFAULT = "R"
 
 LABEL_TITLE_CONTENT_KIT = ": "
 
-class EmulatorUi(Gtk.Window):
+class DebuggerUi(Gtk.Window):
 
 
     def __init__(self):
@@ -42,10 +42,10 @@ class EmulatorUi(Gtk.Window):
         self.initRegisterLabel()
         
         # variables.
-        self.emulator_is_running = False
+        self.debugger_is_running = False
         self.processing_file = False
         self.flags = [False]*4
-        self.emulator = Emulator()
+        self.debugger = None
         self.registerFormat = 16 # hexa-decimal output per default
 
 
@@ -63,7 +63,7 @@ class EmulatorUi(Gtk.Window):
 
     #behaviour definition for the open button. this buttons purpose is to enable the user to feed a file to the application.
     def open_button_clicked(self, widget):
-        if self.emulator_is_running == False:
+        if not self.debugger_is_running:
             dialog = Gtk.FileChooserDialog("Please choose a file", self,
                 Gtk.FileChooserAction.OPEN,
                 (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
@@ -72,8 +72,7 @@ class EmulatorUi(Gtk.Window):
             response = dialog.run()
             if response == Gtk.ResponseType.OK:
                 self.filename = dialog.get_filename()
-                openedFile = os.open(self.filename, os.O_RDONLY)
-                self.processing_file = self.emulator.readIn(openedFile)
+                self.debugger =  Debugger.loadFromFile(self.filename)
                 self.enableManipulation()
 
             
@@ -81,40 +80,41 @@ class EmulatorUi(Gtk.Window):
 
 
 
-    #behaviour definition for the normal start button. Makes the emulator impl start executing a loaded file,
+    #behaviour definition for the normal start button. Makes the debugger impl start executing a loaded file,
     # if existent, until the first occurrence of a breakpoint (TODO: to be developed.)
     def start_button_clicked(self, widget):
-        if self.processing_file != False and self.emulator_is_running == False:
+        if debugger and not self.debugger_is_running:
             #set running status to true
-            self.emulator_is_running = True
+            self.debugger_is_running = True
 
-            
-            self.emulator.run(self.processing_file)
-            self.emulator_is_running = False
+            self.debugger.run()
+            self.debugger_is_running = False
             self.disableManipulation()
             return 0
 
     #behaviour definition for the button "deep line execution" or "step into"
     def execute_step_into(self, widget):
+        # TODO: Implement
         return 0
 
     #behaviour definition for the button "single line execution" or "step over". Semantik: disables start button.
     def execute_step_over(self, widget):
-        self.emulator_is_running = True
+        if not self.debugger:
+            return 0
+        self.debugger_is_running = True
         self.startButton.set_sensitive(False)
-        moreToExecute = self.emulator.step(self.processing_file)
+        moreToExecute = self.debugger.step()
         self.populateChanges()
         if not moreToExecute:
             self.disableManipulation()
-            self.emulator.stop()
-            self.emulator_is_running = False
         return 0
 
     def stop_button_clicked(self, widget):
-        self.emulator.stop()
-        self.disableManipulation()
-        self.clearUi()
-        self.emulator_is_running = False
+        # TODO: Implement!
+        # self.debugger.stop()
+        # self.disableManipulation()
+        # self.clearUi()
+        # self.debugger_is_running = False
         return 0
 
     def switch_register_display(self, button, button_name):
@@ -135,7 +135,7 @@ class EmulatorUi(Gtk.Window):
 
     # populates flag status changes to the frontend.
     def populateFlagStatus(self):
-        flags = self.emulator.getFlags()
+        flags = self.debugger.flags
         if self.flags != flags:
             self.flagZero.set_markup(LABEL_FLAG_ZERO + LABEL_TITLE_CONTENT_KIT + "<b>"+str(flags[0])+"</b>")
             self.flagNegative.set_markup(LABEL_FLAG_NEGATIVE + LABEL_TITLE_CONTENT_KIT + "<b>"+str(flags[1])+"</b>")
@@ -144,7 +144,7 @@ class EmulatorUi(Gtk.Window):
 
     # populates register status changes to the frontend.
     def populateRegisterContent(self):
-        cpuRegs = self.emulator.getRegister()
+        cpuRegs = self.debugger.register
         for i in range(0, 16):
             content = cpuRegs[i]
             if self.registerFormat == 16:
@@ -252,12 +252,9 @@ def on_key_press_event(widget, event):
         Gtk.main_quit()
 
 
-window = EmulatorUi()
-window.connect("delete-event", Gtk.main_quit)
-window.connect('key_press_event', on_key_press_event)
-window.show_all()
-Gtk.main()
-
-
-
-        
+if __name__ == "__main__":
+    window = DebuggerUi()
+    window.connect("delete-event", Gtk.main_quit)
+    window.connect('key_press_event', on_key_press_event)
+    window.show_all()
+    Gtk.main()

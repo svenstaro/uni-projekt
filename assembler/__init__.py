@@ -76,25 +76,26 @@ def encodeCommandStream(lines):
 
     stream = ""
     pos = 0
+    debug_info = []
 
-    for (number, line) in enumerate(lines):
+    for (number, line) in enumerate(lines, 1):
         line = stripLine(line)
         if not line:
             continue
         elif isLabel(line):  # Label
             continue
         elif line[0] == ".":
-            d = parseData(line, data, EncodingState(labels, pos))
-            stream += d.binary
-            pos += d.size / 8
+            cur = parseData(line, data, EncodingState(labels, pos))
         else:
             try:
                 op = parseCommand(line, ops, encode=True)
-                stream += op.fromText(line, EncodingState(labels, pos)).binary
-                pos += op.size / 8
+                cur = op.fromText(line, EncodingState(labels, pos))
             except:
                 raise EncodingError(line, "Invalid instruction")
-    return stream
+        stream += cur.binary
+        debug_info += [str(pos)]
+        pos += cur.size / 8
+    return stream, '\n'.join(debug_info)
 
 
 def decodeCommandStream(stream):

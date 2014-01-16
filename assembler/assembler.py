@@ -3,6 +3,7 @@
 import struct
 import sys
 import os
+import argparse
 
 sys.path.insert(0, os.path.dirname(__file__) + '/../')
 from assembler import encodeCommandStream
@@ -26,13 +27,13 @@ def readStream(f):
 
 
 def entry_point(argv):
-    try:
-        filename = argv[1]
-    except IndexError:
-        print "You must supply a filename"
-        return 1
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--debug", help="create debug file",
+                        action="store_true")
+    parser.add_argument("filename", help="name of source file")
+    args = parser.parse_args()
 
-    fin = os.open(filename, os.O_RDONLY, 0777)
+    fin = os.open(args.filename, os.O_RDONLY, 0777)
     content = ""
     while True:
         read = os.read(fin, 4096)
@@ -43,11 +44,17 @@ def entry_point(argv):
 
     lines = content.split('\n')
 
-    stream = encodeCommandStream(lines)
+    stream, debug_info = encodeCommandStream(lines)
 
-    fout = os.open(filename + ".out", os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0644)
+    fout = os.open(args.filename + ".out", os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0644)
     writeStream(fout, stream)
     os.close(fout)
+
+    if args.debug:
+        fout = os.open(args.filename + ".out.dbg", os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0644)
+        os.write(fout, debug_info)
+        os.close(fout)
+
 
     return 0
 

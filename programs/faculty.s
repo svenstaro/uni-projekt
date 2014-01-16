@@ -16,5 +16,6 @@ ret
 .start:
 mov $1, #6
 call faculty
-swi #1 ; should be 720
+; TODO: Print correct value.
+rst $1 ; should be 720
 halt

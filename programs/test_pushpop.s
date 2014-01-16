@@ -9,7 +9,8 @@ pop $1
 mov $1, #0
 .loop_beg:
     push $1
-    swi #1
+    ; TODO: Print correct value.
+    rst $1
     add $1, $1, #1
     cmp $1, #16
     jgt .loop_end
@@ -19,7 +20,8 @@ mov $1, #0
 
 .loopo_beg:
     pop $1
-    swi #1
+    ; TODO: Print correct value.
+    rst $1
     subs $1, $1, #1
     jlt .loopo_end
     jmp .loopo_beg

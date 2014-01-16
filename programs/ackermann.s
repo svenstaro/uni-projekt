@@ -41,5 +41,6 @@ ld $14, .sp
 mov $1, #3
 mov $2, #6
 call ackermann
-swi #1 ; should be 509
+; TODO: print correct output
+rst $1 ; should be 509
 halt

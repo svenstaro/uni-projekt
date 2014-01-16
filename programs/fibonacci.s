@@ -25,5 +25,6 @@ ret
 .start:
 mov $1, #20
 call fibonacci
-swi #1 ; should be 6765
+; TODO: Print correct value.
+rst $1 ; should be 6765
 halt

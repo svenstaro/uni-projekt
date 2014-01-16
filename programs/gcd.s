@@ -78,5 +78,6 @@ ret
 ld $1, .a
 ld $2, .b
 call gcd
-swi #1 ; should be 2
+; TODO: Print correct value.
+rst $1 ; should be 2
 halt

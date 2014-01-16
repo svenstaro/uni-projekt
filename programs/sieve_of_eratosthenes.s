@@ -98,7 +98,8 @@ mov $1, #1
 ld $4, $3
 cmp $4, #0
 jz .pr_cont1
-swi #1
+; TODO: Print correct value.
+rst $1
 .pr_cont1:
 cmp $2, $1
 add $1, $1, #1

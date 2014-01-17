@@ -57,4 +57,4 @@ class Rs232Test(TestCase):
                 self.assertEquals(t, cl.dataOut)
                 yield delay(int(1.5*50/10))
 
-        genSim(verify, trace=True).run()
+        genSim(verify).run()

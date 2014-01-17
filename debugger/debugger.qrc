@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="pictures">
+    <file>debug-step-instruction.png</file>
+    <file>debug-step-into-instruction.png</file>
+    <file>debug-step-into.png</file>
+    <file>debug-step-out.png</file>
+    <file>debug-step-over.png</file>
+    <file>media-playback-start.png</file>
+    <file>script-error.png</file>
+  </qresource>
+</RCC>

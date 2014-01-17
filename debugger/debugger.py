@@ -3,6 +3,7 @@ import sys, os
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)) + "/../")
 import assembler
 import struct
+import debugger_rc
 from emulator import Cpu
 
 
@@ -15,10 +16,10 @@ class Debugger(object):
 
     @staticmethod
     def loadFromFile(filename, memorysize=1024*1024):
-    """
-    Creates a new debugger object
-    with the program contents from the given file.
-    """
+        """
+        Creates a new debugger object
+        with the program contents from the given file.
+        """
         with open(filename) as fin:
             return Debugger(fin.read(), memorysize)
 
@@ -87,3 +88,4 @@ class Debugger(object):
         r = ['  '.join((a,b)) for a,b in zip(rs[:8], rs[8:])]
         s += "Register:\n" + '\n'.join(r)
         return s
+

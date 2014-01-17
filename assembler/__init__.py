@@ -40,7 +40,7 @@ def stripLine(line):
     while i < len(line):
         char = line[i]
         if char == ';' and not in_string:
-            return result
+            return result.strip(" \t\r\n")
         if char == "\\":
             result += line[i:i+1]
             i += 2
@@ -51,7 +51,7 @@ def stripLine(line):
         i += 1
     if in_string:
         raise ValueError(line)  # TODO: invalid count of "
-    return result.strip(" \r\n")
+    return result.strip(" \t\r\n")
 
 def encodeCommandStream(lines):
     labels = {}
@@ -84,7 +84,7 @@ def encodeCommandStream(lines):
         line = stripLine(line)
         if not line:
             continue
-        elif isLabel(line):  # Label
+        elif isLabel(line):
             continue
         elif line[0] == ".":
             cur = parseData(line, data, EncodingState(labels, pos))

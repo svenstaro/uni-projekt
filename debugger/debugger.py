@@ -75,6 +75,10 @@ class Debugger(object):
         self.breakpoints.pop()
         return result
 
+    def stepOut(self):
+        while not self.getNextCommand().startswith('ret'):
+            self.stepOver()
+
     __flag_order = 'ZNCO'
 
     def reset(self):

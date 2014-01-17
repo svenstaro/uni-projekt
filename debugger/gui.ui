@@ -91,7 +91,7 @@
    <attribute name="toolBarBreak">
     <bool>true</bool>
    </attribute>
-   <addaction name="actionContinue"/>
+   <addaction name="actionRun"/>
    <addaction name="actionStep_Over"/>
    <addaction name="actionStep_Into"/>
    <addaction name="actionStep_Out"/>
@@ -130,13 +130,16 @@
     <string>R&amp;OM</string>
    </property>
   </action>
-  <action name="actionContinue">
+  <action name="actionRun">
    <property name="icon">
     <iconset resource="debugger.qrc">
      <normaloff>:/pictures/media-playback-start.png</normaloff>:/pictures/media-playback-start.png</iconset>
    </property>
    <property name="text">
-    <string>Continue</string>
+    <string>Run</string>
+   </property>
+   <property name="toolTip">
+    <string>Run</string>
    </property>
    <property name="autoRepeat">
     <bool>true</bool>
@@ -187,5 +190,22 @@
  <resources>
   <include location="debugger.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>356</x>
+     <y>313</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

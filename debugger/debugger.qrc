@@ -1,11 +1,16 @@
 <RCC>
   <qresource prefix="pictures">
-    <file>debug-step-instruction.png</file>
-    <file>debug-step-into-instruction.png</file>
-    <file>debug-step-into.png</file>
-    <file>debug-step-out.png</file>
-    <file>debug-step-over.png</file>
-    <file>media-playback-start.png</file>
-    <file>script-error.png</file>
+    <file alias="debug-step-instruction.png">../../../../../../../../usr/share/icons/oxygen/48x48/actions/debug-step-instruction.png</file>
+    <file alias="debug-step-into-instruction.png">../../../../../../../../usr/share/icons/oxygen/48x48/actions/debug-step-into-instruction.png</file>
+    <file alias="debug-step-into.png">../../../../../../../../usr/share/icons/oxygen/48x48/actions/debug-step-into.png</file>
+    <file alias="debug-step-out.png">../../../../../../../../usr/share/icons/oxygen/48x48/actions/debug-step-out.png</file>
+    <file alias="debug-step-over.png">../../../../../../../../usr/share/icons/oxygen/48x48/actions/debug-step-over.png</file>
+    <file alias="media-playback-start.png">../../../../../../../../usr/share/icons/oxygen/48x48/actions/media-playback-start.png</file>
+    <file alias="media-playback-pause.png">../../../../../../../usr/share/icons/oxygen/48x48/actions/media-playback-pause.png</file>
+    <file alias="script-error.png">../../../../../../../../usr/share/icons/oxygen/48x48/status/script-error.png</file>
+    <file alias="process-stop.png">../../../../../../../../usr/share/icons/oxygen/48x48/actions/process-stop.png</file>
+    <file alias="view-refresh.png">../../../../../../../../usr/share/icons/oxygen/48x48/actions/view-refresh.png</file>
   </qresource>
 </RCC>
+
+<!-- the ../.. ... are needed, because the path must be relative !-->

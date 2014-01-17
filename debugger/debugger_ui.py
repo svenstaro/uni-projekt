@@ -3,11 +3,11 @@
 import sys
 from PyQt4 import QtGui, uic
 from PyQt4.QtCore import *
-
 from debugger import Debugger
+import debugger_rc
+
 
 class MainWindow(QtGui.QMainWindow):
-
     def __init__(self):
         super(MainWindow, self).__init__()
         self.debugger = None

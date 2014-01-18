@@ -27,3 +27,6 @@ class Structure(object):
     @classmethod
     def fromBinary(cls, arg, state):
         raise NotImplementedError()
+
+    def __str__(self):
+        return self.binary

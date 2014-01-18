@@ -40,7 +40,7 @@ def stripLine(line):
     while i < len(line):
         char = line[i]
         if char == ';' and not in_string:
-            return result
+            return result.strip(" \t\r\n")
         if char == "\\":
             result += line[i:i+1]
             i += 2
@@ -51,7 +51,7 @@ def stripLine(line):
         i += 1
     if in_string:
         raise ValueError(line)  # TODO: invalid count of "
-    return result.strip(" \r\n")
+    return result.strip(" \t\r\n")
 
 def encodeCommandStream(lines):
     labels = {}
@@ -59,18 +59,20 @@ def encodeCommandStream(lines):
     data = getData()
 
     pos = 0
-    for line in lines:
+    for (number, line) in enumerate(lines, 1):
         line = stripLine(line)
         if line == "":
             continue
-        elif isLabel(line):
+        elif line[-1] == ":":
+            if not isLabel(line):
+                raise EncodingError(line, "Invalid label at line %s" % number)
             parseLabel(line, labels, pos)
         elif line[0] == ".":
             size = parseData(line, data, None, sizeOnly=True)
             if size:
                 pos += size / 8
             else:
-                raise EncodingError(line, "Invalid instruction")
+                raise EncodingError(line, "Invalid instruction at line %s" % number)
         else:
             pos += 4
 
@@ -82,7 +84,7 @@ def encodeCommandStream(lines):
         line = stripLine(line)
         if not line:
             continue
-        elif isLabel(line):  # Label
+        elif isLabel(line):
             continue
         elif line[0] == ".":
             cur = parseData(line, data, EncodingState(labels, pos))
@@ -90,10 +92,12 @@ def encodeCommandStream(lines):
             try:
                 op = parseCommand(line, ops, encode=True)
                 cur = op.fromText(line, EncodingState(labels, pos))
+            except EncodingError as e:
+                raise EncodingError(str(e), "Invalid instruction at line %s" % number)
             except:
-                raise EncodingError(line, "Invalid instruction")
+                raise EncodingError(line, "Unknown instruction at line %s" % number)
         stream += cur.binary
-        debug_info += [str(pos)]
+        debug_info += ["%s: %s"%(str(number),str(pos))]
         pos += cur.size / 8
     return stream, '\n'.join(debug_info)
 

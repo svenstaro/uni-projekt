@@ -3,10 +3,9 @@ class CodingError(Exception):
         self.val = val
         self.inner = inner
         self.errString = errString
-        Exception.__init__(self, str(self))
 
     def __str__(self):
-        errstring = self.__class__.__name__ +  ": %s %s" % (self.val, self.errString)
+        errstring = "%s:\n%s" % (self.errString, self.val)
         if self.inner is not None:
-            errstring += "(was: %s)" % str(self.inner)
+            errstring += "\n\t" + str(self.inner).replace("\n", "\n\t") 
         return errstring

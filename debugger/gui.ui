@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="AsmEditor" name="textEdit">
+     <widget class="AsmEditor" name="editor">
       <property name="minimumSize">
        <size>
         <width>500</width>
@@ -503,7 +503,7 @@
    <widget class="QWidget" name="dockWidgetContents_4">
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
-      <widget class="RamViewer" name="frame">
+      <widget class="MemoryViewer" name="ram">
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -531,7 +531,7 @@
    <widget class="QWidget" name="dockWidgetContents_5">
     <layout class="QVBoxLayout" name="verticalLayout_4">
      <item>
-      <widget class="RamViewer" name="frame_2">
+      <widget class="MemoryViewer" name="rom">
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -634,9 +634,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>RamViewer</class>
+   <class>MemoryViewer</class>
    <extends>QFrame</extends>
-   <header>ramviewer</header>
+   <header>memoryviewer</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

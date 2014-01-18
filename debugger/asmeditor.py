@@ -47,29 +47,24 @@ class LexerAsm(Qsci.QsciLexerCustom):
         Qsci.QsciLexerCustom.setEditor(self, sci)
 
     def styleText(self, start, end):
-        print("LexerErlang.styleText(%d,%d)" % (start, end))
         lines = self.getText(start, end)
         offset = start
         self.startStyling(offset, 0)
-        print("startStyling()")
+        print self.getText(start, end)
         for i in lines:
             if i == "":
                 self.setStyling(1, self.styles[0])
-                print("setStyling(1)")
                 offset += 1
                 continue
             if i[0] == '%':
                 self.setStyling(len(i)+1, self.styles[1])
-                print("setStyling(%)")
                 offset += len(i)+1
                 continue
             self.setStyling(len(i)+1, self.styles[0])
-            print("setStyling(n)")
             offset += len(i)+1
 
     def getText(self, start, end):
         data = self.sci.text()
-        print("LexerErlang.getText(): " + str(len(data)) + " chars")
         return data[start:end].split('\n')
 
 

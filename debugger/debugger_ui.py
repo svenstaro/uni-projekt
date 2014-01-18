@@ -4,15 +4,21 @@ import sys
 from PyQt4 import QtGui, uic
 from PyQt4.QtCore import *
 from debugger import Debugger
-from asmeditor import AsmEditor
+from memoryviewer import *
 import debugger_rc
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.debugger = None
-
+        self.decoder = AsmDecoder()
         self.ui = uic.loadUi('gui.ui', self)
+
+        self.ui.editor.setReadOnly(True)
+        self.ui.rom.setDecoder(self.decoder)
+        self.ui.rom.setReadOnly(True)
+        self.ui.rom.setOverwriteMode(False)
+        self.ui.rom.setNoOfBytesPerLine(4)
 
         self.ui.actionOpen.triggered.connect(self.openNewFile)
 
@@ -21,8 +27,9 @@ class MainWindow(QtGui.QMainWindow):
         filename = QtGui.QFileDialog.getOpenFileNameAndFilter(self, 'Open File', filter="Compiled/Debug Files (*.out.dbg *.s.out) (*.out.dbg *.out);;All Files (*)")[0]
         if filename != '':
             self.debugger = Debugger.loadFromFile(filename)
+            self.ui.rom.setData(''.join(map(chr, self.debugger.rom)))
             with open(str(filename).rsplit('.', 1)[0]) as content:
-                self.ui.textEdit.setText(content.read())
+                self.ui.editor.setText(content.read())
 
     @pyqtSlot()
     def cont(self):

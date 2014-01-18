@@ -75,29 +75,44 @@ class LexerAsm(QsciLexerCustom):
         # scintilla always asks to style whole lines
         for line in source.splitlines(False):
             # XXX: insert here!
-            posInLine = 0
-            while posInLine < len(line):
-                state = self.Default
-                length = len(line)
-                if not line:
-                    pass
-                elif isLabel(line):
-                    state = self.Label
-                elif line.startswith('.'):
-                    state = self.Data
-                else:
-                    # the following will style lines like "x = 0"
-                    pos = line.find('=')
-                    if pos > 0:
-                        set_style(pos, self.Key)
-                        set_style(1, self.Assignment)
-                        length = length - pos - 1
-                        state = self.Value
-                    else:
-                        state = self.Default
-                set_style(length, state)
-                posInLine += length
+            length = len(line)
+            commentStart = line.find(';')
 
+            if commenStart == -1:
+                cmd = line
+            else:
+                cmd = line[:commentStart]
+
+            pos = 0
+            if cmd[-1:] == ':':
+                set_style(len(cmd), self.Label)
+                pos += len(cmd)
+
+            firstSpace = cmd.find(' ', pos)
+            if firstSpace == -1:
+                firstSpace = len(cmd) - pos
+            set_style(firstSpace, self.Instruction)
+            pos += firstSpace + 1
+
+            while pos < len(cmd):
+                if cmd[pos] in '$#.':
+                    if cmd[pos] == '$':
+                        style = self.Register
+                    elif cmd[pos] == '#':
+                        style = self.Immediate
+                    else:
+                        style = self.Label
+                    
+                    start = pos
+                    while cmd[pos:pos+1] not in ', ':
+                        pos += 1
+                    set_style(pos-start+1, style)
+                else:
+                    set_style(1, self.Default)
+                    pos += 1
+
+            if commentStart != -1:
+                set_style(length - commentStart, self.Comment)
             set_style(1, self.Default) # for the newline, don't forget this!
 
 

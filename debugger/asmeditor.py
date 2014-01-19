@@ -75,10 +75,12 @@ class LexerAsm(QsciLexerCustom):
         # scintilla always asks to style whole lines
         for line in source.splitlines(False):
             # XXX: insert here!
+            line = str(line)
+
             length = len(line)
             commentStart = line.find(';')
 
-            if commenStart == -1:
+            if commentStart == -1:
                 cmd = line
             else:
                 cmd = line[:commentStart]

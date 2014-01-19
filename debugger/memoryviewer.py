@@ -8,9 +8,10 @@ class MemoryViewer(QHexEdit):
 
 class AsmDecoder(Decoder):
     def decode(self, data, pos):
-        com = ord(data[pos]) << 24 | ord(data[pos+1]) << 16 | ord(data[pos+2]) << 8 | ord(data[pos+3])
-
-        res = getTextOfCommand(str(bin(com)[2:].zfill(32)))
+        res = None
+        if pos <= data.size() - 4:
+            com = ord(data[pos]) << 24 | ord(data[pos+1]) << 16 | ord(data[pos+2]) << 8 | ord(data[pos+3])
+            res = getTextOfCommand(str(bin(com)[2:].zfill(32)))
 
         return res if res else ""
 

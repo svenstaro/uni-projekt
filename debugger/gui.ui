@@ -54,8 +54,8 @@
      <string>&amp;View</string>
     </property>
     <addaction name="actionRegister"/>
-    <addaction name="actionRAM"/>
-    <addaction name="actionROM"/>
+    <addaction name="actionRam"/>
+    <addaction name="actionRom"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -102,7 +102,7 @@
    <addaction name="actionStep_Into"/>
    <addaction name="actionStep_Out"/>
   </widget>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="registerDock">
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
@@ -487,7 +487,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="ramWidget">
+  <widget class="QDockWidget" name="ramDock">
    <property name="minimumSize">
     <size>
      <width>77</width>
@@ -515,7 +515,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="romWidget">
+  <widget class="QDockWidget" name="romDock">
    <property name="minimumSize">
     <size>
      <width>77</width>
@@ -561,20 +561,20 @@
     <string>&amp;Register</string>
    </property>
   </action>
-  <action name="actionRAM">
+  <action name="actionRam">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>R&amp;AM</string>
+    <string>R&amp;am</string>
    </property>
   </action>
-  <action name="actionROM">
+  <action name="actionRom">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>R&amp;OM</string>
+    <string>R&amp;om</string>
    </property>
   </action>
   <action name="actionRun">
@@ -661,18 +661,98 @@
    </hints>
   </connection>
   <connection>
-   <sender>dockWidget</sender>
-   <signal>dockLocationChanged(Qt::DockWidgetArea)</signal>
-   <receiver>dockWidget</receiver>
-   <slot>update()</slot>
+   <sender>registerDock</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionRegister</receiver>
+   <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>674</x>
-     <y>350</y>
+     <x>538</x>
+     <y>269</y>
     </hint>
     <hint type="destinationlabel">
-     <x>674</x>
-     <y>350</y>
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ramDock</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionRam</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>146</x>
+     <y>542</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>romDock</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionRom</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>441</x>
+     <y>542</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRegister</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>registerDock</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>538</x>
+     <y>269</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRam</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>ramDock</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>146</x>
+     <y>552</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>146</x>
+     <y>542</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRom</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>romDock</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>441</x>
+     <y>542</y>
     </hint>
    </hints>
   </connection>

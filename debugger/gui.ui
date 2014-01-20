@@ -100,7 +100,6 @@
    <addaction name="actionRun"/>
    <addaction name="actionStep_Over"/>
    <addaction name="actionStep_Into"/>
-   <addaction name="actionStep_Out"/>
   </widget>
   <widget class="QDockWidget" name="registerDock">
    <attribute name="dockWidgetArea">
@@ -128,8 +127,17 @@
          <property name="textFormat">
           <enum>Qt::AutoText</enum>
          </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>-1</number>
          </property>
         </widget>
        </item>
@@ -152,8 +160,17 @@
          <property name="text">
           <string>0</string>
          </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>-1</number>
          </property>
         </widget>
        </item>
@@ -176,8 +193,17 @@
          <property name="text">
           <string>0</string>
          </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>-1</number>
          </property>
         </widget>
        </item>
@@ -197,11 +223,26 @@
        </item>
        <item>
         <widget class="QLabel" name="reg_4">
+         <property name="lineWidth">
+          <number>1</number>
+         </property>
+         <property name="midLineWidth">
+          <number>0</number>
+         </property>
          <property name="text">
           <string>0</string>
          </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>-1</number>
          </property>
         </widget>
        </item>
@@ -224,8 +265,17 @@
          <property name="text">
           <string>0</string>
          </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>-1</number>
          </property>
         </widget>
        </item>
@@ -248,8 +298,17 @@
          <property name="text">
           <string>0</string>
          </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>-1</number>
          </property>
         </widget>
        </item>
@@ -272,8 +331,17 @@
          <property name="text">
           <string>0</string>
          </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>-1</number>
          </property>
         </widget>
        </item>
@@ -296,8 +364,17 @@
          <property name="text">
           <string>0</string>
          </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>-1</number>
          </property>
         </widget>
        </item>
@@ -320,8 +397,17 @@
          <property name="text">
           <string>0</string>
          </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>-1</number>
          </property>
         </widget>
        </item>
@@ -344,8 +430,17 @@
          <property name="text">
           <string>0</string>
          </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>-1</number>
          </property>
         </widget>
        </item>
@@ -368,8 +463,17 @@
          <property name="text">
           <string>0</string>
          </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>-1</number>
          </property>
         </widget>
        </item>
@@ -392,8 +496,17 @@
          <property name="text">
           <string>0</string>
          </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>-1</number>
          </property>
         </widget>
        </item>
@@ -416,8 +529,17 @@
          <property name="text">
           <string>0</string>
          </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>-1</number>
          </property>
         </widget>
        </item>
@@ -440,8 +562,17 @@
          <property name="text">
           <string>0</string>
          </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>-1</number>
          </property>
         </widget>
        </item>
@@ -464,8 +595,17 @@
          <property name="text">
           <string>0</string>
          </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>-1</number>
          </property>
         </widget>
        </item>
@@ -601,7 +741,7 @@
   <action name="actionStep_Over">
    <property name="icon">
     <iconset resource="debugger.qrc">
-     <normaloff>:/pictures/debug-step-over.png</normaloff>:/pictures/debug-step-over.png</iconset>
+     <normaloff>:/pictures/debug-step-instruction.png</normaloff>:/pictures/debug-step-instruction.png</iconset>
    </property>
    <property name="text">
     <string>Step Over</string>
@@ -610,19 +750,10 @@
   <action name="actionStep_Into">
    <property name="icon">
     <iconset resource="debugger.qrc">
-     <normaloff>:/pictures/debug-step-into.png</normaloff>:/pictures/debug-step-into.png</iconset>
+     <normaloff>:/pictures/debug-step-into-instruction.png</normaloff>:/pictures/debug-step-into-instruction.png</iconset>
    </property>
    <property name="text">
     <string>Step Into</string>
-   </property>
-  </action>
-  <action name="actionStep_Out">
-   <property name="icon">
-    <iconset resource="debugger.qrc">
-     <normaloff>:/pictures/debug-step-out.png</normaloff>:/pictures/debug-step-out.png</iconset>
-   </property>
-   <property name="text">
-    <string>Step Out</string>
    </property>
   </action>
  </widget>

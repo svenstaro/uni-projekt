@@ -11,7 +11,6 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.Qsci import *
 
-
 # TODO make lexer work
 class LexerAsm(QsciLexerCustom):
     def __init__(self, obj = None):
@@ -121,7 +120,14 @@ class LexerAsm(QsciLexerCustom):
 
 
 class AsmEditor(QsciScintilla):
-    ARROW_MARKER_NUM = 8
+    __BREAKPOINT = 0
+    __COND_BREAKPOINT = 1
+    __CURRENT_PC = 2
+    __BREAK_BG = 5
+    __PC_BG = 6
+
+    breakpointSet = pyqtSignal(int, name="Breakpoint set")
+    breakpointRemoved = pyqtSignal(int, name="Breakpoint removed")
 
     def __init__(self, parent=None):
         super(AsmEditor, self).__init__(parent)
@@ -144,11 +150,22 @@ class AsmEditor(QsciScintilla):
         # Clickable margin 1 for showing markers
         self.setMarginSensitivity(1, True)
         self.marginClicked.connect(self.on_margin_clicked)
-        self.markerDefine(QsciScintilla.RightArrow, self.ARROW_MARKER_NUM)
-        self.setMarkerBackgroundColor(QColor("#F00"), self.ARROW_MARKER_NUM)
-        self.SendScintilla(QsciScintilla.SCI_SETCARETLINEVISIBLE, True)
-        self.SendScintilla(QsciScintilla.SCI_SETCARETSTYLE, QsciScintilla.CARETSTYLE_INVISIBLE)
-        self.SendScintilla(QsciScintilla.SCI_GOTOLINE, -1)
+
+        # Define marker
+        self.markerDefine(QsciScintilla.RightArrow, self.__BREAKPOINT)
+        self.setMarkerBackgroundColor(QColor("#F00"), self.__BREAKPOINT)
+
+        self.markerDefine(QsciScintilla.Circle, self.__COND_BREAKPOINT)
+        self.setMarkerBackgroundColor(QColor("#F00"), self.__COND_BREAKPOINT)
+
+        self.markerDefine(QsciScintilla.RightArrow, self.__CURRENT_PC)
+        self.setMarkerBackgroundColor(QColor("#00F"), self.__CURRENT_PC)
+
+        self.markerDefine(QsciScintilla.Background, self.__BREAK_BG)
+        self.setMarkerBackgroundColor(QColor("#FFE5E5"), self.__BREAK_BG)
+
+        self.markerDefine(QsciScintilla.Background, self.__PC_BG)
+        self.setMarkerBackgroundColor(QColor("#CDCDFF"), self.__PC_BG)
 
         # set asm lexer
         # TODO does not work yet :/
@@ -162,10 +179,29 @@ class AsmEditor(QsciScintilla):
         # here: http://www.scintilla.org/ScintillaDoc.html)
         self.SendScintilla(QsciScintilla.SCI_SETHSCROLLBAR, 0)
 
+
     @pyqtSlot(int, int, Qt.KeyboardModifier)
     def on_margin_clicked(self, nmargin, nline, modifiers):
         # Toggle marker for the line the margin was clicked on
-        if self.markersAtLine(nline) != 0:
-            self.markerDelete(nline, self.ARROW_MARKER_NUM)
+        #if modifiers & Qt.ControlModifier == Qt.ControlModifier:  # control key is pressed
+        if self.markersAtLine(nline) != 0 and self.markersAtLine(nline) != self.__CURRENT_PC:
+            self.markerDelete(nline, self.__BREAKPOINT)
+            self.markerDelete(nline, self.__BREAK_BG)
+            self.breakpointRemoved.emit(nline+1)
         else:
-            self.markerAdd(nline, self.ARROW_MARKER_NUM)
+            self.markerAdd(nline, self.__BREAKPOINT)
+            self.markerAdd(nline, self.__BREAK_BG)
+            self.breakpointSet.emit(nline+1)
+
+    def resetMarker(self):
+        self.markerDeleteAll(-1)
+
+    def contextMenuEvent(self, QContextMenuEvent):
+        #disables the right click context menu
+        pass
+
+    def setPcLine(self, line):
+        self.markerDeleteAll(self.__CURRENT_PC)
+        self.markerDeleteAll(self.__PC_BG)
+        self.markerAdd(line-1, self.__CURRENT_PC)
+        self.markerAdd(line-1, self.__PC_BG)

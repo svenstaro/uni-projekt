@@ -5,10 +5,8 @@ import assembler
 import struct
 from emulator import Cpu
 
-
-class Debugger(object): 
+class Debugger(object):
     breakpoints = []
-    last_pc = 0
 
     def __init__(self, program, memorysize=1024*1024):
         self.cpu = Cpu(memorysize, program)
@@ -18,9 +16,30 @@ class Debugger(object):
         """
         Creates a new debugger object
         with the program contents from the given file.
+        If it's a debug file, evertyhing will be properly set.
+        If not a disaasmbled file will be generated
         """
-        with open(filename) as fin:
-            return Debugger(fin.read(), memorysize)
+        assert isinstance(filename, str)
+        assert isinstance(memorysize, (int, long))
+        result = None
+        if filename.endswith(".dbg"):
+            with open(filename.rsplit('.', 1)[0]) as code: #that't the .out file
+                result = Debugger(code.read(), memorysize)
+            with open(filename.rsplit('.', 2)[0]) as content: #the .s file
+                result.__filecontent = content.read()
+            with open(filename) as debug:
+                result.__fileassoc = {}
+                result.__romassoc = {}
+                for line in debug:
+                    (key, val) = line.split()
+                    result.__romassoc[int(key)] = int(val)
+                    result.__fileassoc[int(val)] = int(key)
+        elif filename.endswith(".out"):
+            with open(filename) as code:
+                result = Debugger(code.read(), memorysize)
+            result.__filecontent = ""  #FIXME get disassmbled file
+
+        return result
 
     @property
     def pc(self):
@@ -46,7 +65,6 @@ class Debugger(object):
         return self.cpu.register
 
     def step(self):
-        self.last_pc = self.pc
         return self.cpu.tick()
 
     def run(self):
@@ -60,24 +78,17 @@ class Debugger(object):
         string = assembler.getTextOfEncodedCommand(bytes)
         return string if string else ""
 
-    def getLastExecutedCommand(self):
-        return self.__getCommand(self.cpu.load(self.last_pc))
-
     def getNextCommand(self):
         return self.__getCommand(self.cpu.load(self.pc))
 
     def stepOver(self):
-        if not self.getNextCommand().startswith('call'):
+        if not self.getNextCommand().startswith('call'): # FIXME: get rid of getnextcommand
             return self.step()
 
         self.breakpoints.append(self.pc+4)
         result = self.run()
         self.breakpoints.pop()
         return result
-
-    def stepOut(self):
-        while not self.getNextCommand().startswith('ret'):
-            self.stepOver()
 
     __flag_order = 'ZNCO'
 
@@ -91,4 +102,16 @@ class Debugger(object):
         r = ['  '.join((a,b)) for a,b in zip(rs[:8], rs[8:])]
         s += "Register:\n" + '\n'.join(r)
         return s
+
+    def fileContent(self): #TODO: make nice names!
+        return self.__filecontent
+
+    def getContentLine(self, pc):
+        return self.__fileassoc[pc]
+
+    def getRomAddr(self, line):
+        return self.__romassoc[line]
+
+    def hasReachedEnd(self):
+        return self.getNextCommand() == 'halt'
 

@@ -1,0 +1,16 @@
+settings window
+    einstellungen für register 
+        hex,dec,oct,bin
+    einstellungen für ram 
+        adr, hex, ascii
+        hex,dec,oct,bin
+        evtl größen (nobpl...)
+    einstellungen für rom
+        adr, hex, ascii
+        hex,dec,oct,bin
+    highlight ja, nein
+    
+
+Funktion hinter die Knöpfe bringen
+    run, stepover, stepinto, stepout
+

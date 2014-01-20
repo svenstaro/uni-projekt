@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>588</width>
-    <height>618</height>
+    <width>761</width>
+    <height>673</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,6 +29,7 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
+      <layout class="QVBoxLayout" name="verticalLayout_11"/>
      </widget>
     </item>
    </layout>
@@ -38,7 +39,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>588</width>
+     <width>761</width>
      <height>21</height>
     </rect>
    </property>
@@ -618,6 +619,88 @@
       </layout>
      </item>
      <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="KLed" name="Z">
+           <property name="state">
+            <enum>KLed::Off</enum>
+           </property>
+           <property name="look">
+            <enum>KLed::Raised</enum>
+           </property>
+           <property name="darkFactor">
+            <number>300</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Z</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <widget class="KLed" name="N">
+           <property name="state">
+            <enum>KLed::Off</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>N</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <item>
+          <widget class="KLed" name="C">
+           <property name="state">
+            <enum>KLed::Off</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>C</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_8">
+         <item>
+          <widget class="KLed" name="V">
+           <property name="state">
+            <enum>KLed::Off</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>V</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -636,7 +719,7 @@
   <widget class="QDockWidget" name="ramDock">
    <property name="minimumSize">
     <size>
-     <width>77</width>
+     <width>87</width>
      <height>150</height>
     </size>
    </property>
@@ -656,6 +739,7 @@
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
+       <layout class="QVBoxLayout" name="verticalLayout_9"/>
       </widget>
      </item>
     </layout>
@@ -664,7 +748,7 @@
   <widget class="QDockWidget" name="romDock">
    <property name="minimumSize">
     <size>
-     <width>77</width>
+     <width>87</width>
      <height>150</height>
     </size>
    </property>
@@ -684,6 +768,7 @@
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
+       <layout class="QVBoxLayout" name="verticalLayout_10"/>
       </widget>
      </item>
     </layout>
@@ -796,6 +881,11 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>KLed</class>
+   <extends>QWidget</extends>
+   <header>kled.h</header>
+  </customwidget>
+  <customwidget>
    <class>AsmEditor</class>
    <extends>QFrame</extends>
    <header>asmeditor</header>
@@ -899,8 +989,8 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>146</x>
-     <y>552</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>146</x>

@@ -61,6 +61,19 @@ class Debugger(object):
         return self.cpu.flags
 
     @property
+    def Z(self):
+        return self.flags[0]
+    @property
+    def N(self):
+        return self.flags[1]
+    @property
+    def C(self):
+        return self.flags[2]
+    @property
+    def V(self):
+        return self.flags[3]
+
+    @property
     def register(self):
         return self.cpu.register
 

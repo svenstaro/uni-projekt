@@ -33,6 +33,10 @@ class MainWindow(QMainWindow):
         for i in range(1, 15):
             getattr(self.ui, "reg_"+str(i)).setText(str(self.debugger.register[i]))
         self.ui.ram.setData(''.join(map(chr, self.debugger.ram)))
+        self.ui.Z.setState(self.debugger.Z)
+        self.ui.N.setState(self.debugger.N)
+        self.ui.C.setState(self.debugger.C)
+        self.ui.V.setState(self.debugger.V)
         self.ui.editor.setPcLine(self.debugger.getContentLine(self.debugger.pc))
 
     @pyqtSlot()

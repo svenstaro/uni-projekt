@@ -11,8 +11,6 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.Qsci import *
 
-from assembler import isLabel
-
 
 # TODO make lexer work
 class LexerAsm(QsciLexerCustom):
@@ -32,6 +30,9 @@ class LexerAsm(QsciLexerCustom):
 
     def description(self, style):
         return self._styles.get(style, '')
+
+    def language(self):
+        return "ASM"
 
     def defaultColor(self, style):
         if style == self.Default:
@@ -93,6 +94,7 @@ class LexerAsm(QsciLexerCustom):
             firstSpace = cmd.find(' ', pos)
             if firstSpace == -1:
                 firstSpace = len(cmd) - pos
+
             set_style(firstSpace, self.Instruction)
             pos += firstSpace + 1
 
@@ -142,14 +144,11 @@ class AsmEditor(QsciScintilla):
         # Clickable margin 1 for showing markers
         self.setMarginSensitivity(1, True)
         self.marginClicked.connect(self.on_margin_clicked)
-        self.markerDefine(QsciScintilla.RightArrow,
-            self.ARROW_MARKER_NUM)
-        self.setMarkerBackgroundColor(QColor("#000"),
-            self.ARROW_MARKER_NUM)
-
-        # Current line visible with special background color
-        self.setCaretLineVisible(True)
-        self.setCaretLineBackgroundColor(QColor("#ffeedd"))
+        self.markerDefine(QsciScintilla.RightArrow, self.ARROW_MARKER_NUM)
+        self.setMarkerBackgroundColor(QColor("#F00"), self.ARROW_MARKER_NUM)
+        self.SendScintilla(QsciScintilla.SCI_SETCARETLINEVISIBLE, True)
+        self.SendScintilla(QsciScintilla.SCI_SETCARETSTYLE, QsciScintilla.CARETSTYLE_INVISIBLE)
+        self.SendScintilla(QsciScintilla.SCI_GOTOLINE, -1)
 
         # set asm lexer
         # TODO does not work yet :/

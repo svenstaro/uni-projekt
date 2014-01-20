@@ -14,3 +14,6 @@ settings window
 Funktion hinter die Knöpfe bringen
     run, stepover, stepinto, stepout
 
+highlight current line
+debug file parsen
+

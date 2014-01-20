@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="pictures">
+    <file alias="document-open.png">../../../../../../usr/share/icons/oxygen/48x48/actions/document-open.png</file>
+    <file alias="application-exit">../../../../../../usr/share/icons/oxygen/48x48/actions/application-exit.png</file>
     <file alias="debug-step-instruction.png">../../../../../../../../usr/share/icons/oxygen/48x48/actions/debug-step-instruction.png</file>
     <file alias="debug-step-into-instruction.png">../../../../../../../../usr/share/icons/oxygen/48x48/actions/debug-step-into-instruction.png</file>
     <file alias="debug-step-into.png">../../../../../../../../usr/share/icons/oxygen/48x48/actions/debug-step-into.png</file>
@@ -12,5 +14,3 @@
     <file alias="view-refresh.png">../../../../../../../../usr/share/icons/oxygen/48x48/actions/view-refresh.png</file>
   </qresource>
 </RCC>
-
-<!-- the ../.. ... are needed, because the path must be relative !-->

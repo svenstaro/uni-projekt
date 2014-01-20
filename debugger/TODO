@@ -16,5 +16,6 @@ Funktion hinter die Knöpfe bringen
 
 highlight current line
 debug file parsen
+bedingte breakpoints setzen
 
 interactive debugger, mit code editor und dann instant compile und execute?!

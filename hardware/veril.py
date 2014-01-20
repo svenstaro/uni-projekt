@@ -75,7 +75,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(description='C25Board emulator and generator')
     parser.add_argument('filename', type=str, nargs=1, help='a executable')
     parser.add_argument('--type', choices=['analyze', 'compile', 'run'], default='run', help='specify the type')
-    parser.add_argument('--trace', action='store_true', help='enable tracing?')
+    parser.add_argument('--trace', action='store_true', help='enable tracing')
     parser.add_argument('--nocache', action='store_false', help='disable cache')
 
     args = parser.parse_args()

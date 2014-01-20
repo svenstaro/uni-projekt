@@ -73,10 +73,10 @@ class Cpu(object):
         Sets the rom contents
         contents -- String or list of ints
         """
-        if isinstance(contents, type("")):
+        if isinstance(contents, str):
             contents = [ord(char) for char in contents]
 
-        self.rom = contents + [0] * 4
+        self.rom = contents
 
     def run(self):
         """

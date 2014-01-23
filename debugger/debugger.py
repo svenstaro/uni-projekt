@@ -153,11 +153,7 @@ class Debugger(object):
         return self.__filecontent
 
     def getContentLine(self, pc):
-        return self.__fileassoc[pc]
+        return self.__fileassoc.get(pc, -1)
 
     def getRomAddr(self, line):
-        return self.__romassoc[line]
-
-    def hasReachedEnd(self):
-        return self.getNextCommand() == 'halt'
-
+        return self.__romassoc.get(line, -1)

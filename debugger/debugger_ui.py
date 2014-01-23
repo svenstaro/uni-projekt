@@ -21,15 +21,16 @@ class MainWindow(QMainWindow):
         self.ui.editor.breakpointSet.connect(self.breakpointSet)
         self.ui.editor.breakpointRemoved.connect(self.breakpointRemoved)
 
-
         #TODO register on registerlabels
         for i in ['Z', 'N', 'C', 'V']:
             getattr(self.ui, i).toggled.connect(partial(lambda flag, state: setattr(self.debugger, flag, state), i))
 
+        self.updateDisplay()
+
 
     def updateDisplay(self):
         for i in range(1, 15+1):
-            getattr(self.ui, "reg_"+str(i)).setText(str(self.debugger.register[i]))
+            getattr(self.ui, "reg_"+str(i)).setText(QString("%1").arg(self.debugger.register[i], base=10, fieldWidth=10, fillChar=QChar('0')))
         self.ui.ram.setData(''.join(map(chr, self.debugger.ram)))
         self.ui.Z.state = self.debugger.Z
         self.ui.N.state = self.debugger.N
@@ -62,8 +63,6 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     def run(self):
         if self.debugger:
-            if self.debugger.hasReachedEnd(): #TODO make it huebsch
-                self.debugger.reset()
             self.debugger.run()
             self.updateDisplay()
 

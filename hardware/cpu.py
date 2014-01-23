@@ -270,7 +270,7 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
             addrymux1.next = True
             enReg.next = True
             butBuf.next = True
-            pass
+            state.next = tState.FETCH
 
         ##### RSR
         elif state == tState.RSR:

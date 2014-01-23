@@ -5,11 +5,31 @@ import assembler
 import struct
 from emulator import Cpu
 
+
+class DummyCpu(object):
+    ram = []
+    rom = []
+    pc = 0
+    flags = [False] * 4
+    register = [0] * 16
+
+    def tick(self):
+        return False
+
+    def load(self, _):
+        return ""
+
+    def reset(self):
+        pass
+
+
 class Debugger(object):
     breakpoints = []
 
-    def __init__(self, program, memorysize=1024*1024):
-        self.cpu = Cpu(memorysize, program)
+    def __init__(self, cpu):
+        self.cpu = cpu
+        self.__fileassoc = {}
+        self.__romassoc = {}
 
     @staticmethod
     def loadFromFile(filename, memorysize=1024*1024):
@@ -21,22 +41,20 @@ class Debugger(object):
         """
         assert isinstance(filename, str)
         assert isinstance(memorysize, (int, long))
-        result = None
+        result = Debugger(None)
         if filename.endswith(".dbg"):
             with open(filename.rsplit('.', 1)[0]) as code: #that't the .out file
-                result = Debugger(code.read(), memorysize)
+                result.cpu = Cpu(memorysize, code.read())
             with open(filename.rsplit('.', 2)[0]) as content: #the .s file
                 result.__filecontent = content.read()
             with open(filename) as debug:
-                result.__fileassoc = {}
-                result.__romassoc = {}
                 for line in debug:
                     (key, val) = line.split()
                     result.__romassoc[int(key)] = int(val)
                     result.__fileassoc[int(val)] = int(key)
         elif filename.endswith(".out"):
             with open(filename) as code:
-                result = Debugger(code.read(), memorysize)
+                result.cpu = Cpu(code.read(), memorysize)
             result.__filecontent = ""  #FIXME get disassmbled file
 
         return result
@@ -63,15 +81,30 @@ class Debugger(object):
     @property
     def Z(self):
         return self.flags[0]
+    @Z.setter
+    def Z(self, value):
+        self.flags[0] = value
+
     @property
     def N(self):
         return self.flags[1]
+    @N.setter
+    def N(self, value):
+        self.flags[1] = value
+
     @property
     def C(self):
         return self.flags[2]
+    @C.setter
+    def C(self, value):
+        self.flags[2] = value
+
     @property
     def V(self):
         return self.flags[3]
+    @V.setter
+    def V(self, value):
+        self.flags[3] = value
 
     @property
     def register(self):

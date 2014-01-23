@@ -5,14 +5,14 @@ from functools import partial
 from PyQt4 import uic
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from debugger import Debugger
+from debugger import Debugger, DummyCpu
 from memoryviewer import *
 import debugger_rc
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.debugger = None
+        self.debugger = Debugger(DummyCpu())
         self.ui = uic.loadUi('gui.ui', self)
 
         self.ui.editor.setReadOnly(True)
@@ -28,24 +28,14 @@ class MainWindow(QMainWindow):
 
 
     def updateDisplay(self):
-        if self.debugger:
-            for i in range(1, 15+1):
-                getattr(self.ui, "reg_"+str(i)).setText(str(self.debugger.register[i]))
-            self.ui.ram.setData(''.join(map(chr, self.debugger.ram)))
-            self.ui.Z.setState(self.debugger.Z)
-            self.ui.N.setState(self.debugger.N)
-            self.ui.C.setState(self.debugger.C)
-            self.ui.V.setState(self.debugger.V)
-            self.ui.editor.setPcLine(self.debugger.getContentLine(self.debugger.pc))
-        else:
-            for i in range(1, 15+1):
-                getattr(self.ui, "reg_"+str(i)).setText('0')
-            self.ui.ram.setData('')
-            self.ui.Z.setState(False)
-            self.ui.N.setState(False)
-            self.ui.C.setState(False)
-            self.ui.V.setState(False)
-            self.ui.editor.setPcLine(0)
+        for i in range(1, 15+1):
+            getattr(self.ui, "reg_"+str(i)).setText(str(self.debugger.register[i]))
+        self.ui.ram.setData(''.join(map(chr, self.debugger.ram)))
+        self.ui.Z.state = self.debugger.Z
+        self.ui.N.state = self.debugger.N
+        self.ui.C.state = self.debugger.C
+        self.ui.V.state = self.debugger.V
+        self.ui.editor.setPcLine(self.debugger.getContentLine(self.debugger.pc))
 
     @pyqtSlot()
     def openNewFile(self):
@@ -59,7 +49,7 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot()
     def closeFile(self):
-        self.debugger = None
+        self.debugger.cpu = Debugger(DummyCpu())
         self.ui.ram.setData('')
         self.ui.editor.setText('')
         self.ui.editor.resetMarker()

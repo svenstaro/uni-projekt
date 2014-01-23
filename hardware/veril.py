@@ -71,6 +71,7 @@ if __name__ == "__main__":
                     elif bus[32:26] == 0b111111: #rst
                         yield rs232avail.posedge
                         sys.stdout.write(chr(rs232out))
+                        sys.stdout.flush()
 
         interesting=[]
         dut_cl.args.append(interesting)

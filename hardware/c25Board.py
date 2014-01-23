@@ -1,7 +1,7 @@
 from myhdl import *
 from allimport import *
 
-def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), enCache=True, interesting=None):
+def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), baudrate=57600, enCache=True, interesting=None):
 
     """
     clk     (Ibool)  -- The clock
@@ -161,8 +161,9 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), enCache=True, int
         rs232out = Signal(intbv(0)[8:])
 
         readerTristate = tristate(rs232out, bufRsr, bbus)
-        reader = rs232rx(clk, reset, rx, rs232out, rsrreadybit, baudRate=57600)
-        writer = rs232tx(clk, reset, rstreadybit, enRst, bbus, tx, baudRate=57600)
+
+        writer = rs232tx(clk, reset, rstreadybit, enRst, bbus, tx, baudRate=baudrate)
+        reader = rs232rx(clk, reset, rx, rs232out, rsrreadybit, baudRate=baudrate)
 
         return readerTristate, reader, writer
 

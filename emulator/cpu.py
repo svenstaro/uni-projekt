@@ -199,7 +199,7 @@ class Cpu(object):
             r, dest = self.__op2decode(op2, 25)
             if r == 1:
                 dest = self.register[dest]
-            dest = dest & 0xFF
+            dest &= 0xFF
             os.write(1, chr(dest))
         else:
             raise NotImplementedError()

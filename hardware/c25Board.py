@@ -161,8 +161,8 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), enCache=True, int
         rs232out = Signal(intbv(0)[8:])
 
         readerTristate = tristate(rs232out, bufRsr, bbus)
-        reader = rs232rx(clk, reset, rx, rs232out, rsrreadybit)
-        writer = rs232tx(clk, reset, rstreadybit, enRst, bbus, tx)
+        reader = rs232rx(clk, reset, rx, rs232out, rsrreadybit, baudRate=57600)
+        writer = rs232tx(clk, reset, rstreadybit, enRst, bbus, tx, baudRate=57600)
 
         return readerTristate, reader, writer
 

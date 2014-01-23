@@ -169,10 +169,10 @@ class AsmEditor(QsciScintilla):
 
         # set asm lexer
         # TODO does not work yet :/
-        self.lexer = LexerAsm(self)
-        self.lexer.setDefaultFont(font)
-        self.setLexer(self.lexer)
-        self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, 'Courier')
+        #self.lexer = LexerAsm(self)
+        #self.lexer.setDefaultFont(font)
+        #self.setLexer(self.lexer)
+        #self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, 'Courier')
 
         # Don't want to see the horizontal scrollbar at all
         # Use raw message to Scintilla here (all messages are documented

@@ -1,5 +1,6 @@
 from myhdl import *
 
+
 def alu(opc, en, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
     """This represents the ALU of the microcontroller.
 
@@ -39,7 +40,7 @@ def alu(opc, en, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
             return first | second
         elif opc == 0b1010: #XOR
             return first ^ second
-        elif opc == 0b1011: #NOT
+        elif opc == 0b1011: #NOR
             return first | ~second
         elif opc == 0b1100: #LSL
             assert second < bitwidth
@@ -64,11 +65,12 @@ def alu(opc, en, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
         Res.next = 0
 
         if en:
-            alu_res = calc(opc, A, B, Cin)
+            result = calc(opc, A, B, Cin)
+            alu_res = intbv(result)[bitwidth:]
 
             Z.next = alu_res == 0
             N.next = intbv(alu_res)[bitwidth-1]
-            C.next = intbv(alu_res)[bitwidth]
+            C.next = result & 0x100000000 != 0
             V.next = (A[bitwidth-1] == B[bitwidth-1]) and (A[bitwidth-1] == (not intbv(alu_res)[bitwidth-1]))
 
             Res.next = alu_res

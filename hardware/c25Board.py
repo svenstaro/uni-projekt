@@ -171,7 +171,7 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), enCache=True, int
     def createLedBut():
         ioOut = Signal(intbv(0)[32:])
 
-        io = iodevice(clk, enLed, ioOut, bbus, leds, buttons)
+        io = iodevice(clk, reset, enLed, ioOut, bbus, leds, buttons)
         ioTristate = tristate(ioOut, bufBut, bbus)
 
         return io, ioTristate

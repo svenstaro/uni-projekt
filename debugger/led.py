@@ -4,10 +4,15 @@ from PyQt4.QtCore import *
 
 
 class Led(QWidget):
+
+    toggled = pyqtSignal(bool, name="Toggled event")
+
     def __init__(self, parent):
         super(Led, self).__init__(parent)
 
         self._state = False
+        self.colorOn = QColor("#0f0")
+        self.colorOff = QColor("#f00")
         self.setMinimumWidth(22)
         self.setMinimumHeight(22)
 
@@ -17,11 +22,22 @@ class Led(QWidget):
     @state.setter
     def state(self, state):
         self._state = state
+        self.toggled.emit(state)
         self.repaint()
 
-    darkFactor = 0.5
-    color = QColor("#0f0")
-    color2 = QColor("#f00")
+    @pyqtProperty(QColor)
+    def colorOn(self):
+        return self._colorOn
+    @colorOn.setter
+    def colorOn(self, value):
+        self._colorOn = value
+
+    @pyqtProperty(QColor)
+    def colorOff(self):
+        return self._colorOff
+    @colorOff.setter
+    def colorOff(self, value):
+        self._colorOff = value
 
     def mouseDoubleClickEvent(self, _):
         self.state = not self.state
@@ -31,7 +47,7 @@ class Led(QWidget):
         size = QSize(minSize, minSize)
         center = QPointF(size.width()/2.0, size.height()/2.0)
         gradient = QRadialGradient(center, minSize / 2.0, QPointF(center.x(), size.height()/3.0))
-        color = self.color if self.state else self.color2
+        color = self.colorOn if self.state else self.colorOff
         gradient.setColorAt(0.0, color.light(250))
         gradient.setColorAt(0.5, color.light(130))
         gradient.setColorAt(1.0, color)

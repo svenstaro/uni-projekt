@@ -13,6 +13,12 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="documentMode">
+   <bool>false</bool>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
@@ -122,8 +128,11 @@
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="1">
         <widget class="QLabel" name="reg_1">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="textFormat">
           <enum>Qt::AutoText</enum>
@@ -139,6 +148,9 @@
          </property>
          <property name="indent">
           <number>-1</number>
+         </property>
+         <property name="textInteractionFlags">
+          <set>Qt::TextEditorInteraction</set>
          </property>
         </widget>
        </item>
@@ -571,17 +583,7 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
-          <widget class="KLed" name="Z">
-           <property name="state">
-            <enum>KLed::Off</enum>
-           </property>
-           <property name="look">
-            <enum>KLed::Raised</enum>
-           </property>
-           <property name="darkFactor">
-            <number>300</number>
-           </property>
-          </widget>
+          <widget class="Led" name="Z" native="true"/>
          </item>
          <item>
           <widget class="QLabel" name="label">
@@ -598,11 +600,7 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <item>
-          <widget class="KLed" name="N">
-           <property name="state">
-            <enum>KLed::Off</enum>
-           </property>
-          </widget>
+          <widget class="Led" name="N" native="true"/>
          </item>
          <item>
           <widget class="QLabel" name="label_2">
@@ -619,11 +617,7 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_7">
          <item>
-          <widget class="KLed" name="C">
-           <property name="state">
-            <enum>KLed::Off</enum>
-           </property>
-          </widget>
+          <widget class="Led" name="C" native="true"/>
          </item>
          <item>
           <widget class="QLabel" name="label_3">
@@ -640,11 +634,7 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_8">
          <item>
-          <widget class="KLed" name="V">
-           <property name="state">
-            <enum>KLed::Off</enum>
-           </property>
-          </widget>
+          <widget class="Led" name="V" native="true"/>
          </item>
          <item>
           <widget class="QLabel" name="label_4">
@@ -707,7 +697,7 @@
   </widget>
   <action name="actionExit">
    <property name="icon">
-    <iconset resource="debugger.qrc">
+    <iconset>
      <normaloff>:/pictures/application-exit</normaloff>:/pictures/application-exit</iconset>
    </property>
    <property name="text">
@@ -716,7 +706,7 @@
   </action>
   <action name="actionOpen">
    <property name="icon">
-    <iconset resource="debugger.qrc">
+    <iconset>
      <normaloff>:/pictures/document-open.png</normaloff>:/pictures/document-open.png</iconset>
    </property>
    <property name="text">
@@ -749,7 +739,7 @@
   </action>
   <action name="actionRun">
    <property name="icon">
-    <iconset resource="debugger.qrc">
+    <iconset>
      <normaloff>:/pictures/media-playback-start.png</normaloff>:/pictures/media-playback-start.png</iconset>
    </property>
    <property name="text">
@@ -773,7 +763,7 @@
   </action>
   <action name="actionStep_Over">
    <property name="icon">
-    <iconset resource="debugger.qrc">
+    <iconset>
      <normaloff>:/pictures/debug-step-instruction.png</normaloff>:/pictures/debug-step-instruction.png</iconset>
    </property>
    <property name="text">
@@ -785,7 +775,7 @@
   </action>
   <action name="actionStep_Into">
    <property name="icon">
-    <iconset resource="debugger.qrc">
+    <iconset>
      <normaloff>:/pictures/debug-step-into-instruction.png</normaloff>:/pictures/debug-step-into-instruction.png</iconset>
    </property>
    <property name="text">
@@ -797,7 +787,7 @@
   </action>
   <action name="actionClose">
    <property name="icon">
-    <iconset resource="debugger.qrc">
+    <iconset>
      <normaloff>:/pictures/process-stop.png</normaloff>:/pictures/process-stop.png</iconset>
    </property>
    <property name="text">
@@ -811,7 +801,7 @@
   </action>
   <action name="actionReset">
    <property name="icon">
-    <iconset resource="debugger.qrc">
+    <iconset>
      <normaloff>:/pictures/view-refresh.png</normaloff>:/pictures/view-refresh.png</iconset>
    </property>
    <property name="text">
@@ -820,11 +810,6 @@
   </action>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>KLed</class>
-   <extends>QWidget</extends>
-   <header>kled.h</header>
-  </customwidget>
   <customwidget>
    <class>AsmEditor</class>
    <extends>QFrame</extends>
@@ -839,6 +824,12 @@
    <slots>
     <signal>dataChanged(int)</signal>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>Led</class>
+   <extends>QWidget</extends>
+   <header>led</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

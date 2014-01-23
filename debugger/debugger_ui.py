@@ -1,6 +1,7 @@
 #! /usr/bin/env python2.7
 
 import sys
+from functools import partial
 from PyQt4 import uic
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -19,6 +20,12 @@ class MainWindow(QMainWindow):
         # nearly (all) connects are done via qtdesigner
         self.ui.editor.breakpointSet.connect(self.breakpointSet)
         self.ui.editor.breakpointRemoved.connect(self.breakpointRemoved)
+
+
+        #TODO register on registerlabels
+        for i in ['Z', 'N', 'C', 'V']:
+            getattr(self.ui, i).toggled.connect(partial(lambda flag, state: setattr(self.debugger, flag, state), i))
+
 
     def updateDisplay(self):
         if self.debugger:

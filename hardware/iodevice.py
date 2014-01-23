@@ -1,14 +1,15 @@
 from myhdl import *
 
-def iodevice(clk, enable, dout, din, leds, buttons):
+
+def iodevice(clk, reset, enable, dout, din, leds, buttons):
     ledBuffer = Signal(intbv(0)[4:])
 
-    @always(clk.posedge)
+    @always_seq(clk.posedge, reset=reset)
     def logic():
         if enable:
             ledBuffer.next = din[4:]
 
-        dout.next = concat(intbv(0)[28:], buttons)
-        leds.next = ledBuffer
+        dout.next = ~buttons
+        leds.next = ~ledBuffer
 
     return logic

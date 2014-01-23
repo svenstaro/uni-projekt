@@ -27,6 +27,8 @@ def rs232tx(clk, reset, readybit, start, din, tx, clkFreq=50000000, baudRate=576
                     bitCnt.next = 8
                     tx.next = False
                     state.next = tState.SEND
+                else:
+                    readybit.next = True
             elif state == tState.SEND:
                 if bitCnt > 0:
                     tx.next = data[8-bitCnt]
@@ -34,7 +36,6 @@ def rs232tx(clk, reset, readybit, start, din, tx, clkFreq=50000000, baudRate=576
                     clkCnt.next = timeoutOne
                 else:
                     tx.next = True
-                    readybit.next = True
                     clkCnt.next = timeoutHalf
                     state.next = tState.IDLE
 

@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
 
     def updateDisplay(self):
         if self.debugger:
-            for i in range(1, 15):
+            for i in range(1, 15+1):
                 getattr(self.ui, "reg_"+str(i)).setText(str(self.debugger.register[i]))
             self.ui.ram.setData(''.join(map(chr, self.debugger.ram)))
             self.ui.Z.setState(self.debugger.Z)
@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
             self.ui.V.setState(self.debugger.V)
             self.ui.editor.setPcLine(self.debugger.getContentLine(self.debugger.pc))
         else:
-            for i in range(1, 15):
+            for i in range(1, 15+1):
                 getattr(self.ui, "reg_"+str(i)).setText('0')
             self.ui.ram.setData('')
             self.ui.Z.setState(False)

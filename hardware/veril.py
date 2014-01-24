@@ -5,7 +5,7 @@ import struct
 import os
 from myhdl import *
 from argparse import ArgumentParser
-from c25Board import c25Board
+from processor import processor
 from rs232 import rs232rx
 from pseudorom import pseudorom
 
@@ -31,7 +31,7 @@ class DutClass():
 def genSim(verifyMethod, dut_cl, data, *argss, **kwargs):
     """ Generates a Simulation Object """
 
-    dut = traceSignals(c25Board, *dut_cl.args) if kwargs.get('trace', False) else c25Board(*dut_cl.args)
+    dut = traceSignals(processor, *dut_cl.args) if kwargs.get('trace', False) else processor(*dut_cl.args)
 
     @always(delay(kwargs.get('clkfreq', 1)))
     def clkGen():
@@ -59,11 +59,11 @@ def genSim(verifyMethod, dut_cl, data, *argss, **kwargs):
 if __name__ == "__main__":
     def analyzeBoard(dut_cl):
         conversion.analyze.simulator = 'icarus'
-        conversion.analyze(c25Board, *dut_cl.args)
+        conversion.analyze(processor, *dut_cl.args)
 
     def compileBoard(dut_cl):
         conversion.toVerilog.no_testbench = True
-        conversion.toVerilog(c25Board, *dut_cl.args)
+        conversion.toVerilog(processor, *dut_cl.args)
 
     def run(dut_cl, trace):
         def verify(cl, _):

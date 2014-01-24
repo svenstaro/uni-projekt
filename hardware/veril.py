@@ -92,8 +92,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     with open(args.filename[0]) as f:
-        size = os.path.getsize(f.name)//4
-        data = struct.unpack('>' + "I"*size, f.read(4*size))
+        size = os.path.getsize(f.name)
+        data = struct.unpack('>' + "B"*size, f.read(size))
 
     dut_cl = DutClass(data)
     dut_cl.args.append(args.baudrate)

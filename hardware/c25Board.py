@@ -4,14 +4,17 @@ from allimport import *
 def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), baudrate=57600, enCache=True, interesting=None):
 
     """
-    clk     (Ibool)  -- The clock
-    reset   (IReset) -- Reset Signal
-    buttons (I4)     -- 4 input buttons
-    leds    (O4)     -- 4 output LEDS
-    rx      (Ibool)  -- input from rs232
-    tx      (Obool)  -- output from rs232
-    romContent       -- the rom content
-    interesting      -- A list with interesting signals will be returned
+    clk       (Ibool)  -- The clock
+    reset     (IReset) -- Reset Signal
+    buttons   (I4)     -- 4 input buttons
+    leds      (O4)     -- 4 output LEDS
+    rx        (Ibool)  -- input from rs232
+    tx        (Obool)  -- output from rs232
+    flashaddr (O26)    -- addr for the flash rom
+
+    baudrate           -- the baudrate for the rs232
+    romContent         -- the rom content
+    interesting        -- A list with interesting signals will be returned
     """
 
     ### the actual bus
@@ -208,7 +211,7 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), baudrate=57600, e
 
         ### RAM
         def createRam():
-            ram = pseudoram(clk, enW, enO, csA, memaddr, membus, membus, depth=1024)
+            ram = pseudoram(clk, enW, enO, csA, memaddr, membus, membus, depth=128)
             return ram
 
         ### ROM
@@ -217,7 +220,7 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), baudrate=57600, e
             return rom
 
         MMU = createMmuTristate()
-        #RAM = createRam()
+        RAM = createRam()
         ROM = createRom()
         if enCache:
             CACHE = createCache()

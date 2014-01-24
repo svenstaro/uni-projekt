@@ -23,7 +23,7 @@ def pseudoram(clk, we, oe, cs, addr, din, dout, depth=128):
             mem[int(addr)+2].next = din[16: 8]
             mem[int(addr)+3].next = din[ 8: 0]
 
-    @always(clk.posedge)
+    @always_comb
     def read():
         o.next = None
 

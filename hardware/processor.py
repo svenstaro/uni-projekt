@@ -1,7 +1,11 @@
 from myhdl import *
 from allimport import *
 
-def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), baudrate=57600, enCache=True, interesting=None):
+def c25Board(clk, reset,
+             buttons, leds,
+             rx, tx,
+             romaddr, romclk, romrden, romout,
+             baudrate=57600, enCache=True, interesting=None):
 
     """
     clk       (Ibool)  -- The clock
@@ -10,10 +14,13 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), baudrate=57600, e
     leds      (O4)     -- 4 output LEDS
     rx        (Ibool)  -- input from rs232
     tx        (Obool)  -- output from rs232
-    flashaddr (O26)    -- addr for the flash rom
+    romaddr   (O8)     -- addr of rom
+    romclk    (Obool)  -- clock
+    romrden   (Obool)  -- rom-readenable
+    romout    (I32)    -- rom data
 
     baudrate           -- the baudrate for the rs232
-    romContent         -- the rom content
+    enCache            -- enable cache or not
     interesting        -- A list with interesting signals will be returned
     """
 
@@ -39,7 +46,8 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), baudrate=57600, e
 
 
     ### cpu
-    readybit, rsrreadybit, rstreadybit = [Signal(bool(1)) for _ in range(3)]  # they must be true!
+    readybit, rstreadybit = [Signal(bool(1)) for _ in range(2)]  # they must be true!
+    rsrreadybit = Signal(bool(0))  # false by default
     addrymux1, addrymux0, pmux = [Signal(bool(0)) for _ in range(3)]
     bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC, bufClk, bufBut, bufRsr = [Signal(bool(0)) for _ in range(9)]
     enAlu, enIr, enPc, enReg, enJump, enCall, enSup, enLed, enRst = [Signal(bool(0)) for _ in range(9)]
@@ -166,7 +174,7 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), baudrate=57600, e
         readerTristate = tristate(rs232out, bufRsr, bbus)
 
         writer = rs232tx(clk, reset, rstreadybit, enRst, bbus, tx, baudRate=baudrate)
-        reader = rs232rx(clk, reset, rx, rs232out, rsrreadybit, baudRate=baudrate)
+        reader = rs232rx(clk, reset, rsrreadybit, bufRsr, rs232out, rx, baudRate=baudrate)
 
         return readerTristate, reader, writer
 
@@ -198,6 +206,7 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), baudrate=57600, e
             cacheHit = False
 
         def createMmuTristate():
+            # romaddr, romclk, romrden, romout,
             mmuOut = Signal(intbv(0)[32:])
 
             Mmu = mmu(clk, reset, enMmu, bbus, mmuOut, readybit, memaddr, membus, enO, enW, csA, csO, cacheHit)
@@ -214,14 +223,8 @@ def c25Board(clk, reset, buttons, leds, rx, tx, romContent=(), baudrate=57600, e
             ram = pseudoram(clk, enW, enO, csA, memaddr, membus, membus, depth=128)
             return ram
 
-        ### ROM
-        def createRom():
-            rom = pseudorom(clk, enO, csO, memaddr, membus, romContent)
-            return rom
-
         MMU = createMmuTristate()
         RAM = createRam()
-        ROM = createRom()
         if enCache:
             CACHE = createCache()
 

@@ -1,7 +1,9 @@
 from myhdl import *
 
 
-def mmu(clk, reset, en, din, dout, ready, addr, io, enO, enW, csRam, csRom, hit):
+def mmu(clk, reset,
+        en, din, dout, ready,
+        addr, io, enO, enW, csRam, csRom, hit):
     """This unit can be used to abstract the actual memory access. Also we can implement some caching here
 
         clk   (Ibool) -- The clock

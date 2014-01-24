@@ -1,28 +1,30 @@
 from myhdl import *
 from allimport import *
 
-def c25Board(clk, reset,
-             buttons, leds,
-             rx, tx,
-             romaddr, romclk, romrden, romout,
-             baudrate=57600, enCache=True, interesting=None):
-
+def processor(clk, reset,
+              buttons, leds,
+              rx, tx,
+              memoryaddr, memorydata,
+              romrden, ramrden, ramwren,
+              baudrate=57600, enCache=True, interesting=None):
     """
-    clk       (Ibool)  -- The clock
-    reset     (IReset) -- Reset Signal
-    buttons   (I4)     -- 4 input buttons
-    leds      (O4)     -- 4 output LEDS
-    rx        (Ibool)  -- input from rs232
-    tx        (Obool)  -- output from rs232
-    romaddr   (O8)     -- addr of rom
-    romclk    (Obool)  -- clock
-    romrden   (Obool)  -- rom-readenable
-    romout    (I32)    -- rom data
+    clk        (Ibool)  -- The clock
+    reset      (IReset) -- Reset Signal
+    buttons    (I4)     -- 4 input buttons
+    leds       (O4)     -- 4 output LEDS
+    rx         (Ibool)  -- input from rs232
+    tx         (Obool)  -- output from rs232
+    memoryaddr (O16)    -- memory addr
+    memorydata (IO32)   -- memory data
+    romrden    (Obool)  -- rom-readenable
+    ramrden    (Obool)  -- ram-readenable
+    ramwren    (Obool)  -- ram-writeenable
 
     baudrate           -- the baudrate for the rs232
     enCache            -- enable cache or not
     interesting        -- A list with interesting signals will be returned
     """
+
 
     ### the actual bus
     bbus = TristateSignal(intbv(0)[32:])
@@ -188,47 +190,23 @@ def c25Board(clk, reset,
 
         return io, ioTristate
 
+    ### MMU
 
-    ##############
-    ### MEMORY ###
-    ##############
-
-    def createMemory():
+    def createMmu():
         membus = TristateSignal(intbv(0)[32:])
         memaddr = Signal(intbv(0)[31:])
-
-        ### MMU
         enO, enW, csA, csO= [Signal(bool(0)) for _ in range(4)]
 
-        if enCache:
-            cacheHit = Signal(bool(0))
-        else:
-            cacheHit = False
+        # romaddr, romclk, romrden, romout,
+        mmuOut = Signal(intbv(0)[32:])
+        enableromout = andd(enO, csO, romrden)
+        enableramout = andd(enO, csA, ramrden)
+        enableramwri = andd(enW, csA, ramwren)
 
-        def createMmuTristate():
-            # romaddr, romclk, romrden, romout,
-            mmuOut = Signal(intbv(0)[32:])
+        Mmu = mmu(clk, reset, enMmu, bbus, mmuOut, readybit, memoryaddr, memorydata, enO, enW, csA, csO, False)
+        mmuTristate = tristate(mmuOut, mmuBuf, bbus)
 
-            Mmu = mmu(clk, reset, enMmu, bbus, mmuOut, readybit, memaddr, membus, enO, enW, csA, csO, cacheHit)
-            mmuTristate = tristate(mmuOut, mmuBuf, bbus)
-
-            return Mmu, mmuTristate
-
-        def createCache():
-            Cache = cache(clk, reset, memaddr, membus, enO, enW, csA, csO, cacheHit, readybit)
-            return Cache
-
-        ### RAM
-        def createRam():
-            ram = pseudoram(clk, enW, enO, csA, memaddr, membus, membus, depth=128)
-            return ram
-
-        MMU = createMmuTristate()
-        RAM = createRam()
-        if enCache:
-            CACHE = createCache()
-
-        return instances()
+        return enableromout, enableramout, enableramwri, Mmu, mmuTristate
 
     if interesting is not None:
         interesting.append(bbus)
@@ -246,6 +224,6 @@ def c25Board(clk, reset,
     ClkBuf = createClkBuf()
     RS232 = createRs232()
     IO = createLedBut()
-    Memory = createMemory()
+    Memory = createMmu()
 
     return instances()

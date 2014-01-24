@@ -11,16 +11,24 @@ from pseudorom import pseudorom
 
 class DutClass():
     """Wrapper around DUT"""
-    def __init__(self, data):
+    def __init__(self):
         self.clk = Signal(bool(0))
         self.reset = ResetSignal(1, 0, True)
         self.buttons, self.leds = [Signal(intbv(0)[4:]) for _ in range(2)]
         self.rx, self.tx = [Signal(bool(1)) for _ in range(2)]
-        self.data = data
-        self.baudrate = 57600
-        self.args = [self.clk, self.reset, self.buttons, self.leds, self.rx, self.tx, self.data]
 
-def genSim(verifyMethod, dut_cl, *argss, **kwargs):
+        self.memoryaddr = Signal(intbv(0)[8:])
+        self.memorydata = TristateSignal(intbv(0)[32:])
+        self.ramrden, self.ramwren, self.romrden = [Signal(bool(0)) for _ in range(3)]
+
+        self.baudrate = 57600
+        self.args = [self.clk, self.reset,
+                     self.buttons, self.leds,
+                     self.rx, self.tx,
+                     self.memoryaddr, self.memorydata,
+                     self.romrden, self.ramrden, self.ramwren]
+
+def genSim(verifyMethod, dut_cl, data, *argss, **kwargs):
     """ Generates a Simulation Object """
 
     dut = traceSignals(processor, *dut_cl.args) if kwargs.get('trace', False) else processor(*dut_cl.args)
@@ -39,7 +47,9 @@ def genSim(verifyMethod, dut_cl, *argss, **kwargs):
         yield verifyMethod(dut_cl, dut)
         raise StopSimulation
 
-    return Simulation(dut, clkGen, stimulus, *argss)
+    rom = pseudorom(dut_cl.clk, dut_cl.romrden, dut_cl.romrden, dut_cl.memoryaddr, dut_cl.memorydata, mem=data)
+
+    return Simulation(dut, clkGen, stimulus, rom, *argss)
 
 
 
@@ -49,12 +59,11 @@ def genSim(verifyMethod, dut_cl, *argss, **kwargs):
 if __name__ == "__main__":
     def analyzeBoard(dut_cl):
         conversion.analyze.simulator = 'icarus'
-        conversion.analyze(c25Board.c25Board, *dut_cl.args)
+        conversion.analyze(processor, *dut_cl.args)
 
     def compileBoard(dut_cl):
-        conversion.toVerilog.name = 'c25Board'
         conversion.toVerilog.no_testbench = True
-        conversion.toVerilog(c25Board.c25Board, *dut_cl.args)
+        conversion.toVerilog(processor, *dut_cl.args)
 
     def run(dut_cl, trace):
         def verify(cl, _):
@@ -62,9 +71,7 @@ if __name__ == "__main__":
 
             while True:
                 yield cl.clk.posedge
-                if bus == 0b01000011111111111111111111111100: #halt
-                    raise StopSimulation("HALT DETECTED (%s)" % now())
-                elif bus._val is not None:
+                if bus._val is not None:
                     if bus[32:26] == 0b111110: #led
                         yield cl.clk.posedge
                         yield cl.clk.posedge
@@ -106,7 +113,7 @@ if __name__ == "__main__":
         size = os.path.getsize(f.name)
         data = struct.unpack('>' + "B"*size, f.read(size))
 
-    dut_cl = DutClass(data)
+    dut_cl = DutClass()
     dut_cl.args.append(args.baudrate)
     dut_cl.baudrate = args.baudrate
 

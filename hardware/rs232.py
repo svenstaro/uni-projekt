@@ -2,7 +2,7 @@ from math import log
 from myhdl import *
 
 
-def rs232rx(clk, reset, avail, dout, rx, baudRate=57600, clkFreq=50000000):
+def rs232rx(clk, reset, avail, dout, rx, clkFreq=50000000, baudRate=57600):
 
     timeoutOne  = int(1.0*clkFreq/baudRate)-1
     timeoutHalf = int(1.5*clkFreq/baudRate)-1
@@ -23,6 +23,7 @@ def rs232rx(clk, reset, avail, dout, rx, baudRate=57600, clkFreq=50000000):
                     data.next = 0
                     bitCnt.next = 8
                     clkCnt.next = timeoutHalf
+                    avail.next = False
                     state.next = tState.READ
             elif state == tState.READ:
                 clkCnt.next = timeoutOne

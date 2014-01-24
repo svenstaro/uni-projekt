@@ -174,7 +174,7 @@ def c25Board(clk, reset,
         readerTristate = tristate(rs232out, bufRsr, bbus)
 
         writer = rs232tx(clk, reset, rstreadybit, enRst, bbus, tx, baudRate=baudrate)
-        reader = rs232rx(clk, reset, rsrreadybit, bufRsr, rs232out, rx, baudRate=baudrate)
+        reader = rs232rx(clk, reset, rsrreadybit, rs232out, rx, baudRate=baudrate)
 
         return readerTristate, reader, writer
 

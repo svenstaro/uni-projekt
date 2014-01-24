@@ -1,7 +1,6 @@
 from unittest import TestCase
 from myhdl import *
-from hardware.rs232tx import *
-from hardware.rs232rx import *
+from hardware.rs232 import *
 
 class DutClass():
     """Wrapper around DUT"""
@@ -14,7 +13,7 @@ class DutClass():
 
     def Gens(self, trace = False):
         argst = [self.clk,self.reset,self.ready,self.write,self.dataIn,self.wire, 50, 10]
-        argsr = [self.clk,self.reset,self.wire,self.dataOut,self.available, 50, 10]
+        argsr = [self.clk,self.reset,self.available,self.dataOut,self.wire, 50, 10]
 
         result = rs232tx(*argst), rs232rx(*argsr)
         return result

@@ -14,6 +14,5 @@ from pseudoram import pseudoram
 from pseudorom import pseudorom
 from register import registerr
 from registerbank import registerbank
-from rs232rx import rs232rx
-from rs232tx import rs232tx
+from rs232 import rs232rx, rs232tx
 from tristate import tristate

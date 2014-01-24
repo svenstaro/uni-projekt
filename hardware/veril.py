@@ -5,7 +5,9 @@ import struct
 import os
 from myhdl import *
 from argparse import ArgumentParser
-import c25Board, rs232rx
+from processor import processor
+from rs232 import rs232rx
+from pseudorom import pseudorom
 
 class DutClass():
     """Wrapper around DUT"""
@@ -21,7 +23,7 @@ class DutClass():
 def genSim(verifyMethod, dut_cl, *argss, **kwargs):
     """ Generates a Simulation Object """
 
-    dut = traceSignals(c25Board.c25Board, *dut_cl.args) if kwargs.get('trace', False) else c25Board.c25Board(*dut_cl.args)
+    dut = traceSignals(processor, *dut_cl.args) if kwargs.get('trace', False) else processor(*dut_cl.args)
 
     @always(delay(kwargs.get('clkfreq', 1)))
     def clkGen():
@@ -70,15 +72,24 @@ if __name__ == "__main__":
                         print "LEDS (%s): %s" % (now(), str(~cl.leds._val))
                     elif bus[32:26] == 0b111111: #rst
                         yield rs232avail.posedge
+                        rs232read.next = True
+                        yield cl.clk.posedge
+                        rs232read.next = False
                         sys.stdout.write(chr(rs232out))
                         sys.stdout.flush()
+
+        @always(dut_cl.clk.posedge)
+        def stop():
+            if bus == 0b01000011111111111111111111111100: #halt
+                raise StopSimulation("HALT DETECTED (%s)" % now())
 
         interesting=[]
         dut_cl.args.append(interesting)
         rs232avail = Signal(True)
+        rs232read = Signal(False)
         rs232out = Signal(intbv(0)[8:])
-        rs232read = rs232rx.rs232rx(dut_cl.clk, dut_cl.reset, dut_cl.tx, rs232out, rs232avail, baudRate=dut_cl.baudrate)
-        sim = genSim(verify, dut_cl, rs232read, trace=trace)
+        rs232read = rs232rx(dut_cl.clk, dut_cl.reset, rs232avail, rs232out, dut_cl.tx, baudRate=dut_cl.baudrate)
+        sim = genSim(verify, dut_cl, data, rs232read, stop, trace=trace)
         bus = interesting[0]
         sim.run()
 

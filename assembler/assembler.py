@@ -67,4 +67,4 @@ def target(*args):
     return entry_point, None
 
 if __name__ == '__main__':
-    entry_point(sys.argv)
+    sys.exit(entry_point(sys.argv))

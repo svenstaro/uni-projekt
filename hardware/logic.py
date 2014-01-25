@@ -1,7 +1,7 @@
 from myhdl import *
 
 __all__ = ['identity', 'negation',
-           'false', 'nor', 'xB', 'nA', 'xA', 'nB', 'xor', 'nand', 'andd', 'xnor', 'A', 'impl', 'B', 'xnB', 'orr', 'true']
+           'false', 'nor', 'xB', 'nA', 'xA', 'nB', 'xor', 'nand', 'andd', 'xnor', 'aA', 'impl', 'aB', 'xnB', 'orr', 'true']
 
 #unary funtction
 def identity(A, R):
@@ -103,7 +103,7 @@ def xnor(A, B, R):
 
     return logic
 
-def A(A, B, R):
+def aA(A, B, R):
 
     @always_comb
     def logic():
@@ -119,7 +119,7 @@ def impl(A, B, R):
 
     return logic
 
-def B(A, B, R):
+def aB(A, B, R):
 
     @always_comb
     def logic():

@@ -54,7 +54,7 @@ class DutClass():
         self.kwargs = {}
 
 
-def genSim(verifyMethod, dut_cl, data, *argss, **kwargs):
+def genSim(verifyMethod, dut_cl, data, *args, **kwargs):
     """ Generates a Simulation Object """
 
     dut = traceSignals(processor, *dut_cl.args, **dut_cl.kwargs) if kwargs.get('trace', False) else processor(*dut_cl.args, **dut_cl.kwargs)
@@ -77,7 +77,7 @@ def genSim(verifyMethod, dut_cl, data, *argss, **kwargs):
     ram = pseudoram(dut_cl.clk, dut_cl.ramwren, dut_cl.ramrden, dut_cl.memoryaddr, dut_cl.memoryout, dut_cl.memoryin)
     ff = fifo(dut_cl.clk, dut_cl.fData, dut_cl.fre, dut_cl.fwe, dut_cl.fempty, dut_cl.ffull, dut_cl.fQ)
 
-    return Simulation(dut, clkGen, stimulus, rom, ram, ff, *argss)
+    return Simulation(dut, clkGen, stimulus, rom, ram, ff, *args)
 
 
 if __name__ == "__main__":
@@ -113,14 +113,12 @@ if __name__ == "__main__":
                 raise StopSimulation("HALT DETECTED (%s)" % now())
 
         interesting=[]
-        dut_cl.args.append(interesting)
+        dut_cl.kwargs['interesting'] = interesting
         rs232avail = Signal(True)
         rs232read = Signal(False)
         rs232out = Signal(intbv(0)[8:])
-        rs232read = rs232rx(dut_cl.clk, dut_cl.reset, rs232avail, rs232out, dut_cl.tx, baudRate=dut_cl.baudrate)
+        rs232read = rs232rx(dut_cl.clk, dut_cl.reset, rs232avail, rs232out, dut_cl.tx, baudRate=args.baudrate)
         sim = genSim(verify, dut_cl, data, rs232read, stop, trace=trace)
-        dut_cl.kwargs['interesting'] = interesting
-        sim = genSim(verify, dut_cl, data, stop, rsrecv, rstrans, trace=trace)
         bus = interesting[0]
         sim.run()
 

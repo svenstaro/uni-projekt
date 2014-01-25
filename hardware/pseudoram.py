@@ -1,7 +1,7 @@
 from myhdl import *
 from math import log
 
-def pseudoram(clk, we, oe, cs, addr, din, dout, depth=128):
+def pseudoram(clk, we, oe, addr, din, dout, depth=128):
     """This is a pseudoram with a specific delay
     """
 
@@ -11,7 +11,7 @@ def pseudoram(clk, we, oe, cs, addr, din, dout, depth=128):
 
     @always(clk.posedge)
     def write():
-        if cs and we:
+        if we:
             assert int(addr) < len(mem)
 
             if __debug__:
@@ -27,7 +27,7 @@ def pseudoram(clk, we, oe, cs, addr, din, dout, depth=128):
     def read():
         o.next = None
 
-        if cs and oe:
+        if oe:
             assert int(addr) < len(mem)
 
             if __debug__:

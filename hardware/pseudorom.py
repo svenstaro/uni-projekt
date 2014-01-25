@@ -3,7 +3,7 @@ from math import log
 from assembler import getTextOfCommand
 
 
-def pseudorom(clk, oe, cs, addr, dout, mem):
+def pseudorom(oe, addr, dout, mem):
     """This is a pseudorom with delay
     """
 
@@ -13,7 +13,7 @@ def pseudorom(clk, oe, cs, addr, dout, mem):
     def read():
         o.next = None
 
-        if cs and oe:
+        if oe:
             assert int(addr) <= len(mem) - 4
 
             if __debug__:

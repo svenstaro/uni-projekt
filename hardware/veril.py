@@ -16,7 +16,7 @@ class DutClass():
     def __init__(self):
         self.clk = Signal(bool(0))
         self.reset = ResetSignal(1, 0, True)
-        self.buttons, self.leds = [Signal(intbv(0)[4:]) for _ in range(2)]
+        self.buttons, self.leds = [Signal(intbv(-1)[4:]) for _ in range(2)]
         self.rx, self.tx = [Signal(bool(1)) for _ in range(2)]
 
         self.memoryaddr = Signal(intbv(0)[16:])

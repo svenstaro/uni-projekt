@@ -6,6 +6,7 @@ def processor(clk, reset,
               rx, tx,
               memoryaddr, memoryin, memoryout,
               romrden, ramrden, ramwren,
+              fifodata, fifore, fifowe, fifoempty, fifofull, fifoq,
               baudrate=57600, enCache=True, interesting=None):
     """
     clk        (Ibool)  -- The clock
@@ -20,6 +21,12 @@ def processor(clk, reset,
     romrden    (Obool)  -- rom-readenable
     ramrden    (Obool)  -- ram-readenable
     ramwren    (Obool)  -- ram-writeenable
+    fifodata   (O8)     -- fifo data in
+    fifore     (Obool)  -- enable reading from fifo
+    fifowe     (Obool)  -- enable writing to fifo
+    fifoempty  (Ibool)  -- indicates, that fifo is empty
+    fifofull   (Ibool)  -- indicates, that the fifo is full
+    fifoq      (I8)     -- fifo data out
 
     baudrate           -- the baudrate for the rs232
     enCache            -- enable cache or not
@@ -50,19 +57,23 @@ def processor(clk, reset,
 
     ### cpu
     readybit, rstreadybit = [Signal(bool(1)) for _ in range(2)]  # they must be true!
-    rsrreadybit = Signal(bool(0))  # false by default
     addrymux1, addrymux0, pmux = [Signal(bool(0)) for _ in range(3)]
     bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC, bufClk, bufBut, bufRsr = [Signal(bool(0)) for _ in range(9)]
     enAlu, enIr, enPc, enReg, enJump, enCall, enSup, enLed, enRst = [Signal(bool(0)) for _ in range(9)]
     enMmu, mmuBuf = [Signal(bool(0)) for _ in range(2)]
 
     def createCPU():
-        Cpu = cpu(clk, reset, irPrefix, readybit, rsrreadybit, rstreadybit,
+        ffavail = Signal(bool(0))
+
+        ffneg = negation(fifoempty, ffavail)
+        ffread = aA(bufRsr, False, fifore)
+        Cpu = cpu(clk, reset, irPrefix, readybit, ffavail, rstreadybit,
                   addrymux1, addrymux0, pmux,
                   bufAddr, bufOp2, bufAddr14, bufRy, bufAlu, bufPC, bufClk, bufBut, bufRsr,
                   enAlu, enIr, enPc, enReg, enJump, enCall, enSup, enLed, enRst,
                   enMmu, mmuBuf)
-        return Cpu
+
+        return ffneg, ffread, Cpu
 
 
     ### statusflags
@@ -76,6 +87,7 @@ def processor(clk, reset,
         N = registerr(clk, reset, sUp, nIn, nOut, bitwidth=1)
         C = registerr(clk, reset, sUp, cIn, cOut, bitwidth=1)
         V = registerr(clk, reset, sUp, vIn, vOut, bitwidth=1)
+
         return supAnd, Z, N, C, V
 
 
@@ -90,6 +102,7 @@ def processor(clk, reset,
         zMux = mux41(addrymux1, addrymux0, irDest, 15, 14, irSource2, zMuxOut)
         rb = registerbank(clk, reset, enReg, irSource, yMuxOut, zMuxOut, rgX, rgY, bbus)
         ryTristate = tristate(rgY, bufRy, bbus)
+
         return yMux, zMux, rb, ryTristate
 
 
@@ -102,6 +115,7 @@ def processor(clk, reset,
         Bmux = mux21(irOp2, rgY, irImm16, BmuxOut)
         Alu = alu(irAluop, enAlu, rgX, BmuxOut, cOut, aluRes, zIn, nIn, cIn, vIn)
         aluTristate = tristate(aluRes, bufAlu, bbus)
+
         return Bmux, Alu, aluTristate
 
 
@@ -110,6 +124,7 @@ def processor(clk, reset,
 
     def createJumpUnit():
         ju = jumpunit(irJumpOp, zOut, nOut, cOut, vOut, jumpResult)
+
         return ju
 
 
@@ -172,12 +187,10 @@ def processor(clk, reset,
     ### rs232
 
     def createRs232():
-        rs232out = Signal(intbv(0)[8:])
-
-        readerTristate = tristate(rs232out, bufRsr, bbus)
+        readerTristate = tristate(fifoq, bufRsr, bbus)
 
         writer = rs232tx(clk, reset, rstreadybit, enRst, bbus, tx, baudRate=baudrate)
-        reader = rs232rx(clk, reset, rsrreadybit, rs232out, rx, baudRate=baudrate)
+        reader = rs232rx(clk, reset, fifowe, fifodata, rx, baudRate=baudrate)
 
         return readerTristate, reader, writer
 

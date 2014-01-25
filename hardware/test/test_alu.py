@@ -141,8 +141,8 @@ class TestAluArithmetic(TestCase):
                     cl.A.next = intbv(tup[0])[32:]
                     cl.B.next = intbv(tup[1])[32:]
                     yield delay(1)
-                    self.assertEquals(tup[2], cl.R.signed(), msg = "%s != %s (%s⊕%s opc:%s) " % (tup[2],cl.R,cl.A,cl.B,bin(opc,4)))
-                    #self.assertEquals(tup[2], cl.R)
+                    #self.assertEquals(tup[2], cl.R.signed(), msg = "%s != %s (%s⊕%s opc:%s) " % (tup[2],cl.R,cl.A,cl.B,bin(opc,4)))
+                    self.assertEquals(tup[2], cl.R.signed())
 
         genSim(verify).run()
 

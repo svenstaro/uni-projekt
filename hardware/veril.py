@@ -8,6 +8,8 @@ from argparse import ArgumentParser
 from processor import processor
 from rs232 import rs232rx
 from pseudorom import pseudorom
+from pseudoram import pseudoram
+
 
 class DutClass():
     """Wrapper around DUT"""
@@ -17,16 +19,18 @@ class DutClass():
         self.buttons, self.leds = [Signal(intbv(0)[4:]) for _ in range(2)]
         self.rx, self.tx = [Signal(bool(1)) for _ in range(2)]
 
-        self.memoryaddr = Signal(intbv(0)[8:])
-        self.memorydata = TristateSignal(intbv(0)[32:])
+        self.memoryaddr = Signal(intbv(0)[16:])
+        self.memoryin = TristateSignal(intbv(0)[32:])
+        self.memoryout = Signal(intbv(0)[32:])
         self.ramrden, self.ramwren, self.romrden = [Signal(bool(0)) for _ in range(3)]
 
         self.baudrate = 57600
         self.args = [self.clk, self.reset,
                      self.buttons, self.leds,
                      self.rx, self.tx,
-                     self.memoryaddr, self.memorydata,
+                     self.memoryaddr, self.memoryin, self.memoryout,
                      self.romrden, self.ramrden, self.ramwren]
+
 
 def genSim(verifyMethod, dut_cl, data, *argss, **kwargs):
     """ Generates a Simulation Object """
@@ -47,9 +51,10 @@ def genSim(verifyMethod, dut_cl, data, *argss, **kwargs):
         yield verifyMethod(dut_cl, dut)
         raise StopSimulation
 
-    rom = pseudorom(dut_cl.clk, dut_cl.romrden, dut_cl.romrden, dut_cl.memoryaddr, dut_cl.memorydata, mem=data)
+    rom = pseudorom(dut_cl.romrden, dut_cl.memoryaddr, dut_cl.memoryin, mem=data)
+    ram = pseudoram(dut_cl.clk, dut_cl.ramwren, dut_cl.ramrden, dut_cl.memoryaddr, dut_cl.memoryout, dut_cl.memoryin)
 
-    return Simulation(dut, clkGen, stimulus, rom, *argss)
+    return Simulation(dut, clkGen, stimulus, rom, ram, *argss)
 
 
 

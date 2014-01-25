@@ -4,7 +4,7 @@ from allimport import *
 def processor(clk, reset,
               buttons, leds,
               rx, tx,
-              memoryaddr, memorydata,
+              memoryaddr, memoryin, memoryout,
               romrden, ramrden, ramwren,
               baudrate=57600, enCache=True, interesting=None):
     """
@@ -15,7 +15,8 @@ def processor(clk, reset,
     rx         (Ibool)  -- input from rs232
     tx         (Obool)  -- output from rs232
     memoryaddr (O16)    -- memory addr
-    memorydata (IO32)   -- memory data
+    memoryin   (I32)    -- memory read
+    memoryout  (O32)    -- memory write
     romrden    (Obool)  -- rom-readenable
     ramrden    (Obool)  -- ram-readenable
     ramwren    (Obool)  -- ram-writeenable
@@ -193,8 +194,6 @@ def processor(clk, reset,
     ### MMU
 
     def createMmu():
-        membus = TristateSignal(intbv(0)[32:])
-        memaddr = Signal(intbv(0)[31:])
         enO, enW, csA, csO= [Signal(bool(0)) for _ in range(4)]
 
         # romaddr, romclk, romrden, romout,
@@ -203,7 +202,7 @@ def processor(clk, reset,
         enableramout = andd(enO, csA, ramrden)
         enableramwri = andd(enW, csA, ramwren)
 
-        Mmu = mmu(clk, reset, enMmu, bbus, mmuOut, readybit, memoryaddr, memorydata, enO, enW, csA, csO, False)
+        Mmu = mmu(clk, reset, enMmu, bbus, mmuOut, readybit, memoryaddr, memoryin, memoryout, enO, enW, csA, csO, False)
         mmuTristate = tristate(mmuOut, mmuBuf, bbus)
 
         return enableromout, enableramout, enableramwri, Mmu, mmuTristate

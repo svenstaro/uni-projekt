@@ -3,7 +3,7 @@ from myhdl import *
 
 def mmu(clk, reset,
         en, din, dout, ready,
-        addr, io, enO, enW, csRam, csRom, hit):
+        addr, ioIn, ioOut, enO, enW, csRam, csRom, hit):
     """This unit can be used to abstract the actual memory access. Also we can implement some caching here
 
         clk   (Ibool) -- The clock
@@ -14,8 +14,9 @@ def mmu(clk, reset,
         dout  (O32)   -- output
         ready (Obool) -- Indicates, that the calculation is performed.
         --- memory side
-        addr  (O31)   -- The desired address
-        io    (IO32)  -- In-/Output (tristate)
+        addr  (O16)   -- The desired address
+        ioIn  (I32)   -- Input
+        ioOut (O32)   -- Output
         enO   (Obool) -- Enable output
         enW   (Obool) -- Enable write
         csRam (Obool) -- chip select for ram
@@ -38,15 +39,15 @@ def mmu(clk, reset,
     with_data = Signal(bool(0))
     in_data = Signal(intbv(0)[32:])
 
-    iodriverw = io.driver()
-    iodriverr = io.driver()
-
     @always_seq(clk.posedge, reset=reset)
     def write():
+        if ready:
+            dout.next = in_data
+
         if en:
             if state == tState.LISTEN:
                 ready.next = False
-                addr.next = din[31:]
+                addr.next = din[16:]
                 csRam.next = din[31]
                 csRom.next = not din[31]
                 state.next = tState.CALC
@@ -67,15 +68,15 @@ def mmu(clk, reset,
                 #reading from memory
                 enO.next = True
                 if waitingtimer == 4 and hit:  # cache hit?
-                        in_data.next = io
+                        in_data.next = ioIn
                         state.next = tState.FINISH
                 elif waitingtimer == 1:  # 10 is the number of cycles to wait for the result from memory
-                    in_data.next = io
+                    in_data.next = ioIn
                     state.next = tState.FINISH
             else:
                 #writing to memory
                 enW.next = True
-                iodriverw.next = in_data
+                ioOut.next = in_data
 
                 if waitingtimer == 1:  # 15 is the number of cycles to wait for the result to be written in memory
                     state.next = tState.FINISH
@@ -85,17 +86,6 @@ def mmu(clk, reset,
             enO.next = False
             enW.next = False
             ready.next = True
-            iodriverw.next = None
             state.next = tState.LISTEN
 
-    @always_comb
-    def read():
-        iodriverr.next = None
-        dout.next = 0  # default value
-        if ready:
-            dout.next = in_data
-            if not hit:  # tell the cache the right data, so it can store it
-                #iodriverr.next = in_data
-                pass
-
-    return write, read
+    return write

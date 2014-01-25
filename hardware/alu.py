@@ -31,7 +31,7 @@ def alu(opc, en, A, B, Cin, Res, Z, N, C, V, bitwidth=32):
         elif opc == 0b0111: #RSC
             return second + c - first
         elif opc == 0b0010: #MUL
-            return first.signed() * second.signed()
+            return first * second
         elif opc == 0b0011: #ADN
             return first & ~second
         elif opc == 0b1000: #AND

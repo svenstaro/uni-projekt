@@ -8,10 +8,7 @@ def tristate(input, enable, res):
 
     @always_comb
     def logic():
-        if enable:
-            o.next = input
-        else:
-            o.next = None
+        o.next = input if enable else None
 
     return logic
 

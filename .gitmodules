@@ -1,0 +1,3 @@
+[submodule "debugger/qhexedit"]
+	path = debugger/qhexedit
+	url = git://cookiesoft.de:qhexedit.git

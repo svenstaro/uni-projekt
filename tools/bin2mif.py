@@ -9,7 +9,7 @@ from argparse import ArgumentParser
 depth = 256
 width = 32
 addr_radix = 'DEC'
-data_radix = 'BIN'
+data_radix = 'HEX'
 
 def convert(data, fout):
     print >>fout, 'DEPTH = %d;' % depth
@@ -19,7 +19,7 @@ def convert(data, fout):
     print >>fout, 'CONTENT'
     print >>fout, 'BEGIN'
     for i in range(0, len(data)):
-        print >>fout, '%-3d : %s;' % (i, bin(data[i], width=32))
+        print >>fout, '%-3d : %s;' % (i*4, hex(data[i])[2:].zfill(8))
     print >>fout, 'END;'
     return 0
 

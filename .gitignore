@@ -45,8 +45,10 @@ nosetests.xml
 # idea shit
 .idea/
 
-# vim swap
+# backup files
 *.sw?
+*.bak
+*.*~
 
 # latex shit
 *.aux
@@ -60,9 +62,14 @@ nosetests.xml
 # lock files
 .~lock.*.*#
 
-# vhdl files
-*.vhd
-!vhdl/*.vhd
+# verilog + quartus files
+*.v
+!verilog/*.v
+verilog/db
+verilog/incremental_db
+verilog/greybox_tmp
+verilog/output_files
+verilog/simulation
 
 # hades Files
 *.hds_*

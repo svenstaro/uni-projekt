@@ -1,0 +1,2 @@
+{ "" "" "" "Verilog HDL or VHDL warning at processor.v(572): conditional expression evaluates to a constant" {  } {  } 0 10037 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Verilog HDL warning at processor.v(952): ignoring unsupported system task" {  } {  } 0 10175 "" 0 0 "Quartus II" 0 -1 0 ""}

@@ -41,7 +41,7 @@ class Cpu(object):
                            reds='auto',
                            get_printable_location=get_location)
 
-    mem = []  #: Memory cells
+    ram = []  #: Memory cells
     rom = []  #: ROM cells
     register = []  #: Registers
     flags = []  #: Flag list
@@ -62,7 +62,7 @@ class Cpu(object):
         """
         Resets the cpu to initial state
         """
-        self.mem = [0] * self.memorysize
+        self.ram = [0] * self.memorysize
         self.register = [0]*16
         self.flags = [False]*4
         self.pc = 0
@@ -73,10 +73,10 @@ class Cpu(object):
         Sets the rom contents
         contents -- String or list of ints
         """
-        if isinstance(contents, type("")):
+        if isinstance(contents, str):
             contents = [ord(char) for char in contents]
 
-        self.rom = contents + [0] * 4
+        self.rom = contents
 
     def run(self):
         """
@@ -246,7 +246,7 @@ class Cpu(object):
                 return self.fetchFromRom(self.rom, address)
             else:
                 address &= ~self.__high
-                return self.__int8to32(self.mem[address:address + 4])
+                return self.__int8to32(self.ram[address:address + 4])
         except IndexError:
             raise InvalidAddressError(address)
 
@@ -257,7 +257,7 @@ class Cpu(object):
 
         address &= ~self.__high
         try:
-            self.mem[address:address+4] = self.__int32to8(value)
+            self.ram[address:address+4] = self.__int32to8(value)
         except IndexError:
             raise InvalidAddressError(address)
 

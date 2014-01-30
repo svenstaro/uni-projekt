@@ -78,7 +78,7 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
             print state
 
         ##### UNKNOWN
-        if   state == tState.UNKNOWN: # TODO mir gefällt die Lösung mit dem unknown state nicht, mal gucken, ob ich das besser hinbekomme
+        if state == tState.UNKNOWN:
             if   addr[7:5] == 0b00:
                 state.next  = tState.ALUOP
             elif addr[7:5] == 0b01:
@@ -106,11 +106,11 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
             elif addr[7:0] == 0b1111111:
                 state.next  = tState.RST
             else:
-                state.next  = tState.ILLEGAL # TODO add more
+                state.next  = tState.ILLEGAL
 
         ##### FETCHING
         elif state == tState.FETCH:
-            if not readybit and substate == 0: #check if we can begin
+            if not readybit and substate == 0:  #check if we can begin
                 pass
             else:
                 if substate == 0:
@@ -118,7 +118,7 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
                     pcBuf.next = True
                     substate.next = substate + 1
                 elif substate == 1:
-                    substate.next = substate + 1 # specification says, wait at least 1 cycle!
+                    substate.next = substate + 1  # specification says, wait at least 1 cycle!
                 elif not readybit:
                     pass
                 elif readybit:
@@ -148,7 +148,7 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
 
         ##### LOADING
         elif state == tState.LOAD:
-            if not readybit and substate == 0: # check if we can begin
+            if not readybit and substate == 0:  # check if we can begin
                 pass
             else:
                 if substate == 0:
@@ -156,7 +156,7 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
                     addrBuf.next = True
                     substate.next = substate + 1
                 elif substate == 1:
-                    substate.next = substate + 1 # specification says, wait at least 1 cycle!
+                    substate.next = substate + 1  # specification says, wait at least 1 cycle!
                 elif not readybit:
                     pass
                 elif readybit:
@@ -167,7 +167,7 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
 
         ##### STORING DATA INTO RAM
         elif state == tState.STORE:
-            if not readybit and substate == 0: # check if we can begin
+            if not readybit and substate == 0:  # check if we can begin
                 pass
             else:
                 if substate == 0:
@@ -177,7 +177,7 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
                     enMMU.next = True
                 elif substate == 1:
                     substate.next = 1
-                    op2Buf.next = True # the actual value to bus
+                    op2Buf.next = True  # the actual value to bus
                     enMMU.next = True
                     substate.next = 0
                     state.next = tState.FETCH
@@ -191,17 +191,17 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
 
         ##### PUSH
         elif state == tState.PUSH:
-            if not readybit and substate == 0: # check if we can begin
+            if not readybit and substate == 0:  # check if we can begin
                 pass
             else:
                 if substate == 0:
-                    addrymux1.next = True # decrement $14 by four
-                    pmux.next = False # yep, false!
+                    addrymux1.next = True  # decrement $14 by four
+                    pmux.next = False  # yep, false!
                     enReg.next = True
                     addr14Buf.next = True
                     substate.next = 1
                 elif substate == 1:
-                    addrymux1.next = True # put $14 to memaddr
+                    addrymux1.next = True  # put $14 to memaddr
                     ryBuf.next = True
                     enMMU.next = True
                     substate.next = 2
@@ -213,15 +213,15 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
 
         ##### POP
         elif state == tState.POP:
-            if not readybit and substate == 0: # check if we can begin
+            if not readybit and substate == 0:  # check if we can begin
                 pass
             else:
                 if substate == 0:
-                    addrymux1.next = True # put $14 to memaddr
+                    addrymux1.next = True  # put $14 to memaddr
                     ryBuf.next = True
                     enMMU.next = True
                     substate.next = 1
-                elif substate == 1: # while we wait, we increment $14 by 4
+                elif substate == 1:  # while we wait, we increment $14 by 4
                     addrymux1.next = True
                     pmux.next = True
                     enReg.next = True
@@ -293,7 +293,7 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
 
         ##### HALT
         elif state == tState.HALT:
-            pass
+            state.next = tState.HALT
 
         ##### ILLEGAL
         else:

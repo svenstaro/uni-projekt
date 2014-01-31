@@ -9,6 +9,8 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{tocloft}
+\usepackage{stuff/titlepage}
+\usepackage{geometry}
 
 
 \hypersetup{
@@ -16,9 +18,11 @@
     linktoc=all,
 }
 
+
 \begin{document}
-\begin{titlepage} %TODO margin entfernen
+\begin{fullsizetitle} %TODO margin entfernen
 \centering
+\begin{minipage}{0.75\textwidth}
 \begin{center}
 \includegraphics[width=\textwidth]{images/uhh.png}\\
 {\LARGE Universität Hamburg}\\[.25em]
@@ -51,13 +55,14 @@ Betreuer:\\[1em]
 Dr. Andreas Mäder\\%
 Bernd Schütz%
 \end{flushright}
-\end{minipage}
+\end{minipage} \\[20em]
 
-\vfill
+\vspace*{\fill}
 
 {\large Vorgelegt am: \today}
 \end{center}
-\end{titlepage}
+\end{minipage}
+\end{fullsizetitle}
 \newpage
 
 \cleardoublepage

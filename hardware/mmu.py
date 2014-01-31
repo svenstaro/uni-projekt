@@ -24,11 +24,12 @@ def mmu(clk, reset,
         hit   (Ibool) -- Is there a cache hit?!
 
         To 'communicate' with the unit you have to do the following steps:
-          1. enable the mmu with the addr as input
-          2. [enable the mmu with value to put in the specific addr (for writing)] [optional]
-          3. disable the mmu
-          4. wait for the ready bit
-          5. get the result
+          1. enable the mmu with the addr as input - clk
+          2. [enable the mmu with value to put in the specific addr (for writing)] [optional] - clk
+          3. disable the mmu - clk
+          4. wait at least one clk
+          5. wait for the ready bit
+          6. get the result
 
         You have to wait at least 1 cycle for initializing all the things before you can wait for the ready signal!
     """

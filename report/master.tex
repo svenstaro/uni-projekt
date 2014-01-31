@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper,twoside,openright,headinclude,bibtotoc,bigheadings,final]{scrreprt}
+\documentclass[11pt,paper=a4wide,pagesize=auto,twoside,DIV=15]{scrreprt}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -11,6 +11,7 @@
 \usepackage{tocloft}
 \usepackage{stuff/titlepage}
 \usepackage{geometry}
+\usepackage{minted}
 
 
 \hypersetup{
@@ -18,13 +19,17 @@
     linktoc=all,
 }
 
+\recalctypearea % needed!
+\newminted{python}{frame=lines,linenos,xleftmargin=5em,xrightmargin=5em}
 
 \begin{document}
-\begin{fullsizetitle} %TODO margin entfernen
+\begin{fullsizetitle}
 \centering
 \begin{minipage}{0.75\textwidth}
+\vspace*{5em}
 \begin{center}
 \includegraphics[width=\textwidth]{images/uhh.png}\\
+\vspace*{4em}
 {\LARGE Universität Hamburg}\\[.25em]
 {\Large Fakultät für Mathematik, Informatik und Naturwissenschaften}\\[3em]
 {\Huge Abschlussbericht}\\[3em]
@@ -44,7 +49,7 @@ Verfasser:\\[1em]%
 Marcel Hellwig\\%
 Felix Orthmann\\%
 David Weber\\%
-Felix Wiedmann\\%
+Felix Wiedemann\\%
 Nasif Yueksel%
 \end{flushleft}
 \end{minipage}
@@ -55,28 +60,29 @@ Betreuer:\\[1em]
 Dr. Andreas Mäder\\%
 Bernd Schütz%
 \end{flushright}
-\end{minipage} \\[20em]
-
-\vspace*{\fill}
+\end{minipage} \\[12em]
 
 {\large Vorgelegt am: \today}
 \end{center}
 \end{minipage}
 \end{fullsizetitle}
-\newpage
 
 \cleardoublepage
 \tableofcontents
 
+\cleardoublepage
 \chapter{Einleitung}
 \input{instruction}
 
+\cleardoublepage
 \chapter{Allgemein}
 \input{general}
 
+\cleardoublepage
 \chapter{Hardware}
 \input{hardware}
 
+\cleardoublepage
 \chapter{Software}
 \input{software}
 

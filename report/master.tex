@@ -1,0 +1,85 @@
+\documentclass[11pt,a4paper,twoside,openright,headinclude,bibtotoc,bigheadings,final]{scrreprt}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{tocloft}
+
+
+\hypersetup{
+    colorlinks=true,
+    linktoc=all,
+}
+
+\begin{document}
+\begin{titlepage} %TODO margin entfernen
+\centering
+\begin{center}
+\includegraphics[width=\textwidth]{images/uhh.png}\\
+{\LARGE Universität Hamburg}\\[.25em]
+{\Large Fakultät für Mathematik, Informatik und Naturwissenschaften}\\[3em]
+{\Huge Abschlussbericht}\\[3em]
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\HRule\\[.4em]
+{\Large%
+64-189 Projekt\\%
+Entwurf, Realisierung und Programmierung eines Mikrorechners\\%
+Wintersemester 13/14\\%
+}
+\HRule\\[3em]
+
+\begin{minipage}[t]{0.4\textwidth}
+\begin{flushleft} \large
+Verfasser:\\[1em]%
+Marcel Hellwig\\%
+Felix Orthmann\\%
+David Weber\\%
+Felix Wiedmann\\%
+Nasif Yueksel%
+\end{flushleft}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.4\textwidth}
+\begin{flushright} \large
+Betreuer:\\[1em]
+Dr. Andreas Mäder\\%
+Bernd Schütz%
+\end{flushright}
+\end{minipage}
+
+\vfill
+
+{\large Vorgelegt am: \today}
+\end{center}
+\end{titlepage}
+\newpage
+
+\cleardoublepage
+\tableofcontents
+
+\chapter{Einleitung}
+\input{instruction}
+
+\chapter{Allgemein}
+\input{general}
+
+\chapter{Hardware}
+\input{hardware}
+
+\chapter{Software}
+\input{software}
+
+
+\cleardoublepage
+\listoffigures 
+
+\cleardoublepage
+\listoftables
+
+\end{document}

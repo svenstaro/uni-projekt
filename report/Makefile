@@ -10,4 +10,4 @@ show: master.pdf
 	xdg-open $<
 
 clean:
-	rm -f *.{out,aux,log,eps} *-eps-converted-to.pdf master.pdf
+	rm -f *.{out,aux,log,eps,lof,lot,toc} *-eps-converted-to.pdf master.pdf

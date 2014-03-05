@@ -1,0 +1,65 @@
+\section{Sprache}
+Zur Beschreibung wurde, entgegen der in dem Projekt genannten Sprache, MyHDL\footnote{\url{http://myhdl.org}} genutzt. Es wurde uns von einem Kommilitonen nahegelegt \textit{nicht} VHDL zu nutzen, da dies einen Großteil der Zeit in Anspruch nimmt die Sprache zu lernen. Diese Zeit würde später fehlen, wenn man den Mikrocontroller implementieren möchte
+MyHDL ist ein Python-Modul, welches dazu genutzt wird Python als Hardwarebeschreibungssprache zu nutzen. Außerdem können damit auch Tests geschrieben werden, die zur Verifikation der Devices dient.
+Ein Beispiel ist zu finden unter \autoref{JumpUnit}
+
+\begin{center}
+\begin{figure}[ht]
+\small
+\begin{pythoncode}
+from myhdl import *
+
+def jumpunit(code, Z, N, C, V, R):
+    """This jumpunit determines if the condition for jumping is met
+
+    code (I5) -- The inputcode
+    Z    (I1) -- Zero flag
+    N    (I1) -- Negative flag
+    C    (I1) -- Carry flag
+    V    (I1) -- Overflow flag
+    R    (O1) -- The result
+    """
+
+    @always_comb
+    def logic():
+        result = False
+        if code[4]:
+            result = result or bool(Z)
+        if code[3]:
+            result = result or bool(N)
+        if code[2]:
+            result = result or bool(C)
+        if code[1]:
+            result = result or bool(V)
+        if code[0]:
+            result = not result
+
+        R.next = result
+
+    return logic
+\end{pythoncode}
+\caption{\label{JumpUnit}JumpUnit}
+\end{figure}
+\end{center}
+
+In Zeile drei werden sämtliche Ports der Kompontente deklariert. Dabei werden -- im Gegensatz zu VHDL -- keine Spezifikationen wie input/output oder Bitlänge definiert. Diese werden laut Konvention nur in dem Kommentar der ``Funktion'' definiert.\\
+Der Dekorator\footnote{\url{https://wiki.python.org/moin/PythonDecorators}} in Zeile 14 wird benutzt um zu spezifizieren, wann die dekorierte Funktion ausgeführt werden soll. In diesem Falle wird gesagt, dass bei jeder Veränderung der Input-ports der Wert neu berechnet werden soll.\\
+Die eigentliche Logik der Komponente befindet sich in den Zeilen 16 bis 28. hier sieht man sowohl die Vorteile, als auch die Nachteile von Python als Hardwarebeschreibungssprache. Nachteile sind, dass man die genaue Spezifikation eines Ports nicht direkt angeben kann, z.B. deren Bitweite oder Typ. Dies wird durch statische Analyse des Quellcodes von MyHDL entschieden.\\
+Vorteile hingegen sind der große Umfang der Python-Bibliotheken, die man sehr gut zum Testen der Komponenten nutzen kann, z.B. reguläre Ausdrücke, Listen oder Hashmaps.
+
+\section{Design}
+Das Design der Mikroncontrollers ist sehr stark am D-Core\footnote{\url{http://tams-www.informatik.uni-hamburg.de/applets/hades/webdemos/60-dcore/t3/processor.html}} orientiert, mit einem zentralen Bus, einem Steuerwerk, einer Abstraktion für den Speicher, sowie Elementen, die mit Hilfe des Busses miteinander kommunizieren.
+
+\subsection{Steuerwerk}
+Unser Steuerwerk (Cpu) ist eine State-Machine (\ref{CPU}), die anhand eines Prefix in den nächsten Status gelangt. In den Status selbst ist das Verhalten festgelegt
+
+\begin{figure}[ht]
+\begin{tikzpicture}[semithick]
+    \tikzstyle{every state}=[fill=white,draw=none,text=black]
+    \node[initial,state]    (F)                        {$Fetch$};
+    \node[state]            (D)    [below of=F]        {$Decode$};
+    
+    \path[->] (F)     edge    node {}    (D);
+\end{tikzpicture}
+\caption{\label{CPU}Cpu}
+\end{figure}

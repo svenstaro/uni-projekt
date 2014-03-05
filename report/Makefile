@@ -1,6 +1,6 @@
 all: master.pdf
 
-%.pdf: %.tex
+%.pdf: %.tex $(wildcard *.tex)
 	pdflatex -shell-escape $<
 	@grep 'Rerun to' $(<:.tex=.log) && pdflatex -shell-escape $< || :
 	@grep 'Rerun to' $(<:.tex=.log) && pdflatex -shell-escape $< || :

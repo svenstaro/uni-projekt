@@ -175,8 +175,8 @@ def cpu(clk, reset, addr, readybit, rsrready, rstready,
                     addrymux1.next = True
                     ryBuf.next = True
                     enMMU.next = True
-                elif substate == 1:
                     substate.next = 1
+                elif substate == 1:
                     op2Buf.next = True  # the actual value to bus
                     enMMU.next = True
                     substate.next = 0

@@ -2,39 +2,42 @@
 #  
 [name] IRdecoder
 [components]
-hades.models.rtlib.io.OpinVector aluop 10200 -6150 @N 1001 4 1.0E-9 2
-hades.models.rtlib.io.IpinVector IR 5700 -8550 @N 1001 32 11111001111110101101110010100010_B 1.0E-9 0
-hades.models.io.Opin sUp 24300 -2700 @N 1001 5.0E-9
-hades.models.rtlib.io.OpinVector imm24 10200 750 @N 1001 24 1.0E-9 0
-hades.models.rtlib.io.OpinVector source2 30600 -6000 @N 1001 4 1.0E-9 2
-hades.models.rtlib.io.OpinVector dest 17100 -6000 @N 1001 4 1.0E-9 2
-hades.models.io.Opin op2 17700 -2850 @N 1001 5.0E-9
-hades.models.io.Opin op1 9900 -2700 @N 1001 5.0E-9
-hades.models.rtlib.io.SelectBit i9 23400 -4200 @N 1001 32 29 1.0E-8
-hades.models.rtlib.io.SelectBit i8 16800 -4200 @N 1001 32 16 1.0E-8
-hades.models.rtlib.io.SelectBit i7 9450 -4200 @N 1001 32 25 1.0E-8
-hades.models.rtlib.io.Subset i6 23400 -750 @N 1001 32 30 26 11110_B 1.0E-8
-hades.models.rtlib.io.Subset i5 23400 -7350 @N 1001 32 21 18 1110_B 1.0E-8
-hades.models.rtlib.io.Subset i4 9600 -600 @N 1001 32 23 0 111110101101110010100010_B 1.0E-8
-hades.models.rtlib.io.Subset i3 16650 -450 @N 1001 32 15 0 1101110010100010_B 1.0E-8
-hades.models.rtlib.io.OpinVector source 23850 -6000 @N 1001 4 1.0E-9 2
-hades.models.rtlib.io.Subset i2 16650 -7500 @N 1001 32 29 26 1110_B 1.0E-8
-hades.models.rtlib.io.Subset i1 9450 -7500 @N 1001 32 25 22 0111_B 1.0E-8
-hades.models.rtlib.io.Subset i10 30150 -7350 @N 1001 32 3 0 0010_B 1.0E-8
-hades.models.rtlib.io.OpinVector imm16 17250 750 @N 1001 16 1.0E-9 0
-hades.models.rtlib.io.OpinVector jumpOp 23700 750 @N 1001 5 1.0E-9 2
+hades.models.rtlib.io.OpinVector aluop 10200 -6600 @N 1001 4 1.0E-9 2
+hades.models.rtlib.io.IpinVectorLarge IR 22200 -9600 @N 1001 32 01000011000000000000000000101011_B 1.0E-9 1
+hades.models.io.Opin sUp 18600 5400 @N 1001 5.0E-9
+hades.models.rtlib.io.OpinVector imm24 17250 -600 @N 1001 24 1.0E-9 1
+hades.models.rtlib.io.OpinVector source2 17400 -3600 @N 1001 4 1.0E-9 2
+hades.models.rtlib.io.OpinVector dest 17400 -6600 @N 1001 4 1.0E-9 2
+hades.models.io.Opin op2 14400 5400 @N 1001 5.0E-9
+hades.models.io.Opin op1 10200 5400 @N 1001 5.0E-9
+hades.models.rtlib.io.SelectBit i9 18000 4200 @N 1001 32 29 1.0E-8
+hades.models.rtlib.io.SelectBit i8 13800 4200 @N 1001 32 16 1.0E-8
+hades.models.rtlib.io.SelectBit i7 9600 4200 @N 1001 32 24 1.0E-8
+hades.models.rtlib.io.Subset i6 9600 1200 @N 1001 32 29 25 00001_B 1.0E-8
+hades.models.rtlib.io.Subset i5 9600 -4800 @N 1001 32 20 17 0000_B 1.0E-8
+hades.models.rtlib.io.Subset i4 9600 -1800 @N 1001 32 15 0 0000000000101011_B 1.0E-8
+hades.models.rtlib.io.Subset i3 16800 -1800 @N 1001 32 23 0 000000000000000000101011_B 1.0E-8
+hades.models.rtlib.io.OpinVector source 10200 -3600 @N 1001 4 1.0E-9 2
+hades.models.rtlib.io.Subset i2 16800 -7800 @N 1001 32 28 25 0001_B 1.0E-8
+hades.models.rtlib.io.Subset i1 9600 -7800 @N 1001 32 24 21 1000_B 1.0E-8
+hades.models.rtlib.io.Subset i11 16800 1200 @N 1001 32 31 25 0100001_B 1.0E-8
+hades.models.rtlib.io.Subset i10 16800 -4800 @N 1001 32 3 0 1011_B 1.0E-8
+hades.models.rtlib.io.OpinVector prefix 17400 2400 @N 1001 7 1.0E-9 2
+hades.models.rtlib.io.OpinVector imm16 10200 -600 @N 1001 16 1.0E-9 1
+hades.models.rtlib.io.OpinVector jumpOp 10200 2400 @N 1001 5 1.0E-9 2
 [end components]
 [signals]
-hades.signals.SignalStdLogicVector n8 24 2 i4 Y imm24 A 2 2 9600 0 9600 750 2 9600 750 10200 750 0 
-hades.signals.SignalStdLogicVector n7 4 2 i10 Y source2 A 2 2 30600 -6000 30150 -6000 2 30150 -6000 30150 -6750 0 
-hades.signals.SignalStdLogicVector n6 16 2 i3 Y imm16 A 2 2 17250 750 16650 750 2 16650 750 16650 150 0 
-hades.signals.SignalStdLogic1164 n5 2 i7 Y op1 A 2 2 9900 -2700 9450 -2700 2 9450 -2700 9450 -3600 0 
-hades.signals.SignalStdLogic1164 n4 2 i9 Y sUp A 2 2 23400 -3600 23400 -2700 2 23400 -2700 24300 -2700 0 
-hades.signals.SignalStdLogicVector n3 4 2 i5 Y source A 2 2 23850 -6000 23400 -6000 2 23400 -6000 23400 -6750 0 
-hades.signals.SignalStdLogic1164 n2 2 i8 Y op2 A 2 2 16800 -3600 16800 -2850 2 16800 -2850 17700 -2850 0 
-hades.signals.SignalStdLogicVector n1 4 2 i2 Y dest A 2 2 17100 -6000 16650 -6000 2 16650 -6000 16650 -6900 0 
-hades.signals.SignalStdLogicVector n0 4 2 i1 Y aluop A 2 2 10200 -6150 9450 -6150 2 9450 -6150 9450 -6900 0 
-hades.signals.SignalStdLogicVector n11 32 11 IR Y i6 A i3 A i4 A i10 A i9 A i8 A i7 A i5 A i2 A i1 A 28 2 23400 -750 23400 -1200 2 16650 -450 16650 -1200 2 9600 -600 9600 -1200 2 30150 -7350 30150 -8550 2 23400 -4200 23400 -4650 2 16800 -4200 16800 -4650 2 9450 -4200 9450 -4650 2 23400 -7350 23400 -8550 2 16650 -7500 16650 -8550 2 9450 -7500 9450 -8550 2 7200 -8550 9450 -8550 2 9450 -8550 16650 -8550 2 16650 -8550 23400 -8550 2 5700 -8550 7200 -8550 2 7200 -8550 7200 -4650 2 7200 -4650 9450 -4650 2 9450 -4650 16800 -4650 2 31650 -4650 23400 -4650 2 16800 -4650 23400 -4650 2 7200 -4650 7200 -1200 2 31500 -1200 31650 -1200 2 31500 -1200 31650 -1200 2 7200 -1200 9600 -1200 2 31650 -8550 30150 -8550 2 23400 -8550 30150 -8550 2 9600 -1200 16650 -1200 2 31650 -1200 23400 -1200 2 16650 -1200 23400 -1200 13 7200 -4650 30150 -8550 9600 -1200 9450 -4650 23400 -4650 31650 -1200 23400 -1200 16650 -1200 23400 -8550 16650 -8550 16800 -4650 7200 -8550 9450 -8550 
-hades.signals.SignalStdLogicVector n10 5 2 i6 Y jumpOp A 2 2 23700 750 23400 750 2 23400 750 23400 -150 0 
+hades.signals.SignalStdLogicVector n9 4 2 i1 Y aluop A 2 2 9600 -7200 9600 -6600 2 9600 -6600 10200 -6600 0 
+hades.signals.SignalStdLogicVector n8 4 2 i5 Y source A 2 2 10200 -3600 9600 -3600 2 9600 -3600 9600 -4200 0 
+hades.signals.SignalStdLogicVector n7 32 12 IR Y i9 A i8 A i11 A i6 A i3 A i4 A i10 A i5 A i2 A i1 A i7 A 28 2 18000 4200 18000 3600 2 13800 4200 13800 3600 2 16800 1200 16800 600 2 9600 1200 9600 600 2 16800 -1800 16800 -2400 2 9600 -1800 9600 -2400 2 16800 -4800 16800 -5400 2 9600 -4800 9600 -5400 2 16800 -7800 16800 -8400 2 9600 -7800 9600 -8400 2 9600 4200 9600 3600 2 24600 -9600 22200 -9600 2 24600 -9600 24600 -8400 2 9600 -8400 16800 -8400 2 24600 -8400 16800 -8400 2 24600 -8400 24600 -5400 2 9600 -5400 16800 -5400 2 24600 -5400 16800 -5400 2 24600 -5400 24600 -2400 2 9600 -2400 16800 -2400 2 24600 -2400 16800 -2400 2 24600 3600 24600 600 2 24600 -2400 24600 600 2 9600 600 16800 600 2 24600 600 16800 600 2 9600 3600 13800 3600 2 24600 3600 18000 3600 2 13800 3600 18000 3600 10 24600 -2400 24600 -5400 16800 -8400 16800 -2400 24600 -8400 24600 600 16800 600 16800 -5400 13800 3600 18000 3600 
+hades.signals.SignalStdLogicVector n6 5 2 i6 Y jumpOp A 2 2 10200 2400 9600 2400 2 9600 2400 9600 1800 0 
+hades.signals.SignalStdLogic1164 n5 2 i9 Y sUp A 2 2 18600 5400 18000 5400 2 18000 5400 18000 4800 0 
+hades.signals.SignalStdLogic1164 n4 2 i8 Y op2 A 2 2 14400 5400 13800 5400 2 13800 5400 13800 4800 0 
+hades.signals.SignalStdLogic1164 n3 2 i7 Y op1 A 2 2 10200 5400 9600 5400 2 9600 5400 9600 4800 0 
+hades.signals.SignalStdLogicVector n2 24 2 i3 Y imm24 A 2 2 17400 -600 16800 -600 2 16800 -600 16800 -1200 0 
+hades.signals.SignalStdLogicVector n1 16 2 i4 Y imm16 A 2 2 10200 -600 9600 -600 2 9600 -600 9600 -1200 0 
+hades.signals.SignalStdLogicVector n0 4 2 i10 Y source2 A 2 2 16800 -4200 16800 -3600 2 16800 -3600 17400 -3600 0 
+hades.signals.SignalStdLogicVector n11 7 2 i11 Y prefix A 2 2 16800 1800 16800 2400 2 16800 2400 17400 2400 0 
+hades.signals.SignalStdLogicVector n10 4 2 i2 Y dest A 2 2 17400 -6600 16800 -6600 2 16800 -6600 16800 -7200 0 
 [end signals]
 [end]

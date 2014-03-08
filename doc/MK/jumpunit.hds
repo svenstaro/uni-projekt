@@ -2,36 +2,36 @@
 #  
 [name] jumpunit
 [components]
-hades.models.gates.And2 i8 5850 -11850 @N 1001 1.0E-8
-hades.models.gates.And2 i7 5850 -14250 @N 1001 1.0E-8
-hades.models.io.Ipin C 1950 -10050 @N 1001 null 0
-hades.models.io.Ipin Z 1950 -5250 @N 1001 null 0
-hades.models.io.Ipin V 1950 -12450 @N 1001 null 0
-hades.models.rtlib.io.IpinVector i1 1650 -16500 @N 1001 5 01001_B 1.0E-9 2
-hades.models.rtlib.io.Expander i0 2550 -15900 @N 1001 5 1.0E-8
-hades.models.gates.Xor2 i12 15750 -12450 @N 1001 1.0E-8
-hades.models.io.Ipin N 1950 -7650 @N 1001 null 0
-hades.models.gates.And2 i11 5850 -7050 @N 1001 1.0E-8
-hades.models.gates.And2 i10 5850 -9450 @N 1001 1.0E-8
-hades.models.gatter.Or4 i9 10650 -11850 @N 1001 1.0E-8
-hades.models.io.Opin result 20250 -11250 @N 1001 5.0E-9
+hades.models.gates.And2 i8 6600 -12000 @N 1001 1.0E-8
+hades.models.io.Ipin Z 1800 -13800 @N 1001  0
+hades.models.io.Ipin C 1800 -9000 @N 1001  0
+hades.models.gates.And2 i7 6600 -14400 @N 1001 1.0E-8
+hades.models.io.Ipin V 1800 -6600 @N 1001  0
+hades.models.rtlib.io.Expander i0 2400 -16800 @N 1001 5 1.0E-8
+hades.models.rtlib.io.IpinVector opcode 1800 -17400 @N 1001 5 01100_B 1.0E-9 2
+hades.models.io.Ipin N 1800 -11400 @N 1001  0
+hades.models.gates.Xor2 i12 16800 -12600 @N 1001 1.0E-8
+hades.models.gates.And2 i11 6600 -7200 @N 1001 1.0E-8
+hades.models.gates.And2 i10 6600 -9600 @N 1001 1.0E-8
+hades.models.io.Opin result 21000 -11400 @N 1001 5.0E-9
+hades.models.gatter.Or4 i9 12000 -12000 @N 1001 1.0E-8
 [end components]
 [signals]
-hades.signals.SignalStdLogic1164 n9 2 i0 Y2 i8 A 2 2 4350 -14700 4350 -11250 2 4350 -11250 5850 -11250 0 
-hades.signals.SignalStdLogic1164 n8 2 i0 Y3 i10 A 2 2 3750 -14700 3750 -8850 2 3750 -8850 5850 -8850 0 
-hades.signals.SignalStdLogic1164 n7 2 i0 Y4 i11 A 2 2 3150 -14700 3150 -6450 2 3150 -6450 5850 -6450 0 
-hades.signals.SignalStdLogic1164 n6 2 V Y i7 B 1 2 1950 -12450 5850 -12450 0 
-hades.signals.SignalStdLogic1164 n5 2 N Y i10 B 2 2 1950 -7650 3300 -7650 2 5850 -7650 3300 -7650 0 
-hades.signals.SignalStdLogic1164 n4 2 C Y i8 B 1 2 1950 -10050 5850 -10050 0 
-hades.signals.SignalStdLogic1164 n3 2 Z Y i11 B 1 2 1950 -5250 5850 -5250 0 
-hades.signals.SignalStdLogic1164 n2 2 i12 Y result A 1 2 20250 -11250 19350 -11250 0 
-hades.signals.SignalStdLogic1164 n15 2 i11 Y i9 D 3 2 9450 -5850 10350 -5850 2 10350 -5850 10350 -9450 2 10350 -9450 10650 -9450 0 
-hades.signals.SignalStdLogic1164 n1 2 i9 Y i12 B 1 2 15750 -10650 14250 -10650 0 
-hades.signals.SignalStdLogic1164 n14 2 i10 Y i9 C 3 2 10650 -10050 10050 -10050 2 10050 -10050 10050 -8250 2 10050 -8250 9450 -8250 0 
-hades.signals.SignalStdLogicVector n0 5 2 i1 Y i0 A 2 2 1650 -16500 3150 -16500 2 3150 -16500 3150 -15900 0 
-hades.signals.SignalStdLogic1164 n13 2 i8 Y i9 B 1 2 9450 -10650 10650 -10650 0 
-hades.signals.SignalStdLogic1164 n12 2 i7 Y i9 A 3 2 10650 -11250 10200 -11250 2 10200 -11250 10200 -13050 2 10200 -13050 9450 -13050 0 
-hades.signals.SignalStdLogic1164 n11 2 i0 Y0 i12 A 4 2 5550 -14700 5550 -14400 2 5550 -14400 15150 -14400 2 15150 -14400 15150 -11850 2 15150 -11850 15750 -11850 0 
-hades.signals.SignalStdLogic1164 n10 2 i0 Y1 i7 A 2 2 4950 -14700 4950 -13650 2 4950 -13650 5850 -13650 0 
+hades.signals.SignalStdLogic1164 n9 2 N Y i8 A 1 2 6600 -11400 1800 -11400 0 
+hades.signals.SignalStdLogic1164 n8 2 Z Y i7 A 1 2 1800 -13800 6600 -13800 0 
+hades.signals.SignalStdLogic1164 n7 2 i0 Y0 i12 A 4 2 16800 -12000 16200 -12000 2 16200 -12000 16200 -15000 2 16200 -15000 5400 -15000 2 5400 -15000 5400 -15600 0 
+hades.signals.SignalStdLogic1164 n6 2 i7 Y i9 A 3 2 12000 -11400 10800 -11400 2 10800 -11400 10800 -13200 2 10800 -13200 10200 -13200 0 
+hades.signals.SignalStdLogic1164 n5 2 i8 Y i9 B 1 2 12000 -10800 10200 -10800 0 
+hades.signals.SignalStdLogic1164 n4 2 i10 Y i9 C 3 2 10200 -8400 10800 -8400 2 10800 -8400 10800 -10200 2 10800 -10200 12000 -10200 0 
+hades.signals.SignalStdLogic1164 n3 2 i11 Y i9 D 3 2 12000 -9600 11400 -9600 2 11400 -9600 11400 -6000 2 11400 -6000 10200 -6000 0 
+hades.signals.SignalStdLogic1164 n15 2 i0 Y1 i11 B 2 2 4800 -15600 4800 -5400 2 4800 -5400 6600 -5400 0 
+hades.signals.SignalStdLogic1164 n2 2 i9 Y i12 B 1 2 16800 -10800 15600 -10800 0 
+hades.signals.SignalStdLogic1164 n14 2 i0 Y2 i10 B 2 2 4200 -15600 4200 -7800 2 4200 -7800 6600 -7800 0 
+hades.signals.SignalStdLogic1164 n1 2 i12 Y result A 1 2 21000 -11400 20400 -11400 0 
+hades.signals.SignalStdLogic1164 n13 2 i0 Y3 i8 B 2 2 3600 -15600 3600 -10200 2 3600 -10200 6600 -10200 0 
+hades.signals.SignalStdLogicVector n0 5 2 opcode Y i0 A 2 2 3000 -16800 3000 -17400 2 3000 -17400 1800 -17400 0 
+hades.signals.SignalStdLogic1164 n12 2 i0 Y4 i7 B 2 2 3000 -15600 3000 -12600 2 3000 -12600 6600 -12600 0 
+hades.signals.SignalStdLogic1164 n11 2 V Y i11 A 1 2 1800 -6600 6600 -6600 0 
+hades.signals.SignalStdLogic1164 n10 2 C Y i10 A 1 2 1800 -9000 6600 -9000 0 
 [end signals]
 [end]

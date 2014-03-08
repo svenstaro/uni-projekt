@@ -58,6 +58,7 @@ nosetests.xml
 *.out
 *.synctex.gz
 *.toc
+*-eps-converted-to.pdf
 
 # assembler binaries
 *.s.out

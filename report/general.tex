@@ -31,12 +31,20 @@ Wir haben uns in unserem Projekt für die Lizenz \textit{GNU General Public Lice
 
 \section{Werkzeuge}
 \subsection{Git}
+% TODO
+
 \subsection{Pycharm}
+% TODO
+
 \subsection{Latex}
+% TODO
+
 \subsection{Altera}
 Altera\footnote{\url{http://dl.altera.com/}} ist eine Entwicklungsumgebung für den FPGA. Es bietet sowohl Unterstüztung für das Programmieren mit VHDL/Verilog als auch das Überführen des Codes in eine lauffähige Version auf dem FPGA. Auch Debugging ist möglich, in dem man einzelne Leitungen überwachen und auswerten kann. Dies kam uns vor allem gegen Ende der Zeit, als wir auf der Hardware arbeiteten zu Gute. So wurde der eine oder andere Fehler im Code \glqq schnell\grqq \ entdeckt. 
+
 \subsection{Hades}
 Hades\footnote{\url{http://tams-www.informatik.uni-hamburg.de/applets/hades/webdemos/index.html}} ist eine in Java-Programmierte Digitale Schaltsimulation. Sie diente dazu unser Design anschaulich und verständlich zu machen. Man kann sehr gut die Vernetzung und das Zusammenspiel der einzelnen Komponenten sehen und nachvollziehen. Der fertige Schaltplan ist theoretisch in der Lage den Code auszuführen. Dies wurde aber nicht genutzt, denn es wurde ein eigener Emulator entwickelt, der effizienter war und unseren Bedürfnissen besser entspricht.
+
 \subsection{Gtkwave}
 Gtkwave\footnote{\url{http://gtkwave.sourceforge.net/}} wurde genutzt, um Komponenten und Verschaltungen des Myhdl-Codes zu evaluieren und zu debuggen. MyHdl ist in der Lage aus dem Code direkt eine VCD\footnote{\url{https://en.wikipedia.org/wiki/Value_change_dump}}-Datei zu erstellen, die von Gtkwave ausgelesen und dargestellt werden kann. So können Schaltverhalten und Fehler nachvollzogen und behandelt werden, ehe sie auf dem FGPA landen, wo die Fehler wesentlich schwieriger zu finden sind. Auch Timing-Probleme können hier erkannt und frühzeitig beseigt werden.
 \begin{figure}[H]
@@ -44,5 +52,6 @@ Gtkwave\footnote{\url{http://gtkwave.sourceforge.net/}} wurde genutzt, um Kompon
 \includegraphics[width=\textwidth]{images/gtkwave.png}
 \caption{\label{gen:gtkwave}Gtkwave}
 \end{figure}
+
 \section{testen}
-% unit testing
+% TODO: unit testing

@@ -60,7 +60,7 @@ Der Instruction Decoder (IrD) ist zuständig dafür, einen 32Bit langen Wert in 
 \includegraphics[width=.8\textwidth,angle=270]{images/ir.eps}
 \caption{\label{HW:IRD}Instruction Decoder}
 \end{figure}
-Der IrD stellt 8 Werte bereit und 3 Flags. Die Einzelnen Werte stehen für:
+Der IrD stellt 8 Werte und 3 Flags bereit. Die Einzelnen Werte stehen für:
 
 \begin{itemize}
   \item aluop -- Der Op-code für die ALU
@@ -74,11 +74,18 @@ Der IrD stellt 8 Werte bereit und 3 Flags. Die Einzelnen Werte stehen für:
 \end{itemize}
 Mit Hilfe der einzelnen Werte und Flags ist es nun möglich einen Befehl gemäß unserer Befehlsstruktur auszuführen. Da Werte nicht immer sinnig sein müssen, z.B. bei einem Sprungbefehl kann ein unsinniger Aluop entstehen, ist für die Hardware nicht weiter schlimm. Denn die berechnet einfach, wird ihr Ergebnis aber nie auf den Bus schreiben, denn die CPU unterbindet dies.
 \subsection{ALU}
-\begin{figure}[h]
+\begin{figure}[hbt]
 \centering
 \includegraphics[width=.8\textwidth]{images/alu.eps}
 \caption{\label{HW:ALU}Address, Arithmetisch und Logische Einheit}
 \end{figure}
+Die ALU dient in unserem Mikrocontroller nicht allein zur Berechnung von Ergebnissen, sondern sie ist ein Sammelbegriff für alle Arten von mathematischen Operationen, wie z.B. Adress- oder Stackoffsetberechnung.\\
+Die Registerbank hat 16 Slots, wobei einigen Plätzen besondere Eigenschaften und Bedeutungen zugewiesen wird. Dies hat nichts mit der ABI der Programme zu tun, sondern ist in der Hardware festgelegt und verdrahtet.
+\begin{itemize}
+  \item[0 --] Diese Adresse ist immer 0 und kann sowohl gelesen als auch beschrieben werden. Der Wert ändert sich nie
+  \item[14 --] Die ist der Stackpointer. Wann immer eine Push/Pop Operation ausgeführt wird, wird das 14te Register mit Hilfe der Hardware angepasst.
+  \item[15 --] Die Rücksprungadresse. Mit Hilfe des Call-Befehl wird der aktuelle Programmcounter in das Regsiter 15 abgelegt.
+\end{itemize}
 \subsection{Jumpunit}
 \begin{figure}[h]
 \centering

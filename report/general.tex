@@ -3,7 +3,7 @@ Am 17. Oktober 2013 war der Startschuss der Veranstaltung. Die ersten Termine wa
 von Rechnerarchitekturen wiederholt, um Wissenslücken zu schließen und alle auf einen Stand zu bringen. Erst später ging die eigentliche Projektphase los.
 Nach den Vorlesungsterminen ging es in die Gruppen. Jede Gruppe bestand aus 5-8 Personen. Unsere Gruppe bestand aus 5 Leuten und war damit die Kleinste. Ab diesem Zeitpunkt waren die Gruppen auf sich gestellt. Die Lehrkräfte waren nicht mehr für die Organisation zuständig, sondern hatten nur noch unterstützende und beratende Aufgaben.
 In den ersten Wochen wurde noch nicht so viel Praktisches gemacht. Wir teilten uns zunächst in eine Hardware- und Softwaregruppe auf. Damit beide Teilgruppen an einem Strang ziehen, investierten wir die Zeit in den ersten Wochen für eine kleine Ideensammlung bezüglich unserer ISA. \todo{ISA und Befehlsstruktur sind in etwa das gleiche. Hier bitte was anderes hinschreiben}
-Es wurden grundlegende Fragen geklärt, wie zum Beispiel die Wort- und Adressbreite, Little oder Big Endian und wie unsere Befehlsstruktur aufgebaut ist. Ein Teil unserer Ideensammlung der ersten Wochen ist in der Abbildung \autoref{gen:Idee} zu sehen.
+Es wurden grundlegende Fragen geklärt, wie zum Beispiel die Wort- und Adressbreite, Little oder Big Endian und was bestimmte Register können sollen (z.B. $0-Register = Null). Ein Teil unserer Ideensammlung der ersten Wochen ist in der Abbildung \autoref{gen:Idee} zu sehen.
 
 Um eine gute Kommunikation zu gewährleisten, trafen wir uns jeden Donnerstag am Informatikum. Wir arbeiteten alle in einem Raum, weil uns eine direkte Kommunikation wichtig war. Bei Problemen konnte so der direkte Kontakt hergestellt werden. Denn es stellte sich schnell raus, dass Abweichungen von der ersten Ideensammlung unumgänglich waren. So konnten Konflikte schnell diskutiert und beseitigt werden.
 
@@ -29,8 +29,8 @@ Für unser Projekt haben wir den kostenlosen git-Hoster \textit{Github} genutzt.
 \subsection{Pycharm}
 \todo{TODO}
 
-\subsection{Latex}
-\todo{TODO}
+\subsection{\LaTeX}
+\LaTeX \ haben wir für jede Art von Dokumenten verwendet, die wir im Rahmen des Projektes angelegt haben. Mit diesem Softwarepaket ist es möglich Text zu setzen und zu formatieren. Gerade für wissenschaftliche Arbeiten ist es sehr geeignet, da es umfangreiche Funktionalität zum Einbinden von Referenzen, Zitieren, Bildsetzung, Seitenlayout und Hightlighting anbietet. Auch diese Arbeit ist mir \LaTeX \ gestzt.
 
 \subsection{Altera}
 Altera\footnote{\url{http://dl.altera.com/}} ist eine Entwicklungsumgebung für den FPGA. Es bietet sowohl Unterstüztung für das Programmieren mit VHDL/Verilog als auch das Überführen des Codes in eine lauffähige Version auf dem FPGA. Auch Debugging ist möglich, in dem man einzelne Leitungen überwachen und auswerten kann. Dies kam uns vor allem gegen Ende der Zeit, als wir auf der Hardware arbeiteten zu Gute. So wurde der eine oder andere Fehler im Code \glqq schnell\grqq \ entdeckt. 
@@ -47,4 +47,9 @@ Gtkwave\footnote{\url{http://gtkwave.sourceforge.net/}} wurde genutzt, um Kompon
 \end{figure}
 
 \section{Testen}
-\todo{unit testing}
+Bei der Entwicklung von qualitativ hochwertiger Software ist das automatisierte Testen des Codes nicht nur eine Option, sondern ein zentraler Bestandteil des Entwicklungsprozesses. Da wir in unserem Projekt aber keine Software im klassischen Sinne entwickelt haben, hatte diese Disziplin nicht die höchste Priorität. Dennoch ist das Testen nicht unter den Tisch gefallen. 
+
+Unser Hauptaugenmerk bei der Testabdeckung lag beim Assembler. Da der Assembler in Python geschrieben ist, nutzten wir  für das automatisierte Testen PyUnit, die für Python angepasste Version von JUnit.
+Wir mussten sichergehen, dass unsere Befehle korrekt übersetzt werden, da ein Fehler der später auftritt, sehr schwer zu finden wäre. Um diese Fehlerquelle ausschließen zu können, versuchten wir möglichst alle Fälle beim übersetzen abzudecken. Denn alles was im Folgenden programmiert wird, baut auf diesen Befehlen auf. Ein falsch übersetzter Befehl könnte daher schwerwiegende Folgen haben. 
+
+

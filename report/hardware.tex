@@ -54,13 +54,14 @@ TODO: state chart machen
 \end{figure}
 
 \subsection{Instruction Decoder}
-Der Instruction Decoder (IrD) ist zuständig dafür, einen 32Bit langen Wert in seine Einzelteile zu zerlegen und den einzelnen Komponenten zur Verfügung zu stellen. Dies soll ohne Takt geschehen, sondern sofort. Eine Entsprechende Abbildung ist unter \autoref{HW:IRD} zu sehen.\\
-\begin{figure}[h]
+Der Instruction Decoder (IrD) hat die Aufgabe ein 32Bit langes Wort in seine Einzelteile zu zerlegen und den einzelnen Komponenten zur Verfügung zu stellen. Dies soll nicht im Takt geschehen, sondern direkt. Die aktuelle Implementation ist in der \autoref{HW:IRD} zu sehen.\\
+\begin{figure}[!h]
 \centering
-\includegraphics[width=.8\textwidth,angle=270]{images/ir.eps}
+\hspace{-5em}
+\includegraphics[width=1\textwidth,angle=270]{images/ir.eps}
 \caption{\label{HW:IRD}Instruction Decoder}
-\end{figure}
-Der IrD stellt 8 Werte und 3 Flags bereit. Die Einzelnen Werte stehen für:
+\end{figure}%
+Der IrD stellt 8 Werte und 3 Flags bereit.
 
 \begin{itemize}
   \item aluop -- Der Op-code für die ALU
@@ -72,12 +73,14 @@ Der IrD stellt 8 Werte und 3 Flags bereit. Die Einzelnen Werte stehen für:
   \item jumpop -- Der Op-code für die Sprungeinheit.
   \item prefix -- Das Instruktionsprefix für die CPU
 \end{itemize}
-Mit Hilfe der einzelnen Werte und Flags ist es nun möglich einen Befehl gemäß unserer Befehlsstruktur auszuführen. Da Werte nicht immer sinnig sein müssen, z.B. bei einem Sprungbefehl kann ein unsinniger Aluop entstehen, ist für die Hardware nicht weiter schlimm. Denn die berechnet einfach, wird ihr Ergebnis aber nie auf den Bus schreiben, denn die CPU unterbindet dies.
-\subsection{ALU}
-\begin{figure}[hbt]
+Mit Hilfe der einzelnen Werte und Flags ist es nun möglich einen Befehl gemäß unserer Befehlsstruktur auszuführen. Da Werte nicht immer sinnig sein müssen, z.B. bei einem Sprungbefehl kann ein unsinniger Aluop entstehen, ist für die Hardware nicht weiter schlimm, denn die Berchnung wird zwar ausgeführt, aber ihr Ergebnis nie auf den Bus schreiben, denn die CPU unterbindet dies.
+\subsection{Adress, Arithmetisch und Logische Einheit}
+Die Adress, Arithmetisch und Logische Einheit (kurz ALU) bildet ein Kernstück des Mikrocontrollers. Sie besteht aus mehreren Teilkomponenten die hier genauer erklärt werden.
+\subsubsection{Registerbank}
+\begin{figure}[!h]
 \centering
 \includegraphics[width=.8\textwidth]{images/alu.eps}
-\caption{\label{HW:ALU}Address, Arithmetisch und Logische Einheit}
+\caption{\label{HW:ALU}Adress, Arithmetisch und Logische Einheit}
 \end{figure}
 Die ALU dient in unserem Mikrocontroller nicht allein zur Berechnung von Ergebnissen, sondern sie ist ein Sammelbegriff für alle Arten von mathematischen Operationen, wie z.B. Adress- oder Stackoffsetberechnung.\\
 Die Registerbank hat 16 Slots, wobei einigen Plätzen besondere Eigenschaften und Bedeutungen zugewiesen wird. Dies hat nichts mit der ABI der Programme zu tun, sondern ist in der Hardware festgelegt und verdrahtet.
@@ -86,12 +89,30 @@ Die Registerbank hat 16 Slots, wobei einigen Plätzen besondere Eigenschaften un
   \item[14 --] Die ist der Stackpointer. Wann immer eine Push/Pop Operation ausgeführt wird, wird das 14te Register mit Hilfe der Hardware angepasst.
   \item[15 --] Die Rücksprungadresse. Mit Hilfe des Call-Befehl wird der aktuelle Programmcounter in das Regsiter 15 abgelegt.
 \end{itemize}
+Um von der CPU aus die Adresse 14 bzw. 15 setzen zu können, sind zwei Multiplexer vor der Registerbank angebracht und steuerbar. Im Normalfall werden die Werte addrY/Z direkt an die Registerbank angelegt und die Werte ausgegeben. Wenn eine Stackoperation (\emph{Push/Pop}) ausgeführt wird, wird die Steuerleitung \textit{addrymux1} gesetzt und eine konstante 14 an die Adressleitungen Y und Z gelegt. Wenn ein \emph{Call} oder \emph{Ret} ausgeführt wird, wird der Wert aus der Adresse 15 benötigt und die Leitung \textit{addrymux0} gesetzt. Für einige Befehle befindet sich die Y oder Z Adresse an der \glqq falschen\grqq \ Stelle und muss getauscht werden. Dies wird erreicht, indem beide Steuerleitungen \textit{addrymux0} und \textit{addrymux1} gesetzt werden.
+
+\subsubsection{Recheneinheit}
+Die Recheneinheit (ALU) kann 16 Befehle verarbeiten (eine Übersicht ist zu sehen in \autoref{AP:ISA}) und verarbeitet hierbei 2 32bit Werte plus ein Carry in. Das entsprechende Ergebnis ist ebenfalls 32Bit breit. Außerdem werden s.g. Statusflags berechnet und bei Bedarf (siehe ISA) gesetzt. Diese werden für die Sprungheinheit benötigt. Der erste Eingang ist immer ein Wert aus der Registerbank (Adresse X), der zweite ist abhängig vom Befehl. Entweder ebenfalls aus der Registerbank (Addresse Y) oder ein 16bit Immediate, der auf 32bit \glqq Vorzeichenerweitert\grqq \footnote{D.h. das Vorzeichen des kleinen Wertes wird auf den großen Wert übertragen} und so verrechnet.
+
+\subsubsection{Adressberechnungen}
+Die ALU übernimmt außerdem viele Adressberechnungen, z.B. für Sprünge, Funktionsaufrufe oder Stackoperationen.
+Sprünge werden entweder direkt ausgeführt (Registersprung) oder relativ zum aktuellen Programmcounter (Immediate24+Offset). Deshalb wird mit Hilfe eines Multiplexers und einer Flag aus dem IrD entschieden, welche Adressierungsart erfolgen soll.
+Für die Stackoperationen wird direkt die Nachfolgende Adresse berechnet, entweder +4 (\emph{Pop}) oder -4 (\emph{Push}). Die Subtraktion wird mit Hilfe der Addition des Zweierkomplements durchgeführt.
+Auch erlaubt die ALU es den Op2 direkt auf den Bus zu schreiben. Hierfür bedient man sich lediglich eines einfachen Multiplexers.
+
 \subsection{Jumpunit}
-\begin{figure}[h]
+\begin{figure}[!h]
 \centering
 \includegraphics[width=1\textwidth]{images/ju.eps}
 \caption{\label{HW:JU}Sprung-Einheit}
 \end{figure}
+Die Sprungeinheit entscheidet anhand der Statusflags und des Jumpopcodes aus dem IrD, ob ein Sprung erfolgen soll. Der Jumpcode besteht aus 5 bit, wobei die obertestn 4 Bit entscheiden, ob das entsprechende Statusbit berücksichtigt werden soll und das unterste Bit die Entscheidung invertiert. Die Bits 4 bis 1 stehen für:
+\begin{enumerate}
+ \item[4] Zero-Flag
+ \item[3] Negative-Flag
+ \item[2] Carry-Flag
+ \item[1] Overflow-Flag
+\end{enumerate}
 \subsection{Programmcounter}
 \begin{figure}[h]
 \centering

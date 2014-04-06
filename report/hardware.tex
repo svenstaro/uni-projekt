@@ -87,7 +87,7 @@ Die Registerbank hat 16 Slots, wobei einigen Plätzen besondere Eigenschaften un
 \begin{itemize}
   \item[0 --] Diese Adresse ist immer 0 und kann sowohl gelesen als auch beschrieben werden. Der Wert ändert sich nie
   \item[14 --] Die ist der Stackpointer. Wann immer eine Push/Pop Operation ausgeführt wird, wird das 14te Register mit Hilfe der Hardware angepasst.
-  \item[15 --] Die Rücksprungadresse. Mit Hilfe des Call-Befehl wird der aktuelle Programmcounter in das Regsiter 15 abgelegt.
+  \item[15 --] Die Rücksprungadresse. Mit Hilfe des Call-Befehl wird der aktuelle Programmcounter in das Register 15 abgelegt.
 \end{itemize}
 Um von der CPU aus die Adresse 14 bzw. 15 setzen zu können, sind zwei Multiplexer vor der Registerbank angebracht und steuerbar. Im Normalfall werden die Werte addrY/Z direkt an die Registerbank angelegt und die Werte ausgegeben. Wenn eine Stackoperation (\emph{Push/Pop}) ausgeführt wird, wird die Steuerleitung \textit{addrymux1} gesetzt und eine konstante 14 an die Adressleitungen Y und Z gelegt. Wenn ein \emph{Call} oder \emph{Ret} ausgeführt wird, wird der Wert aus der Adresse 15 benötigt und die Leitung \textit{addrymux0} gesetzt. Für einige Befehle befindet sich die Y oder Z Adresse an der \glqq falschen\grqq \ Stelle und muss getauscht werden. Dies wird erreicht, indem beide Steuerleitungen \textit{addrymux0} und \textit{addrymux1} gesetzt werden.
 

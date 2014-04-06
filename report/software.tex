@@ -4,7 +4,8 @@ Im Verlauf des Projekts hat sich viel geändert, zum Teil motiviert durch Wünsc
 zum Teil begründet in Fehlern oder Problemen mit den Befehlsworten oder deren Bitcode-Layout, um die Interpretation des Binärcodes in der Hardware zu vereinfachen.
 In der \autoref{AP:ISA} ist unsere endgültige Instruction Set Architecture zu sehen.
 
-Von Beginn an war ein Reduced Instruction Set (RISC) mit drei Operanden-Befehlen geplant.
+Von Beginn an war ein Reduced Instruction Set (RISC) mit drei Operanden-Befehlen geplant,
+wobei wir uns an den Befehlssätzen der RISC-Prozessoren von ARM und MIPS orientiert haben.
 Die Wortbreite beträgt 32-bit. Es gibt 15 General Purpose-Register, wovon zwei zum Speichern des Stack Pointers und der Rücksprungaddresse genutzt werden.
 Das erste Register \texttt{\$0} ist immer null und kann auch zum Verwerfen eines Ergebnisses genutzt werden, in dem es als Zielregister angegeben wird.
 Es gibt vier Statusflags -- Zero, Negative, Carry, Overflow.
@@ -33,35 +34,50 @@ Diesen gibt es nur in der Ausführung PC-relativ mit Immediate.
 Er speichert gleichzeitig den Wert \texttt{PC+4} im Rücksprungregister und
 eignet sich damit hervorragend für Subroutinenaufrufe.
 
-%TODO
-Schlussendlich haben sich in unserer ISA auch noch Befehle als nützlich erwiesen, die eine spezielle Funktion direkt an der Hardware abstrahieren. Die ISA bietet uns die Möglichkeit direkt auf Buttons und LEDs auf dem FPGA zuzugreifen und diese Hardwarelemente in logisch unären Operationen anzusprechen. Dies ist sehr praktisch, denn eine Abfrage der Buttonelemente für jedes Programm als Sprachkonstrukt in herkömmlichem Assembler implementieren zu müssen, erschien uns sehr umständlich.
+Schlussendlich haben sich in unserer ISA auch noch Befehle als nützlich erwiesen,
+die eine spezielle Funktion direkt an der Hardwareschnittstellen des FPGAs abstrahieren.
+Die ISA bietet uns die Möglichkeit, direkt auf Buttons und LEDs auf dem FPGA zuzugreifen.
+Außerdem gibt es zwei Befehle zum Senden und Empfangen von Daten über die serielle Schnittstelle.
+Wir sind diesem Weg gefolgt, da wir die Implementierung von Interrupts oder Maschinenregistern vermeiden wollten.
+So ist die Lösung sehr einfach zu nutzen, aber nicht sonderlich flexibel.
 
-All diese Feinheiten der ISA haben sich mit der Zeit entwickelt. Beginnend bei unserem Primärziel, ein FPGA zu einem kleinen Taschenrechner werden lassen, hatten wir eine entsprechend kleine ISA. Sie umfasste lediglich den Befehlsatz für arithmetische Operationen, der fast genau so bis zur endgültigen ISA geblieben ist, Kontrollfluss regulierende Befehle wie call und jump, die wir zu diesem Zeitpunkt noch nicht weiter durchdacht hatten, sowie einen load und store Befehl. Wie \autoref{AP:ISA} zeigt, hat sich die ISA im Vergleich zu \autoref{gen:Idee} stark erweitert. \todo{calculator.s in Anhang und referenzieren}
+All diese Feinheiten der ISA haben sich mit der Zeit entwickelt.
+Beginnend bei unserem Primärziel, ein FPGA zu einem kleinen Taschenrechner werden lassen, hatten wir eine entsprechend kleine ISA.
+Sie umfasste lediglich den Befehlsatz für arithmetische Operationen, der fast genau so bis zur endgültigen ISA geblieben ist,
+Kontrollfluss-Befehle wie call und jump, die wir zu diesem Zeitpunkt noch nicht weiter durchdacht hatten, sowie einen load und store Befehl.
+Wie \autoref{AP:ISA} zeigt, hat sich die ISA im Vergleich zu \autoref{gen:Idee} stark erweitert.
+Durch selbstgeschriebene Assembler-Programme sind immer wieder Fehler oder fehlende Befehle aufgefallen.
+So konnte zu Beginn keine Sprungtabellen geschrieben werden, da ein Addressberechnungsbefehl fehlte.
+Durch die Einführung von \texttt{adr} wurde dies nachträglich ermöglicht.
+Zudem war anfangs unklar, ob und wie relative und absolute Sprünge möglich sind.
+% TODO: Probleme?
+
+Am Ende dieses Kapitels ist als Programmcode-Beispiel ein kleiner Taschenrechner zu sehen. \todo{calculator.s in Anhang und referenzieren}
+
+% TODO: Fehlt in der ISA: Sign extension, Bytewise mem access,
 
 \newpage
 \begin{multicols}{3}
 \inputminted{nasm}{calc.s}
 \end{multicols}
 
-
-% TODO: entwicklung zur final isa
-% probleme am anfang
-%  - 
-% probleme zwischendurch: fehlendes adr, absolut <-> relativ bei Sprüngen und Speicherbefehlen
-% geil am ende
-
+\newpage
 \section{ABI}
-% TODO
-% Parameter: $1, $2, $3, $4, Stack
-% Rückgabe: $1
-% (Stackpointer: $14, Rücksprungaddresse: $15)
-% Caller-Save: $1,$2,$3,$4, $15
-% Calle-Save: $5-$14
+Die ABI ist nicht detailliert und vollständig definiert worden, da für die kleinen Programme nicht alle Möglichkeiten ausgenutzt werden.
+Da die ISA nur einen Datentypgröße unterstützt, nämlich 32-Bit, und keine Gleitkommazahlen unterstützt, sind andere Datentypen als Integer und Pointer entsprechend nicht definiert.
+Bei einem Funktionsaufruf sind in den Registern \texttt{\$1, \$2, \$3, \$4} die ersten vier Parameter.
+Weitere Parameter werden auf den Stack gelegt.
+Beim Aufruf konsumiert die aufgerufene Funktion die Parameter auf dem Stack,
+so dass der Aufrufer nach dem Funktionsaufruf den ursprünglichen Stackzustand vor der Parameterablage erhält. 
+Der Stackpointer liegt in \texttt{\$14}, die Rücksprungaddresse in \texttt{\$15}.
+Ein Rückgabewert eines Funktionsaufrufs liegt in \texttt{\$1}.
+Dem entsprechend sind die Register \texttt{\$1-\$4, \$15} Caller-Save, alle anderen Register Callee-Save.
+% TODO: Fehlt was?
 
 \section{Assembler} % Felix W.
 % TODO: do your shit
-% inkl. programmbeispiele
-% faculty.s mit Kommentaren
+% assembler ausschnitte
+% pseudo-ops
 
 \section{Emulator} % Felix W.
 % TODO: do your shit
@@ -70,5 +86,3 @@ All diese Feinheiten der ISA haben sich mit der Zeit entwickelt. Beginnend bei u
 
 \section{GUI/Debugger(Marcel)}
 % TODO: do your shit
-
-% TODO: calculator.s mit Kommentaren im Anhang

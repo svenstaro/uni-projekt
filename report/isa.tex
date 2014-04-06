@@ -15,13 +15,13 @@
  & Or & orr \$d, \$s, \$t & 00 S dddd 1001 ssss op3 \\ \cline{ 2- 4}
  & Xor & xor \$d, \$s, \$t & 00 S dddd 1010 ssss op3 \\ \cline{ 2- 4}
  & Orn & orn \$d, \$s, \$t & 00 S dddd 1011 ssss op3 \\ \hline
-\multirow{4}{*}{\parbox{2cm}{\textbf{Shift / Rotate}}} & lsl & lsl \$d, \$s, \$t & 00 S dddd 1100 ssss op3 \\ \cline{ 2- 4}
- & asr & asr \$d, \$s, \$t & 00 S dddd 1101 ssss op3 \\ \cline{ 2- 4}
- & lsr & lsr \$d, \$s, \$t & 00 S dddd 1110 ssss op3 \\ \cline{ 2- 4}
- & ror & ror \$d, \$s, \$t & 00 S dddd 1111 ssss op3 \\ \hline
+\multirow{4}{*}{\parbox{2cm}{\textbf{Shift / Rotate}}} & Lsl & lsl \$d, \$s, \$t & 00 S dddd 1100 ssss op3 \\ \cline{ 2- 4}
+ & Asr & asr \$d, \$s, \$t & 00 S dddd 1101 ssss op3 \\ \cline{ 2- 4}
+ & Lsr & lsr \$d, \$s, \$t & 00 S dddd 1110 ssss op3 \\ \cline{ 2- 4}
+ & Ror & ror \$d, \$s, \$t & 00 S dddd 1111 ssss op3 \\ \hline
 %
 \multirow{12}{*}{\textbf{Jump}} & Jump & jmp .label & 01 00001 op2 \\ \cline{ 2- 4}
- & Jump & jmp op2 & 01 00001 op2 \\ \cline{ 2- 4}
+ & Jump & jmp \$d & 01 00001 * dddd \\ \cline{ 2- 4}
  & Jump Equal & jeq .label & 01 10000 op2 \\ \cline{ 2- 4}
  & Jump Not Equal & jne .label & 01 10001 op2 \\ \cline{ 2- 4}
  & Jump Less Than & jlt .label & 01 01000 op2 \\ \cline{ 2- 4}
@@ -34,9 +34,9 @@
  & Jump Not Carry & jnc .label & 01 00101 op2 \\ \hline
 \multirow{3}{*}{\textbf{Memory}} & Load & ld \$d, \$s & 100 dddd op2 \\ \cline{ 2- 4}
  & Store & st \$d, \$s & 101 dddd op2 \\ \cline{ 2- 4}
- & adr & adr \$d, \#imm & 110 dddd * imm24 \\ \hline
+ & adr & adr \$d, .label & 110 dddd * imm24 \\ \hline
 \multirow{2}{*}{\parbox{2cm}{\textbf{Push / Pop}}} & Push & push \$s & 11100 \ \ \ * op2 \\ \cline{ 2- 4}
- & Pop & pop \$d & 11101 \ \ \ * op2 \\ \hline
+ & Pop & pop \$d & 11101 \ \ \ * dddd \\ \hline
 \multirow{6}{*}{\textbf{Special}} & Call & call .label & 111100 \ \ * op2 \\ \cline{ 2- 4}
  & Clock & clk \$d & 111101 \ \ * dddd \\ \cline{ 2- 4}
  & Get Button & but \$d & 1111100 \ * dddd \\ \cline{ 2- 4}
@@ -47,3 +47,4 @@
 }
 \caption{\label{AP:ISA}ISA}
 \end{table}
+% TODO: how about pseudo-befehle?

@@ -15,7 +15,7 @@ Der Befehl \texttt{cmp \$1, \$2} wird übersetzt zu \texttt{subs \$0, \$1, \$2} 
 also eine Substraktion, bei der die Statusflags abhängig vom Ergebnis gesetzt werden, und das Ergebnis in \texttt{\$0} gespeichert wird. \\
 Alle ALU-Befehle können auch mit einem 16-Bit-Immediate als dritten Operanden genutzt werden.
 In der finalen Version der ISA exisitiert kein Divisionsbefehl, da dieser zu Gunsten anderer Bitmasken-Befehle fallengelassen wurde.
-Zudem gibt es keine Multiplikation, die ein 64-bittes Ergebnis hat.
+Zudem gibt es keine Multiplikation, die ein 64-bittiges Ergebnis hat.
 
 Für Speicherzugriffe gibt es zwei Load- und Store-Befehle zum Lesen und Speichern von 32-Bit-Wörtern --
 die Speicheraddressen müssen dabei kein Vielfaches der Wortbreite sein.
@@ -39,7 +39,7 @@ die eine spezielle Funktion direkt an der Hardwareschnittstellen des FPGAs abstr
 Die ISA bietet uns die Möglichkeit, direkt auf Buttons und LEDs auf dem FPGA zuzugreifen.
 Außerdem gibt es zwei Befehle zum Senden und Empfangen von Daten über die serielle Schnittstelle.
 Wir sind diesem Weg gefolgt, da wir die Implementierung von Interrupts oder Maschinenregistern vermeiden wollten.
-So ist die Lösung sehr einfach zu nutzen, aber nicht sonderlich flexibel.
+So ist die Lösung sehr einfach zu implementieren und zu nutzen, aber nicht sonderlich flexibel.
 
 All diese Feinheiten der ISA haben sich mit der Zeit entwickelt.
 Beginnend bei unserem Primärziel, ein FPGA zu einem kleinen Taschenrechner werden lassen, hatten wir eine entsprechend kleine ISA.
@@ -52,14 +52,24 @@ Durch die Einführung von \texttt{adr} wurde dies nachträglich ermöglicht.
 Zudem war anfangs unklar, ob und wie relative und absolute Sprünge möglich sind.
 % TODO: Probleme?
 
-Am Ende dieses Kapitels ist als Programmcode-Beispiel ein kleiner Taschenrechner zu sehen. \todo{calculator.s in Anhang und referenzieren}
+In der ISA fehlen bisher viele Aspekte:
+So sind keine unterschiedlichen Datentypen definiert. Es wird lediglich mit vorzeichenbehafteten 32-bit gearbeitet.
+Daher fehlen Befehle für vorzeichenlose Multiplikation, Vorzeichenerweiterung, Laden und vorallem Speichern von Daten kleiner als 32-bit.
+Deswegen ist keine effiziente Nutzung von 8-bit Datentypen möglich, da unter anderem zum Speichern eine handvoll Befehle benötigt werden -- Laden der alten Daten,
+Bitmaske laden, neue und alte Daten durch die Bitmaske verknüpfen und anschließend speichern.
 
-% TODO: Fehlt in der ISA: Sign extension, Bytewise mem access,
+%TODO: Gleitkomma-Arithmetik
 
+Am Ende dieses Kapitels ist als Programmcode-Beispiel ein kleiner Taschenrechner zu sehen.
+
+% TODO: calculator.s in Anhang und referenzieren?
 \newpage
+\begin{center}
 \begin{multicols}{3}
 \inputminted{nasm}{calc.s}
 \end{multicols}
+\captionof{figure}{Ein kleiner Taschrechner, der über die serielle Schnittstelle kommuniziert.}
+\end{center}
 
 \newpage
 \section{ABI}
@@ -77,7 +87,20 @@ Dem entsprechend sind die Register \texttt{\$1-\$4, \$15} Caller-Save, alle ande
 \section{Assembler} % Felix W.
 % TODO: do your shit
 % assembler ausschnitte
+% disassembler
+% fehlermeldungen
+% …
+
+\begin{center}
+\inputminted{py}{../assembler/operations/memOperation.py}
+\captionof{figure}{Die Definition der Speicheroperationen}
+\end{center}
+
 % pseudo-ops
+\begin{center}
+\inputminted[firstline=59,lastline=75]{py}{../assembler/operations/pseudoOperation.py}
+\captionof{figure}{Die Definitionen von Pseudooperationen}
+\end{center}
 
 \section{Emulator} % Felix W.
 % TODO: do your shit

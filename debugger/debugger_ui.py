@@ -100,8 +100,6 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == '__main__':
-    import gc
-    gc.set_debug(gc.DEBUG_COLLECTABLE | gc.DEBUG_INSTANCES | gc.DEBUG_COLLECTABLE)
     app = QApplication(sys.argv)
     MainWindow().show()
     sys.exit(app.exec_())

@@ -2,7 +2,7 @@
 Am 17. Oktober 2013 war der Startschuss der Veranstaltung. Die ersten Termine waren im Sinne der Wissensreaktivierung gestaltet. In mehreren Terminen wurden die grundlegenden Konzepte 
 von Rechnerarchitekturen wiederholt, um Wissenslücken zu schließen und alle auf einen Stand zu bringen. Erst später ging die eigentliche Projektphase los.
 Nach den Vorlesungsterminen ging es in die Gruppen. Jede Gruppe bestand aus 5-8 Personen. Unsere Gruppe bestand aus 5 Leuten und war damit die Kleinste. Ab diesem Zeitpunkt waren die Gruppen auf sich gestellt. Die Lehrkräfte waren nicht mehr für die Organisation zuständig, sondern hatten nur noch unterstützende und beratende Aufgaben.
-In den ersten Wochen wurde noch nicht so viel Praktisches gemacht. Wir teilten uns zunächst in eine Hardware- und Softwaregruppe auf. Damit beide Teilgruppen an einem Strang ziehen, investierten wir die Zeit in den ersten Wochen für eine kleine Ideensammlung bezüglich unserer ISA. \todo{ISA und Befehlsstruktur sind in etwa das gleiche. Hier bitte was anderes hinschreiben}
+In den ersten Wochen wurde noch nicht so viel Praktisches gemacht. Wir teilten uns zunächst in eine Hardware- und Softwaregruppe auf. Damit beide Teilgruppen an einem Strang ziehen, investierten wir die Zeit in den ersten Wochen für eine kleine Ideensammlung bezüglich unserer ISA.
 Es wurden grundlegende Fragen geklärt, wie zum Beispiel die Wort- und Adressbreite, Little oder Big Endian und was bestimmte Register können sollen (z.B. \$0-Register = Null). Ein Teil unserer Ideensammlung der ersten Wochen ist in der Abbildung \autoref{gen:Idee} zu sehen.
 
 Um eine gute Kommunikation zu gewährleisten, trafen wir uns jeden Donnerstag am Informatikum. Wir arbeiteten alle in einem Raum, weil uns eine direkte Kommunikation wichtig war. Bei Problemen konnte so der direkte Kontakt hergestellt werden. Denn es stellte sich schnell raus, dass Abweichungen von der ersten Ideensammlung unumgänglich waren. So konnten Konflikte schnell diskutiert und beseitigt werden.
@@ -27,7 +27,7 @@ Git ist ein Versionskontrollsystem, dass das verteilte Arbeiten in Gruppen erlei
 Für unser Projekt haben wir den kostenlosen git-Hoster \textit{Github} genutzt. Hier ist auch unsere Projekthistorie in Form von Commits in das Projektrepository festgehalten.
 
 \subsection{Pycharm}
-\todo{TODO}
+Pycharm\footnote{\url{http://www.jetbrains.com/pycharm/}} ist eine IDE die speziell für Python ausgelegt ist. Wir nutzten sie zum editieren des Codes, da es IDE-typisch viele Features bereit stellt, die das Programmieren sehr angenehm machen.
 
 \subsection{\LaTeX}
 \LaTeX \ haben wir für jede Art von Dokumenten verwendet, die wir im Rahmen des Projektes angelegt haben. Mit diesem Softwarepaket ist es möglich Text zu setzen und zu formatieren. Gerade für wissenschaftliche Arbeiten ist es sehr geeignet, da es umfangreiche Funktionalität zum Einbinden von Referenzen, Zitieren, Bildsetzung, Seitenlayout und Hightlighting anbietet. Auch diese Arbeit ist mit \LaTeX \ geschrieben worden.
@@ -49,5 +49,5 @@ Gtkwave\footnote{\url{http://gtkwave.sourceforge.net/}} wurde genutzt, um Kompon
 \section{Testen}
 Bei der Entwicklung von qualitativ hochwertiger Software ist das automatisierte Testen des Codes nicht nur eine Option, sondern ein zentraler Bestandteil des Entwicklungsprozesses. Da wir in unserem Projekt aber keine Software im klassischen Sinne entwickelt haben, hatte diese Disziplin nicht die höchste Priorität. Dennoch ist das Testen nicht unter den Tisch gefallen. 
 
-Unser Hauptaugenmerk bei der Testabdeckung lag beim Assembler.\todo{Wenn man mal den Assembler gegen die hardware vergleicht, dann gewinnt die hardware :D} Da der Assembler in Python geschrieben ist, nutzten wir  für das automatisierte Testen PyUnit, die für Python angepasste Version von JUnit.
+Unser Hauptaugenmerk bei der Testabdeckung lag beim Assembler. Da der Assembler in Python geschrieben ist, nutzten wir  für das automatisierte Testen PyUnit, die für Python angepasste Version von JUnit.
 Wir mussten sichergehen, dass unsere Befehle korrekt übersetzt werden, da ein Fehler der später auftritt, sehr schwer zu finden wäre. Um diese Fehlerquelle ausschließen zu können, versuchten wir möglichst alle Fälle beim übersetzen abzudecken. Denn alles was im Folgenden programmiert wird, baut auf diesen Befehlen auf. Ein falsch übersetzter Befehl könnte daher schwerwiegende Folgen haben. 

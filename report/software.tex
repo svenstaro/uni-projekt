@@ -107,5 +107,13 @@ Dem entsprechend sind die Register \texttt{\$1-\$4, \$15} Caller-Save, alle ande
 % intention: hardware nicht so weit. wollten isa und abi testen auf tauglichkeit
 % assembler testen
 
-\section{GUI/Debugger(Marcel)}
-% TODO: do your shit
+\section{Debugger}
+Neben einem Emulator wollten wir auch einen Debugger, der basierend auf dem Emulator den Programmablauf verdeutlicht.
+\begin{figure}[htb]
+\centering
+\includegraphics[width=\textwidth]{images/debugger.png}
+\captionof{figure}{\label{SW:debugger}Screenshot des Debuggers}
+\end{figure}
+Wie in \autoref{SW:debugger} zu sehen ist, sind alle wichtigen Informationen der CPU zu sehen -- Registerinhalte, Programmcounter, Statusregister und Ram-Inhalt.
+Auch die Manipulation von Werten ist möglich, so z.B. des Raminhalts, der Register und er Statusflags. Man kann desweiteren Breakpoints setzen und Programmteile überspringen oder genauer inspizieren.\\
+Die Oberfläche wurde mit dem Qt-Designer kreiert, das Programm selbst in wie der Rest in Python geschrieben.

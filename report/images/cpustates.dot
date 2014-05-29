@@ -1,0 +1,13 @@
+digraph G {
+rankdir=LR;
+start [shape=none,label=""];
+node [shape=circle,color=black];
+operation [label="AluOp Jump Load\nStore Adr Push\nPop Call Clock\nLed But Rsr Rst"]
+
+start -> fetch;
+fetch -> decode;
+decode -> operation[label="¬halt"];
+decode -> halt [label="halt"];
+operation -> fetch;
+halt -> halt;
+}

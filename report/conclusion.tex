@@ -6,44 +6,27 @@
 % 'über das ziel hinausgeschossen'
 
 \section{Probleme} %0ortmann
-
-\subsection{Gruppe \todo{hier evtl nicht gliedern}}
 Zu Beginn unseres Projektes bestand die Gruppe aus 7 Mitgliedern, die sich nach recht kurzer Zeit um zwei reduziert hat. Schade war, dass die Mitglieder nicht einfach ausgetreten sind, sondern bis zum Ende trotz wiederholten Anfragen einfach nichts getan haben. Im Folgenden ist mit \textit{unserer Gruppe} also das reduzierte Team von 5 Leuten gemeint.
-Im Verlauf underes Projektes haben sich über die Zeit einige Probleme ergeben. Dies war meist begründet durch kurzfristig nötige Programmänderungen, die dann zu größeren Diskussionen führten. Im Allgemenein hat unsere Gruppe dazu geneigt, Einzelheiten sehr fein auszudiskutieren. Auch bei der vielfältigen Änderung unserer ISA, siehe auch das zugehörige Kapitel, hat sich einiges an Streitigkeiten ergeben. Besonders anzumerken ist jedoch, dass alle Streitigkeiten in unserer Gruppe stets fachlich begründet waren. Unsere Mitglieder haben sich nicht etwa aus persönlichen Gründen nicht verstanden, sondern hatten vielmehr alle immer konstruktiv etwas zu den Fragestellungen beizutragen und daraus ergaben sich dann größere Diskussionen.
-
-\subsection{Fachliche Probleme}
+Im Verlauf underes Projektes haben sich über die Zeit einige Probleme ergeben. Dies war meist begründet durch kurzfristig nötige Programmänderungen, die dann zu größeren Diskussionen führten. Im Allgemenein hat unsere Gruppe dazu geneigt, Einzelheiten sehr fein auszudiskutieren. Auch bei der vielfältigen Änderung unserer ISA, siehe auch das zugehörige Kapitel, hat sich einiges an Streitigkeiten ergeben. Besonders anzumerken ist jedoch, dass alle Streitigkeiten in unserer Gruppe stets fachlich begründet waren. Unsere Mitglieder haben sich nicht etwa aus persönlichen Gründen nicht verstanden, sondern hatten vielmehr alle immer konstruktiv etwas zu den Fragestellungen beizutragen und daraus ergaben sich dann größere Diskussionen.\\[1em]
+%
 Wie auch schon im Kapitel ISA kurz angerissen wurde, ergaben sich vielfältige Änderungen an der Befehlsstruktur. Zunächst hatten wir nur ein sehr begrenztes Befehlset, am Ende auch Befehle zum direkten Ansteuren von Hardwareelementen. Die Problematik dahinter lag in der Hardware des FPGA begründet. 
 Ein bis jetzt bestehendes Problem unserer Architektur ist, dass unser Microcontroller kein byteweises Laden und Speichern unterstüztz. Auch Kommunikationsmanagement bzw. Nachrichtenaustauschürotokolle unterstrützt der Controller nicht und dementsprechend kennt er auch keine Interrupts.
 
-
-% isa musste mehrfach angepasst werden
-% |- weil moppelkotze
-% |- weil hardware dumm
-% bestehende probleme
-% |- kein byteweises laden/speichern
-% intergruppendynamikkommunikationsaustauschverhalten
-% sven und alisa sind rausgeflogen
-
-\section{Erkenntnisse}
-% TODO: hardware designen ist nicht schwer
-% man muss sich nur gedanken machen
-% verständniss für hardware wurde verbessert
-% verständniss für software wurde verbessert
-% gruppenarbeit ist wichtig und toll
-% issue tracker nutzen um übersicht zu behalten
-% git ist toll
-
-\section{Ausblick} %1hellwig
-% was könnten wir noch machen
-% |- video
-% |- audio
-% |- pipeline
-% |- cache
-% |- interrupts
-% |- multi threading ...
-% assembler (siehe github)
+\section{Ausblick}
+Vieles kann noch verbessert werden -- sowohl an der Hardware als auch an der Software. Jedoch haben wir nur begrenzt Zeit und konnten nur eine begrenzte Auswahl an Features implementieren. Letztendlich funktioniert unser Ansatz auch und wir konnten unsere Architektur auf den FPGA bringen und eigene Programme ausführen lassen. Es gibt noch viele Dinge die man machen könnte, einige wären:
+\begin{itemize}
+  \item Videoausgabe
+  \item Soundausgabe
+  \item CPU-Pipelining
+  \item Caching
+  \item Programmieren mit Interrupts
+  \item Byteweises Laden/Schreiben
+  \item USB
+  \item weitere Peripherie
+\end{itemize}
+Viele dieser Optionen erfordert ein großes Verständnis von Hard- und Software, z.B. die Grafikausgabe ist ein sehr komplexes Thema, denn hier müssen Timings und Standards eingehalten werden. Pipelining erfordert es sich mit der Architektur genauer auseinander zu setzen und Abhängigkeiten zwischen den Befehlen zu beachten. Beim Caching muss man sich auf Strategien des Cachen festlegen und und und.\\
 
 \section{Fazit}
-% TODO: war super
-% machen wir gern noch mal
-% wir sehen uns im master
+Mit mehr Zeit wären einige dieser Features garantiert realisiert worden, dennoch sind wir als Team mit dem Ergebnis sehr zufrieden. Wir haben gut zusammengearbeitet und viele Probleme gemeinsam gelöst. Die Kommunikation war wichtig, denn nur so konnten wir Probleme von Anfang an beseitigen und drifteten nicht zu sehr von der anderen Seite ab, wenn es um die Lösung von Problemen ging. Dabei halfen uns auch Programme und Werkzeuge die wir nutzten, z.B. git als Versionskontrolle, den Github-Issue-Tracker als Aufgabenverwaltung.\\
+Im Großen und Ganzen hat uns das Projekt sehr viel Spaß gemacht und wir haben sehr viel gelernt dabei. Es ist als eine Fortführung der Veranstaltung Rechnerstrukturen anzusehen, denn man lernt nicht nur die Theorie von Rechnerkonzepten, sondern setzt sie praktisch in die Tat um. Auch lernt man, warum Code in 1 und 0 umgesetzt wird und welche Bedeutung die Zahlen für die Hardware haben.\\
+Abschließend kann man sagen, dass das Projekt ein voller Erfolg war.

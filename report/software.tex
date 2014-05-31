@@ -8,16 +8,16 @@ Von Beginn an war ein Reduced Instruction Set (RISC) mit drei Operanden-Befehlen
 wobei wir uns an den Befehlssätzen der RISC-Prozessoren von ARM und MIPS orientiert haben.
 Die Wortbreite beträgt 32-bit. Es gibt 15 General Purpose-Register, wovon zwei zum Speichern des Stack Pointers und der Rücksprungaddresse genutzt werden.
 Das erste Register \texttt{\$0} ist immer null und kann auch zum Verwerfen eines Ergebnisses genutzt werden, in dem es als Zielregister angegeben wird.
-Es gibt vier Statusflags -- Zero, Negative, Carry, Overflow.
+Es gibt vier Statusflags --- Zero, Negative, Carry, Overflow.
 Diese können von allen ALU-Befehlen gesetzt werden und für konditionierte Sprünge genutzt werden.
 Mit dem \texttt{\$0}-Register und den Statusflags werden Vergleiche nun als Substraktionen modelliert:
-Der Befehl \texttt{cmp \$1, \$2} wird übersetzt zu \texttt{subs \$0, \$1, \$2} --
+Der Befehl \texttt{cmp \$1, \$2} wird übersetzt zu \texttt{subs \$0, \$1, \$2} ---
 also eine Substraktion, bei der die Statusflags abhängig vom Ergebnis gesetzt werden, und das Ergebnis in \texttt{\$0} gespeichert wird. \\
 Alle ALU-Befehle können auch mit einem 16-Bit-Immediate als dritten Operanden genutzt werden.
 In der finalen Version der ISA exisitiert kein Divisionsbefehl, da dieser zu Gunsten anderer Bitmasken-Befehle fallengelassen wurde.
 Zudem gibt es keine Multiplikation, die ein 64-bittiges Ergebnis hat.
 
-Für Speicherzugriffe gibt es zwei Load- und Store-Befehle zum Lesen und Speichern von 32-Bit-Wörtern --
+Für Speicherzugriffe gibt es zwei Load- und Store-Befehle zum Lesen und Speichern von 32-Bit-Wörtern ---
 die Speicheraddressen müssen dabei kein Vielfaches der Wortbreite sein.
 Die Angabe der Speicheraddresse ist entweder absolut mittels eines Registers oder relativ zum Program Counter mit einem 24-Bit-Immediate.
 Eine relativer Zugriff mit einem Register ist so nicht direkt möglich, aber der \texttt{adr}-Befehl kann für etwaige Addressberechnungen verwendet werden.
@@ -42,7 +42,7 @@ Wir sind diesem Weg gefolgt, da wir die Implementierung von Interrupts oder Masc
 So ist die Lösung sehr einfach zu implementieren und zu nutzen, aber nicht sonderlich flexibel.
 
 All diese Feinheiten der ISA haben sich mit der Zeit entwickelt.
-Beginnend bei unserem Primärziel, ein FPGA zu einem kleinen Taschenrechner werden lassen, hatten wir eine entsprechend kleine ISA.
+Beginnend bei unserem Primärziel, ein FPGA zu einem kleinen Taschenrechner werden lassen, hatten wir eine entsprechend kleine ISA\@.
 Sie umfasste lediglich den Befehlsatz für arithmetische Operationen, der fast genau so bis zur endgültigen ISA geblieben ist,
 Kontrollfluss-Befehle wie call und jump, die wir zu diesem Zeitpunkt noch nicht weiter durchdacht hatten, sowie einen load und store Befehl.
 Wie \autoref{AP:ISA} zeigt, hat sich die ISA im Vergleich zu \autoref{gen:Idee} stark erweitert.
@@ -55,10 +55,10 @@ Zudem war anfangs unklar, ob und wie relative und absolute Sprünge möglich sin
 In der ISA fehlen bisher viele Aspekte:
 So sind keine unterschiedlichen Datentypen definiert. Es wird lediglich mit vorzeichenbehafteten 32-bit gearbeitet.
 Daher fehlen Befehle für vorzeichenlose Multiplikation, Vorzeichenerweiterung, Laden und vorallem Speichern von Daten kleiner als 32-bit.
-Deswegen ist keine effiziente Nutzung von 8-bit Datentypen möglich, da unter anderem zum Speichern eine handvoll Befehle benötigt werden -- Laden der alten Daten,
+Deswegen ist keine effiziente Nutzung von 8-bit Datentypen möglich, da unter anderem zum Speichern eine handvoll Befehle benötigt werden --- Laden der alten Daten,
 Bitmaske laden, neue und alte Daten durch die Bitmaske verknüpfen und anschließend speichern.
 
-%TODO: Gleitkomma-Arithmetik
+% TODO: Gleitkomma-Arithmetik
 
 Am Ende dieses Kapitels ist als Programmcode-Beispiel ein kleiner Taschenrechner zu sehen.
 
@@ -84,28 +84,51 @@ Ein Rückgabewert eines Funktionsaufrufs liegt in \texttt{\$1}.
 Dem entsprechend sind die Register \texttt{\$1-\$4, \$15} Caller-Save, alle anderen Register Callee-Save.
 % TODO: Fehlt was?
 
-\section{Assembler} % Felix W.
-% TODO: do your shit
-% assembler ausschnitte
-% disassembler
-% fehlermeldungen
-% …
+\section{Assembler}
+Zur vereinfachten Programmierung wurde ein Assembler entwickelt, der Mnemonics in Maschinensprache übersetzt.
+Dieser ist in Python geschrieben und objektorientiert. Durch seine Struktur ermöglicht der Assembler auch eine Rückübersetzung von Maschinensprache zu Mnemonics.
 
+Im Folgenden ist nun die Definition der Speicherbefehle zu sehen, welche sehr kompakt ist. Zunächst werden die Opcodes der Befehle definiert --- an hand derer werden die Befehle unterschieden. Anschließend wird die bitweise Struktur der Befehle beschrieben. Speicherbefehle haben immer ein Register- und ein Labeloperand.
 \begin{center}
 \inputminted{py}{../assembler/operations/memOperation.py}
 \captionof{figure}{Die Definition der Speicheroperationen}
 \end{center}
 
-% pseudo-ops
+Befehle und Daten im menschenlesbaren Code können durch Label markiert werden und anhand dessen referenziert werden im Code. Der Assembler kümmert sich um die korrekte Übersetzung und Berechnung der Offsets. Beim Übersetzen gehen diese Informationen allerdings verloren, so dass bei der Disassemblierung nur noch die Offsets angezeigt werden.
+
+Um das Emulieren und Debuggen von Code trotzdem anhand des Quellcodes nachvollziehen zu können, kann der Assembler Debuginformationen zur Übersetzung ausgeben. Zur Zeit beinhaltet dies eine Zuordnung von Quellcodezeilen und deren Befehlspositionen im Maschinencode.
+
+Um einige Abkürzungen zu ermöglichen, bietet der Assembler Pseudooperationen an. Pseudooperationen sind Ausdrücke, die wie Befehle aussehen, aber in andere Befehle übersetzt werden. Zur Zeit kann ein Pseudobefehl nur zu exakt einem Maschinenbefehl übersetzt werden. Diese Beschränkung ließe sich aber bei Bedarf aufheben.
+% TODO: Implemntation über Substitutionen
 \begin{center}
 \inputminted[firstline=59,lastline=75]{py}{../assembler/operations/pseudoOperation.py}
 \captionof{figure}{Die Definitionen von Pseudooperationen}
 \end{center}
 
-\section{Emulator} % Felix W.
-% TODO: do your shit
-% intention: hardware nicht so weit. wollten isa und abi testen auf tauglichkeit
-% assembler testen
+Zur Objektorientierung gehört auch das Konzept von Ausnahmefehlern (Exceptions). Der Assembler nutzt diese intensiv. Durch die Kaskadierung lassen sich detaillierte Fehlermeldungen erstellen, die exakt anzeigen können, was beim Verarbeiten der Datei fehlgeschlagen ist:
+\begin{center}
+\begin{verbatim}
+Failed to encode file
+Invalid instruction at line 3:
+Not a valid AluOperation (Number too big):
+add $6, $0, #12312321312
+------------^
+\end{verbatim}
+\captionof{figure}{Eine Fehlerausgabe bei einem zu großen Operanden.}
+\end{center}
+
+Im Gegensatz zu den großen bekannten Assemblern GAS und LLVM-AS fehlen unserem Assembler noch viele Funktionen, wie Macros, Unterstützung zur Assemblierung/Linken mehrerer Dateien und  Umsetzung von Befehlen mit zu großem Operanden.
+
+Die Unterstützung von Macros kann auf der Basis der Pseudobefehle einfach hinzugefügt werden, in dem diese in einer Tabelle gesammelt werden und bei jedem Aufruf rekursiv ``hineinassembliert'' werden in den Ausgabestrom. Wichtig ist hierdabei, dass das Macro jedesmal neu übersetzt wird, um die Offsets der Labels korrekt zu berechnen. Zu dem fehlt eine Möglichkeit der Neudefinition von Labels, was aber für Macros nötig ist.
+
+Zur Assemblierung mehrerer Dateien benötigt der Assembler eine Direktive, die anzeigt, dass ein referenziertes Label extern definiert ist. Zu dem brauchen wir einen Linker, der die Objektdateien zusammenfügt.
+
+Wenn die Operanden eines Befehls zu groß sind für die direkte Kodierung in Maschinencode, bricht der Assembler in der aktuellen Fassung ab. Es wäre aber möglich, dass der Assembler solche Befehle in mehrere Befehle umsetzt, um diese direkt und einfach nutzen können. Zur Implementierung könnte man ein Register fest als Assemblerregister reservieren, in dem dieser den Operand des Befehls in mehreren Schritten generiert, und anschließend den Befehl ausführt.
+
+\section{Emulator}
+Um Programmschnipsel für den Prozessor schnell testen zu können, wurde ein Emulator geschrieben, welcher die Maschinenbefehle interpretiert und ausführt. Der Emulator ist ebenfalls wie die anderen Programme in Python geschrieben, aber mit der Besonderheit, dass dabei daraufgeachtet wurde, PyPy\footnote{\url{http://pypy.org/}}-kompatibel zu sein. Pypy kann damit den Emulator-Pythoncode in nativen Code übersetzen und somit schafft es unser Emulator, auf einem modernen Notebook knapp 25 Millionen Befehle pro Sekunde auszuführen.
+
+Der Emulator wurde sehr zeitig entwickelt, da man hiermit auch ohne Hardware die ISA und ABI auf Tauglichkeit testen konnte, um etwaige Schwachstellen zu identifizieren und zu beheben. Zu dem wurde mit dem Emulator auch die Ausgabe des Assemblers getestet.
 
 \section{Debugger}
 Neben einem Emulator wollten wir auch einen Debugger, der basierend auf dem Emulator den Programmablauf verdeutlicht.
@@ -115,5 +138,5 @@ Neben einem Emulator wollten wir auch einen Debugger, der basierend auf dem Emul
 \captionof{figure}{\label{SW:debugger}Screenshot des Debuggers}
 \end{figure}
 Wie in \autoref{SW:debugger} zu sehen ist, sind alle wichtigen Informationen der CPU zu sehen -- Registerinhalte, Programmcounter, Statusregister und Ram-Inhalt.
-Auch die Manipulation von Werten ist möglich, so z.B. des Raminhalts, der Register und er Statusflags. Man kann desweiteren Breakpoints setzen und Programmteile überspringen oder genauer inspizieren.\\
+Auch die Manipulation von Werten ist möglich, so z.B. des Raminhalts, der Register und der Statusflags. Man kann desweiteren Breakpoints setzen und Programmteile überspringen oder genauer inspizieren.\\
 Die Oberfläche wurde mit dem Qt-Designer kreiert, das Programm selbst in wie der Rest in Python geschrieben.
